@@ -23,8 +23,7 @@ grunt.loadNpmTasks('grunt-mock2easy');
 In your project's Gruntfile, add a section named `mock2easy` to the data object passed into `grunt.initConfig()`.
 
 ```js
-grunt.initConfig({
-  mock2easy: {
+grunt.initConfig({mock2easy: {
     options: {
       // Task-specific options go here.
     },
