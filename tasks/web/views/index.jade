@@ -1,0 +1,32 @@
+extends layout
+
+block content
+  .row(ng-controller="mockListCtrl")
+    .col-md-7
+      .panel.panel-info.clearfix
+        .panel-heading
+          h4.panel-title 已经存在的接口
+        .panel-body
+          ol
+            li(ng-repeat="i in data")
+              a(ng-bind="i.url |database",href="/detail/{{i.url | url}}")
+              span &nbsp;&nbsp;&nbsp;
+              span.text-success
+    .col-md-5
+      .panel.panel-info.clearfix
+        .panel-heading
+          h4.panel-title 添加新接口
+        .panel-body
+          form.navbar-form(novalidate,name="form",role="form")
+            .input-group
+              input.form-control(type="text",ng-required="true",name="url",ng-model="url")
+              span.input-group-btn
+                button.btn.btn-default.btn-success(ng-disabled="form.$invalid",ng-click="add()") 添加
+      .panel.panel-danger.clearfix
+        .panel-heading
+          h4.panel-title 错误日志
+        .panel-body
+
+
+
+  script(src="/javascripts/mockList.js")

@@ -1,0 +1,125 @@
+extends layout
+
+block content
+  form.row.form-horizontal(name="addForm",role="form",novalidate,ng-controller="addMockListCtrl")
+    .col-md-7
+      .panel.panel-info.clearfix
+        .panel-heading
+          h4.panel-title 接口详情
+        .panel-body
+          .form-group.has-feedback(ng-class="{'has-error':addForm.interfaceName.$dirty && addForm.interfaceName.$invalid}")
+            label.col-sm-3.control-label 接口名称：
+            .col-sm-9
+              input.form-control(ng-model="data.interfaceName",name="interfaceName",placeholder="必填项",ng-required="true")
+              span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm.interfaceName.$dirty && addForm.interfaceName.$invalid",tooltip="必填项")
+          .form-group
+            label.col-sm-3.control-label 接口类型：
+            .col-sm-9
+              label.radio-inline
+                input(ng-model="data.interfaceType",type="radio",name="interfaceType",value="GET")
+                span GET
+              label.radio-inline
+                input(ng-model="data.interfaceType",type="radio",name="interfaceType",value="POST")
+                span POST
+          .form-group.has-feedback(ng-class="{'has-error':addForm.interfaceUrl.$dirty && addForm.interfaceUrl.$invalid}")
+            label.col-sm-3.control-label 接口URL：
+            .col-sm-9
+              input.form-control(ng-model="data.interfaceUrl",disabled,name="interfaceUrl",placeholder="必填项",ng-required="true")
+              span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm.interfaceUrl.$dirty && addForm.interfaceUrl.$invalid",tooltip="必填项")
+      .panel.panel-info
+        .panel-heading.clearfix
+          h4.panel-title.pull-left 请求参数
+          a.btn.btn-default.btn-sm.btn-xs.pull-right(ng-click="addRequiredParameters()",tooltip="添加")
+            span.glyphicon.glyphicon-plus
+        table.table.table-bordered.tableList
+          thead
+            tr
+              th(width="45") 序号
+              th 变量名
+              th 变量规则
+              th 备注
+              th(width="45") 操作
+          tbody
+            tr(ng-repeat="i in data.requiredParameters")
+              td(align="center")
+                span(style="margin: 6px 0;display: inline-block;",ng-bind="$index+1")
+              td.form-group.has-feedback(ng-class="{'has-error':addForm[i.nameVerify].$dirty && addForm[i.nameVerify].$invalid}")
+                input.form-control(ng-model="i.name",dy-name="i.nameVerify",placeholder="必填项",ng-required="true")
+                span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm[i.nameVerify].$dirty && addForm[i.nameVerify].$invalid",tooltip="必填项")
+              td.form-group.has-feedback(ng-class="{'has-error':addForm[i.ruleVerify].$dirty && addForm[i.ruleVerify].$invalid}")
+                input.form-control(ng-model="i.rule",dy-name="i.ruleVerify",placeholder="必填项",ng-required="true")
+                span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm[i.ruleVerify].$dirty && addForm[i.ruleVerify].$invalid",tooltip="必填项")
+              td
+                input.form-control(ng-model="i.remark")
+              td(align="center")
+                a.btn.btn-sm.glyphicon.glyphicon-trash(ng-click="removeRequiredParameters($index)",tooltip="删除",style="margin-top: 3px;")
+
+      .panel.panel-info
+        .panel-heading.clearfix
+          h4.panel-title.pull-left 响应参数
+          a.btn.btn-default.btn-sm.btn-xs.pull-right(ng-click="addResponseParameters('')",tooltip="添加")
+            span.glyphicon.glyphicon-plus
+        table.table.table-bordered.tableList
+          thead
+            tr
+              th 变量名
+              th 变量规则
+              th(width="120") 类型
+              th 备注
+              th(width="45") 操作
+          tbody
+            tr(ng-repeat="i in data.responseParameters | orderBy : 'id' ",can-remove="data.responseParameters",list-id="{{i.id}}")
+
+              td.form-group.has-feedback(ng-class="{'has-error':addForm[i.nameVerify].$dirty && addForm[i.nameVerify].$invalid}")
+                input.form-control(ng-model="i.name",dy-name="i.nameVerify",placeholder="必填项",ng-required="true")
+                span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm[i.nameVerify].$dirty && addForm[i.nameVerify].$invalid",tooltip="必填项")
+              td.form-group.has-feedback(ng-class="{'has-error':addForm[i.ruleVerify].$dirty && addForm[i.ruleVerify].$invalid}")
+                strong(ng-if="i.kind=='object'",style="margin: 6px 12px;display: inline-block;") {}
+                strong(ng-if="i.kind=='array(object)'",style="margin: 6px 12px;display: inline-block;") [{}]
+                input.form-control(ng-model="i.rule",dy-name="i.ruleVerify",placeholder="必填项",ng-required="true",ng-if="i.kind!='object'&& i.kind!='array(object)'")
+                span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm[i.ruleVerify].$dirty && addForm[i.ruleVerify].$invalid",tooltip="必填项")
+              td(align="center")
+                span.disabled-select(ng-bind="i.kind",style="display:none;margin-top:6px;")
+                select(ng-model="i.kind",style="margin-top: 8px;")
+                  option string
+                  option mock
+                  option number
+                  option boolean
+                  option object
+                  option array(object)
+              td
+                input.form-control(ng-model="i.remark")
+              td(align="center")
+                a.btn.btn-sm.glyphicon.glyphicon-plus.text-success(ng-click="addResponseParameters(i.id)",ng-if="i.kind=='object'||i.kind=='array(object)'",tooltip="添加子节点",style="margin-top: 3px;padding: 10px 0px;")
+                a.btn.btn-sm.glyphicon.glyphicon-minus.text-danger(ng-click="removeResponseParameters($index)",tooltip="删除",style="margin-top: 3px;padding: 10px 0px;")
+
+
+    .col-md-5.well.well-sm
+      .page-header
+        h3 接口文档
+      .panel-body
+        h4 接口名称
+        p.text-muted(ng-bind="data.interfaceName",ng-if="data.interfaceName.length")
+        p.text-muted(ng-if="!data.interfaceName.length") --
+        h4 接口类型
+        p.text-muted(ng-bind="data.interfaceType")
+        h4 请求URL
+        p.text-muted(ng-bind="data.interfaceUrl",ng-if="data.interfaceUrl.length")
+        p.text-muted(ng-if="!data.interfaceUrl.length") --
+        h4 请求参数
+        ul
+          li(ng-repeat="i in data.requiredParameters")
+            strong(ng-if="i.name.length") {{i.name}}
+            span(ng-if="!i.name.length") --
+            sapn &nbsp;：
+            span(mockjs="i.rule",ng-if="i.rule.length")
+            span(ng-if="!i.rule.length") --
+            span.text-success(ng-if="i.remark.length") &nbsp;//{{i.remark}}
+        h4 相应参数
+        .panel.panel-default
+          .panel-body.json-panel(json2html="data.responseParameters",style="overflow-y: auto;")
+      .panel-footer
+        a.btn.btn-success(ng-disabled="addForm.$invalid",ng-click="submit()") 保存
+
+
+  script(src="/javascripts/addMockList.js")

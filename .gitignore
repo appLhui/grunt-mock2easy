@@ -1,0 +1,4 @@
+node_modules
+.idea/
+tasks/web/public/bower_components
+.DS_Store

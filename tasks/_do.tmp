@@ -1,0 +1,35 @@
+var express = require('express');
+var Mock = require('mockjs');
+var http = require('http');
+var app = express();
+
+function mockRewrite(req, res, next){
+    var options = {
+        hostname: '127.0.0.1',
+        port: 3000,
+        path: req.url,
+        method: req.method
+    };
+
+    var _req = http.request(options, function(_res) {
+        _res.setEncoding('utf8');
+        var data = ''
+        _res.on('data', function (chunk) {
+            data += chunk;
+
+        });
+        _res.on('end',function(){
+            res.send(data);
+        });
+    });
+
+    _req.on('error', function(e) {
+        console.log('problem with request: ' + e.message);
+    });
+
+    _req.end();
+};
+
+app.all('*.json',mockRewrite);
+
+module.exports = app;
