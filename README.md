@@ -51,6 +51,29 @@ Default value: `doc`
 
 接口文档的生成位置
 
+## 和 grunt-contrib-connect 实现ajax请求跨域
+
+修改 `Gruntfile.js` 中 connect的配置
+```js
+  
+  connect: {
+     server: {
+       options: {
+         middleware:  function(connect) {
+             return [
+               require('connect-livereload')(
+                 {port: globalSetting.liveReloadPort}
+               ),
+               require('./database/do')   //引入数据接口生成文件中的do.js脚本
+             ];
+           },
+       },
+     },
+   },
+
+```
+
+联调时只需要改变 `do.js` 中的  `hostname` 和 `port` 即可,
 
 ## Release History
 

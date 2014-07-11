@@ -26,9 +26,9 @@ module.exports = function(grunt, target) {
   };
 
   //自动创建node ajax跨域请求脚本
-  var makeDo = function(options){
+  var makeDo = function(grunt,options){
     if(!fs.existsSync(path.resolve(options.database)+'/do.js')){
-
+      fs.mkdirSync(path.resolve(options.database));
       var rOption = {
         flags : 'r',
         encoding : null,
@@ -52,7 +52,6 @@ module.exports = function(grunt, target) {
         console.log('readStream end');
         fileWriteStream.end();
       });
-
     };
   }
 
@@ -60,7 +59,7 @@ module.exports = function(grunt, target) {
   return {
     start: function start(options) {
 
-      makeDo(options);
+      makeDo(grunt,options);
 
       global.options = options;
 
