@@ -126,7 +126,7 @@ module.exports = function(grunt) {
 
     fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
       if(e) throw e;
-      fs.write(fd,JSON.stringify(req.body),0,'utf8',function(e){
+      fs.write(fd,JSON.stringify(req.body,undefined,5),0,'utf8',function(e){
         if(e) throw e;
         fs.closeSync(fd);
         res.json({success:1});
