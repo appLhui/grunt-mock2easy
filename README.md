@@ -23,10 +23,15 @@ grunt.loadNpmTasks('grunt-mock2easy');
 In your project's Gruntfile, add a section named `mock2easy` to the data object passed into `grunt.initConfig()`.
 
 ```js
-grunt.initConfig({mock2easy: {
-       port:3100,
-       database:'mock2easy',
-       doc:'doc'
+grunt.initConfig({
+    mock2easy: {
+        test:{
+            options: {
+                port:3000,
+                database:'database',
+                doc:'doc'
+            }
+        }
    },
 });
 ```

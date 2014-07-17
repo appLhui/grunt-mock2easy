@@ -49,7 +49,6 @@ module.exports = function(grunt, target) {
       });
 
       fileReadStream.on('end',function(){
-        console.log('readStream end');
         fileWriteStream.end();
       });
     };

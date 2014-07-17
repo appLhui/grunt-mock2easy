@@ -27,7 +27,7 @@ module.exports = function(grunt) {
     var server  = servers[this.target];
     var action  = this.args.shift() || 'start';
     var options = this.options({
-      port:3100,
+      port:3000,
       database:'mock2easy',
       doc:'doc'
     });
