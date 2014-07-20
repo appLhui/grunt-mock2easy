@@ -1,5 +1,4 @@
 var express = require('express');
-var Mock = require('mockjs');
 var http = require('http');
 var app = express();
 

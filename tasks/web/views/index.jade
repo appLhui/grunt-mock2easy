@@ -1,32 +1,40 @@
 extends layout
 
 block content
-  .row(ng-controller="mockListCtrl")
-    .col-md-7
-      .panel.panel-info.clearfix
-        .panel-heading
-          h4.panel-title 已经存在的接口
-        .panel-body
-          ol
-            li(ng-repeat="i in data")
-              a(ng-bind="i.url |database",href="/detail/{{i.url | url}}")
-              span &nbsp;&nbsp;&nbsp;
-              span.text-success
-    .col-md-5
-      .panel.panel-info.clearfix
-        .panel-heading
-          h4.panel-title 添加新接口
-        .panel-body
-          form.navbar-form(novalidate,name="form",role="form")
-            .input-group
-              input.form-control(type="text",ng-required="true",name="url",ng-model="url")
-              span.input-group-btn
-                button.btn.btn-default.btn-success(ng-disabled="form.$invalid",ng-click="add()") 添加
-      .panel.panel-danger.clearfix
-        .panel-heading
-          h4.panel-title 错误日志
-        .panel-body
+  div(ng-controller="mockListCtrl")
+    .alert.alert-success(ng-if="suc")
+      button.close(type="button",ng-click="suc=false") &times;
+      span 操作成功
 
+    .row
+      .col-md-7
+        .panel.panel-info.clearfix
+          .panel-heading
+            h4.panel-title 已经存在的接口
+          .panel-body
+            .form-group.has-feedback(style=" position: relative; ")
+              input.form-control(type="text",ng-model="jsonPath",placeholder="输入内容筛选接口")
+              span.glyphicon.glyphicon-search.form-control-feedback(style=" top: 0; ")
+            ol
+              li(ng-repeat="i in data | filter: jsonPath ")
+                span.text-danger.glyphicon.glyphicon-remove(ng-click="del($index)",style="cursor:pointer;")
+                a(ng-bind="i.url |database",href="/detail/{{i.url | url}}",style="margin-left:5px;")
+                span &nbsp;&nbsp;&nbsp;
 
+      .col-md-5
+        .panel.panel-info.clearfix
+          .panel-heading
+            h4.panel-title 添加新接口
+          .panel-body
+            form.navbar-form(novalidate,name="form",role="form")
+              .input-group
+                input.form-control(type="text",ng-required="true",ng-pattern="/^[/].*$/",name="url",ng-model="url",placeholder="接口必须以／开始")
+                span.input-group-btn
+                  button.btn.btn-default.btn-success(ng-disabled="form.$invalid",ng-click="add()") 添加
+        .panel.panel-danger.clearfix
+          .panel-heading
+            h4.panel-title 错误日志
+          .panel-body
+            p 暂时没有开放
 
   script(src="/javascripts/mockList.js")

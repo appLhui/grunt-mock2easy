@@ -16,9 +16,8 @@ module.exports = function(grunt){
         arr.splice(0,2,arr[0]+"/"+arr[1])
       }
       function inner(cur){
-        grunt.log.error(cur+':'+fs.existsSync(cur))
         if(cur.length > 0 && !fs.existsSync(cur)){//不存在就创建一个
-          fs.mkdirSync(cur, mode)
+          fs.mkdirSync(cur, mode);
         }
         if(arr.length){
           inner(cur + "/"+arr.shift());

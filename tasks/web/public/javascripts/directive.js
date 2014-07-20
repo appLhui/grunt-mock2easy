@@ -119,7 +119,6 @@ directiveM.directive('json2html', [
               }else if(v.kind === 'boolean'){
                 _o[v.id] = v.rule == 'true' || v.rule  ? true : false;
                 v.rule = _o[v.id] ? true : false;
-                console.log(v);
               }else if(v.kind === 'object'){
                 _o[v.id] = {};
               }else if(v.kind === 'array(object)'){

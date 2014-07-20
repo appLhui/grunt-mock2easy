@@ -59,6 +59,8 @@ block content
           h4.panel-title.pull-left 响应参数
           a.btn.btn-default.btn-sm.btn-xs.pull-right(ng-click="addResponseParameters('')",tooltip="添加")
             span.glyphicon.glyphicon-plus
+          a.btn.btn-default.btn-sm.btn-xs.pull-right(ng-click="openWin()",tooltip="导入",style="margin-right:10px;")
+            span.glyphicon.glyphicon-import
         table.table.table-bordered.tableList
           thead
             tr
@@ -69,7 +71,6 @@ block content
               th(width="45") 操作
           tbody
             tr(ng-repeat="i in data.responseParameters | orderBy : 'id' ",can-remove="data.responseParameters",list-id="{{i.id}}")
-
               td.form-group.has-feedback(ng-class="{'has-error':addForm[i.nameVerify].$dirty && addForm[i.nameVerify].$invalid}")
                 input.form-control(ng-model="i.name",dy-name="i.nameVerify",placeholder="必填项",ng-required="true")
                 span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm[i.nameVerify].$dirty && addForm[i.nameVerify].$invalid",tooltip="必填项")
@@ -120,6 +121,18 @@ block content
           .panel-body.json-panel(json2html="data.responseParameters",style="overflow-y: auto;")
       .panel-footer
         a.btn.btn-success(ng-disabled="addForm.$invalid",ng-click="submit()") 保存
+        a.btn.btn-default(href="/",style="margin-left: 10px;") 取消
+
+
+
+  script(type="text/ng-template",id="myModalContent.html")
+    form(name="import",role="form",novalidate)
+      .modal-header
+        h5 导入返回JSON数据
+      .modal-body
+        textarea.form-control(name="json",ng-required="true",ng-model="json",placeholder="导入新的JSON数据，之前的JSON数据将会被覆盖...",style="height: 350px;")
+      .modal-footer
+        button.btn.btn-primary(ng-click="importResponseParameters(json)",ng-disabled="import.$invalid") 导入
 
 
   script(src="/javascripts/addMockList.js")

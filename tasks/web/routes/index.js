@@ -56,6 +56,19 @@ module.exports = function(grunt) {
     });
   });
 
+//删除接口
+  router.post('/del',function(req,res){
+    grunt.log.error(path.resolve(global.options.database)+req.body.interfaceUrl);
+
+    fs.unlink(path.resolve(global.options.database)+req.body.interfaceUrl,function(e){
+      if(e){
+        grunt.log.error('删除文件夹错误');
+      }else{
+        res.json({success:1});
+      }
+    });
+  });
+
 
 //获取已经生成的接口路径
   router.post('/add',function(req,res){
@@ -64,7 +77,7 @@ module.exports = function(grunt) {
     grunt.log.error(path.resolve(global.options.database)+_arry.join('\/'));
     util.mkdirSync(path.resolve(global.options.database)+_arry.join('\/'),0,function(e){
       if(e){
-        grunt.log.write('创建文件夹错误');
+        grunt.log.error('创建文件夹错误');
       }else{
         fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
           if(e) throw e;
