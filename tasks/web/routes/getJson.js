@@ -11,13 +11,17 @@ module.exports = function(req, res, next){
       console.log("error");
     }else{
       if(data){
-        var responseParameters = JSON.parse(data).responseParameters;
+        var _data = JSON.parse(data);
+        var responseParameters = _data.responseParameters;
         var hashObj = {};
         for (var i in responseParameters) {
           var o =  responseParameters[i];
           hashObj[o.id] = o;
         }
-        res.send(Mock.mock(util.response2json(hashObj)));
+
+        setTimeout(function(){
+            res.send(Mock.mock(util.response2json(hashObj)));
+        },_data.lazyLoad=="yes"?3000:0);
       }
     }
   });

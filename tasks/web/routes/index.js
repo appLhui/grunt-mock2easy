@@ -5,146 +5,186 @@ var Mock = require('mockjs');
 
 
 module.exports = function(grunt) {
-  var url = '';
-  var util = new require('./util')(grunt);
-  var router = express.Router();
+    var url = '';
+    var util = new require('./util')(grunt);
+    var router = express.Router();
 
-  router.get('/', function(req, res) {
-    res.render('index', { title: 'Express' });
-  });
+    router.get('/', function(req, res) {
+        res.render('index', { title: 'Express' });
+    });
 
-  router.get('/detail/:url', function(req, res) {
-    url = req.params.url;
-    res.render('detail',{});
-  });
+    router.get('/detail/:url', function(req, res) {
+        url = req.params.url;
+        res.render('detail',{});
+    });
 
 //获取已经生成的接口路径
-  router.post('/getList',function(req,res){
-    var _data = [];
-    util.getAllFiles(path.resolve(global.options.database)).forEach(function(file){
-      var arry = file.split(global.options.database);
-      String.prototype.endWith=function(endStr){
-        var d=this.length-endStr.length;
-        return (d>=0&&this.lastIndexOf(endStr)==d)
-      }
-      if(arry[arry.length-1].endWith('.json')){
-        var _json = {};
-        fs.readFile(file,'utf-8',function(err,data){
-          if(err){
-            console.log("error");
-          }else{
-            if(data){
-              _json = JSON.parse(data);
+    router.post('/getList',function(req,res){
+        var _data = [];
+        var _i = 1;
+        var _filse = [];
+        util.getAllFiles(path.resolve(global.options.database)).forEach(function(file){
+            var arry = file.split(global.options.database);
+            String.prototype.endWith=function(endStr){
+                var d=this.length-endStr.length;
+                return (d>=0&&this.lastIndexOf(endStr)==d)
             }
-          }
+            if(arry[arry.length-1].endWith('.json')){
+                _filse.push(file);
+            }
         });
-        _data.push({url:arry[arry.length-1],note:_json.interfaceName});
-      }
+        _filse.forEach(function(file){
+            var arry = file.split(global.options.database);
+            var _json = {};
+            fs.readFile(file,'utf-8',function(err,data){
+                if(err){
+                    console.log("error");
+                }else{
+                    if(data){
+                        _json = JSON.parse(data);
+                        _data.push({
+                            url:arry[arry.length-1],
+                            note:_json.interfaceName,
+                            lazyLoad:_json.lazyLoad == 'yes'
+                        });
+                        _i++;
+                        if(_i == _filse.length){
+                            res.json({data:_data});
+                        }
+                    }
+                }
+            });
+        });
     });
-    res.json({data:_data});
-  });
 
-  router.post('/load',function(req,res){
-    fs.readFile(path.resolve(global.options.database)+url.replace(/&/g,'\/'),'utf-8',function(err,data){
-      if(err){
-        console.log("error");
-      }else{
-        if(data){
-          res.json(JSON.parse(data));
-        }
-      }
+    router.post('/load',function(req,res){
+        fs.readFile(path.resolve(global.options.database)+url.replace(/&/g,'\/'),'utf-8',function(err,data){
+            if(err){
+                console.log("error");
+            }else{
+                if(data){
+                    res.json(JSON.parse(data));
+                }
+            }
+        });
     });
-  });
+
+
+    router.post('/changeLazy',function(req,res){
+        fs.readFile(path.resolve(global.options.database)+req.body.interfaceUrl,'utf-8',function(err,data){
+            if(err){
+                console.log("error");
+            }else{
+                if(data){
+                    fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
+                        if(e) throw e;
+                        var _data =  JSON.parse(data);
+
+                        _data.lazyLoad = _data.lazyLoad == 'yes' ? 'no' : 'yes';
+                        fs.write(fd,JSON.stringify(_data,undefined,5),0,'utf8',function(e){
+                            if(e) throw e;
+                            fs.closeSync(fd);
+                            res.json({success:1});
+                        })
+                    });
+                }
+            }
+        });
+    });
+
 
 //删除接口
-  router.post('/del',function(req,res){
-    grunt.log.error(path.resolve(global.options.database)+req.body.interfaceUrl);
+    router.post('/del',function(req,res){
+        grunt.log.error(path.resolve(global.options.database)+req.body.interfaceUrl);
 
-    fs.unlink(path.resolve(global.options.database)+req.body.interfaceUrl,function(e){
-      if(e){
-        grunt.log.error('删除文件夹错误');
-      }else{
-        res.json({success:1});
-      }
+        fs.unlink(path.resolve(global.options.database)+req.body.interfaceUrl,function(e){
+            if(e){
+                grunt.log.error('删除文件夹错误');
+            }else{
+                res.json({success:1});
+            }
+        });
     });
-  });
 
 
 //获取已经生成的接口路径
-  router.post('/add',function(req,res){
-    var _arry = req.body.interfaceUrl.split('\/');
-    delete _arry[_arry.length-1];
-    grunt.log.error(path.resolve(global.options.database)+_arry.join('\/'));
-    util.mkdirSync(path.resolve(global.options.database)+_arry.join('\/'),0,function(e){
-      if(e){
-        grunt.log.error('创建文件夹错误');
-      }else{
-        fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
-          if(e) throw e;
-          fs.write(fd,JSON.stringify(req.body),0,'utf8',function(e){
-            if(e) throw e;
-            fs.closeSync(fd);
-            res.json({success:1});
-          })
+    router.post('/add',function(req,res){
+        var _arry = req.body.interfaceUrl.split('\/');
+        delete _arry[_arry.length-1];
+        grunt.log.error(path.resolve(global.options.database)+_arry.join('\/'));
+        util.mkdirSync(path.resolve(global.options.database)+_arry.join('\/'),0,function(e){
+            if(e){
+                grunt.log.error('创建文件夹错误');
+            }else{
+                fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
+                    if(e) throw e;
+                    fs.write(fd,JSON.stringify(req.body),0,'utf8',function(e){
+                        if(e) throw e;
+                        fs.closeSync(fd);
+                        res.json({success:1});
+                    })
+                });
+            }
         });
-      }
     });
-  });
 
 //修改接口操作
-  router.post('/modify',function(req,res){
+    router.post('/modify',function(req,res){
 
-    var _reqStr = '';
-    if(req.body.requiredParameters.length>0){
-      _reqStr = '#### 请求参数\n';
-      req.body.requiredParameters.forEach(function(o){
-        _reqStr += '\t'+ o.name +':'+ o.rule + '\n';
-      });
-    }
+        var _reqStr = '';
+        if(req.body.requiredParameters.length>0){
+            _reqStr = '#### 请求参数\n';
+            req.body.requiredParameters.forEach(function(o){
+                _reqStr += '\t'+ o.name +':'+ o.rule + '\n';
+            });
+        }
 
-    var responseParameters = req.body.responseParameters;
-    var hashObj = {};
-    for (var i in responseParameters) {
-      var o =  responseParameters[i];
-      hashObj[o.id] = o;
-    }
+        var responseParameters = req.body.responseParameters;
+        var hashObj = {};
+        for (var i in responseParameters) {
+            var o =  responseParameters[i];
+            hashObj[o.id] = o;
+        }
 
-    var _md =['#### 接口名称\n',
-      '\t',req.body.interfaceName,'\n',
-      '#### 接口类型\n',
-      '\t',req.body.interfaceType,'\n',
-      '#### 请求URL\n',
-      '\t',req.body.interfaceUrl,'\n',
-      _reqStr,
-      '#### 相应参数\n```js\n',
-      JSON.stringify(Mock.mock(util.response2json(hashObj)), undefined,1),
-      '\n```'
-    ];
+        var _md =['#### 接口名称\n',
+            '\t',req.body.interfaceName,'\n',
+            '#### 接口类型\n',
+            '\t',req.body.interfaceType,'\n',
+            '#### 请求URL\n',
+            '\t',req.body.interfaceUrl,'\n',
+            _reqStr,
+            '#### 相应参数\n```js\n',
+            JSON.stringify(Mock.mock(util.response2json(hashObj)), undefined,1),
+            '\n```'
+        ];
 
-    var _arry = req.body.interfaceUrl.split('\/');
-    delete _arry[_arry.length-1];
-    util.mkdirSync(path.resolve(global.options.doc)+_arry.join('\/'),0,function(e){
-      if(e){
-        grunt.log.write('创建文件夹错误');
-      }else{
-        fs.open(path.resolve(global.options.doc)+req.body.interfaceUrl.replace(/.json/,'.md'),"w",0644,function(e,fd){
-          if(e) throw e;
-          fs.write(fd,_md.join(''),0,'utf8',function(e){
-            if(e) throw e;
-            fs.closeSync(fd);
-          })
+        var _arry = req.body.interfaceUrl.split('\/');
+        delete _arry[_arry.length-1];
+        util.mkdirSync(path.resolve(global.options.doc)+_arry.join('\/'),0,function(e){
+            if(e){
+                grunt.log.write('创建文件夹错误');
+            }else{
+                fs.open(path.resolve(global.options.doc)+req.body.interfaceUrl.replace(/.json/,'.md'),"w",0644,function(e,fd){
+                    if(e) throw e;
+                    fs.write(fd,_md.join(''),0,'utf8',function(e){
+                        if(e) throw e;
+                        fs.closeSync(fd);
+                    })
+                });
+            }
         });
-      }
+
+        fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
+            if(e) throw e;
+            fs.write(fd,JSON.stringify(req.body,undefined,5),0,'utf8',function(e){
+                if(e) throw e;
+                fs.closeSync(fd);
+                res.json({success:1});
+            })
+        });
     });
 
-    fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
-      if(e) throw e;
-      fs.write(fd,JSON.stringify(req.body,undefined,5),0,'utf8',function(e){
-        if(e) throw e;
-        fs.closeSync(fd);
-        res.json({success:1});
-      })
-    });
-  });
-  return router;
+
+
+    return router;
 }

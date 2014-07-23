@@ -1,11 +1,9 @@
 extends layout
-
 block content
   div(ng-controller="mockListCtrl")
     .alert.alert-success(ng-if="suc")
       button.close(type="button",ng-click="suc=false") &times;
       span 操作成功
-
     .row
       .col-md-7
         .panel.panel-info.clearfix
@@ -15,12 +13,25 @@ block content
             .form-group.has-feedback(style=" position: relative; ")
               input.form-control(type="text",ng-model="jsonPath",placeholder="输入内容筛选接口")
               span.glyphicon.glyphicon-search.form-control-feedback(style=" top: 0; ")
-            ol
-              li(ng-repeat="i in data | filter: jsonPath ")
-                span.text-danger.glyphicon.glyphicon-remove(ng-click="del($index)",style="cursor:pointer;")
-                a(ng-bind="i.url |database",href="/detail/{{i.url | url}}",style="margin-left:5px;")
-                span &nbsp;&nbsp;&nbsp;
-
+            table.table.table-hover
+              thead
+                tr
+                  th PATH
+                  th 延时
+                    span.glyphicon.glyphicon-question-sign.text-muted(tooltip="模拟极端环境中，接口调用缓慢的情况")
+                  th 操作
+              tbody
+                tr(ng-repeat="i in data | filter: jsonPath ")
+                  td
+                    a.text-error(ng-bind="i.url|database",href="/detail/{{i.url | url}}",tooltip="{{i.note}}")
+                  td
+                    button.btn.btn-default.btn-xs(ng-if="!i.lazyLoad")
+                      span.text-success.glyphicon.glyphicon-play(tooltip="获取接口无延时",ng-click="changeLazy($index)")
+                    button.btn.btn-default.btn-xs(ng-if="i.lazyLoad")
+                      span.text-warning.glyphicon.glyphicon-pause(tooltip="获取接口有 3s 延时",ng-click="changeLazy($index)")
+                  td
+                    button.btn.btn-default.btn-xs
+                      span.text-danger.glyphicon.glyphicon-remove(ng-click="del($index)",style="cursor:pointer;",tooltip="删除")
       .col-md-5
         .panel.panel-info.clearfix
           .panel-heading
@@ -36,5 +47,4 @@ block content
             h4.panel-title 错误日志
           .panel-body
             p 暂时没有开放
-
   script(src="/javascripts/mockList.js")

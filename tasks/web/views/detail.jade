@@ -1,5 +1,4 @@
 extends layout
-
 block content
   form.row.form-horizontal(name="addForm",role="form",novalidate,ng-controller="addMockListCtrl")
     .col-md-7
@@ -7,6 +6,15 @@ block content
         .panel-heading
           h4.panel-title 接口详情
         .panel-body
+          .form-group.has-feedback(ng-class="{'has-error':addForm.interfaceName.$dirty && addForm.interfaceName.$invalid}")
+            label.col-sm-3.control-label 是否需要延时加载：
+            .col-sm-9
+              label.radio-inline
+                input(ng-model="data.lazyLoad",type="radio",value="no")
+                span NO
+              label.radio-inline
+                input(ng-model="data.lazyLoad",type="radio",value="yes")
+                span YES
           .form-group.has-feedback(ng-class="{'has-error':addForm.interfaceName.$dirty && addForm.interfaceName.$invalid}")
             label.col-sm-3.control-label 接口名称：
             .col-sm-9
@@ -53,7 +61,6 @@ block content
                 input.form-control(ng-model="i.remark")
               td(align="center")
                 a.btn.btn-sm.glyphicon.glyphicon-trash(ng-click="removeRequiredParameters($index)",tooltip="删除",style="margin-top: 3px;")
-
       .panel.panel-info
         .panel-heading.clearfix
           h4.panel-title.pull-left 响应参数
@@ -93,8 +100,6 @@ block content
               td(align="center")
                 a.btn.btn-sm.glyphicon.glyphicon-plus.text-success(ng-click="addResponseParameters(i.id)",ng-if="i.kind=='object'||i.kind=='array(object)'",tooltip="添加子节点",style="margin-top: 3px;padding: 10px 0px;")
                 a.btn.btn-sm.glyphicon.glyphicon-minus.text-danger(ng-click="removeResponseParameters($index)",tooltip="删除",style="margin-top: 3px;padding: 10px 0px;")
-
-
     .col-md-5.well.well-sm
       .page-header
         h3 接口文档
@@ -122,9 +127,6 @@ block content
       .panel-footer
         a.btn.btn-success(ng-disabled="addForm.$invalid",ng-click="submit()") 保存
         a.btn.btn-default(href="/",style="margin-left: 10px;") 取消
-
-
-
   script(type="text/ng-template",id="myModalContent.html")
     form(name="import",role="form",novalidate)
       .modal-header
@@ -133,6 +135,4 @@ block content
         textarea.form-control(name="json",ng-required="true",ng-model="json",placeholder="导入新的JSON数据，之前的JSON数据将会被覆盖...",style="height: 350px;")
       .modal-footer
         button.btn.btn-primary(ng-click="importResponseParameters(json)",ng-disabled="import.$invalid") 导入
-
-
   script(src="/javascripts/addMockList.js")
