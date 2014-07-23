@@ -1,7 +1,7 @@
 {
   "name": "grunt-mock2easy",
   "description": "mock接口，生成md文档",
-  "version": "0.1.19",
+  "version": "0.1.22",
   "homepage": "",
   "author": {
     "name": "mofei",

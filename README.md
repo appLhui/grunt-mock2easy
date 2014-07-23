@@ -29,7 +29,8 @@ grunt.initConfig({
             options: {
                 port:3000,
                 database:'database',
-                doc:'doc'
+                doc:'doc',
+                keepAlive:false
             }
         }
    },
@@ -39,22 +40,38 @@ grunt.initConfig({
 ### Options
 
 #### options.port
-Type: `String`
+
+Type: `Number`
+
 Default value: 3100
 
 启动的服务的端口号，保证端口不冲突即可.
 
 #### options.database
+
 Type: `String`
+
 Default value: `mock2easy`
 
 接口数据的生成位置
 
 #### options.doc
+
 Type: `String`
+
 Default value: `doc`
 
 接口文档的生成位置
+
+#### options.keepAlive
+
+Type: `Boolean`
+
+Default value: true
+
+默认为`false`，`true`时可以独立起一个服务提供接口，`false`时可以和别的grunt服务组合成为一个任务串
+
+
 
 ## 和 grunt-contrib-connect 实现ajax请求跨域
 
@@ -80,5 +97,5 @@ Default value: `doc`
 
 联调时只需要改变 `do.js` 中的  `hostname` 和 `port` 即可,
 
-## Release History
+
 
