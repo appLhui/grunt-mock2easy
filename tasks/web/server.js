@@ -1,7 +1,7 @@
 'use strict';
 
 
-module.exports = function(grunt, target) {
+module.exports = function(grunt, target,async) {
 
   var app = require('./app')(grunt);
   var util =new require('../web/routes/util')();
@@ -91,6 +91,9 @@ module.exports = function(grunt, target) {
 
       server = process._servers[target] = app.listen(options.port, function() {
         grunt.log.write('Mock服务已经启动，请访问地址：http://localhost:' + server.address().port);
+        if(!options.keepAlive){
+            async();
+        }
       });
 
       process.on('exit', finished);

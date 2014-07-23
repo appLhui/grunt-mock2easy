@@ -82,8 +82,8 @@ block content
                 input.form-control(ng-model="i.name",dy-name="i.nameVerify",placeholder="必填项",ng-required="true")
                 span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm[i.nameVerify].$dirty && addForm[i.nameVerify].$invalid",tooltip="必填项")
               td.form-group.has-feedback(ng-class="{'has-error':addForm[i.ruleVerify].$dirty && addForm[i.ruleVerify].$invalid}")
-                strong.tex(ng-if="i.kind=='object'",style="margin: 6px 12px;display: inline-block;") {}
-                strong(ng-if="i.kind=='array(object)'",style="margin: 6px 12px;display: inline-block;") [{}]
+                strong.text-info(ng-if="i.kind=='object'",style="margin: 6px 12px;display: inline-block;") {}
+                strong.text-info(ng-if="i.kind=='array(object)'",style="margin: 6px 12px;display: inline-block;") [{}]
                 input.form-control(ng-model="i.rule",dy-name="i.ruleVerify",placeholder="必填项",ng-required="true",ng-if="i.kind!='object'&& i.kind!='array(object)'")
                 span.glyphicon.glyphicon-exclamation-sign.form-control-feedback(ng-if="addForm[i.ruleVerify].$dirty && addForm[i.ruleVerify].$invalid",tooltip="必填项")
               td(align="center")
@@ -101,7 +101,7 @@ block content
                 a.btn.btn-sm.glyphicon.glyphicon-plus.text-success(ng-click="addResponseParameters(i.id)",ng-if="i.kind=='object'||i.kind=='array(object)'",tooltip="添加子节点",style="margin-top: 3px;padding: 10px 0px;")
                 a.btn.btn-sm.glyphicon.glyphicon-minus.text-danger(ng-click="removeResponseParameters($index)",tooltip="删除",style="margin-top: 3px;padding: 10px 0px;")
     .col-md-5.well.well-sm(style=" position: fixed; right: 10px; ")
-      .panel-body(style=" max-height: 500px; overflow-y: auto; ")
+      .panel-body(style=" max-height: 590px; overflow-y: auto; ")
         h5 接口名称
         p.text-muted(ng-bind="data.interfaceName",ng-if="data.interfaceName.length")
         p.text-muted(ng-if="!data.interfaceName.length") --

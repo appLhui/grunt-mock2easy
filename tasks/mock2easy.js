@@ -11,6 +11,7 @@
 
 
 var path = require('path');
+var async = require('async');
 
 
 module.exports = function(grunt) {
@@ -21,7 +22,7 @@ module.exports = function(grunt) {
 
 
     if (!servers[this.target]) {
-      servers[this.target] = require('./web/server')(grunt, this.target);
+      servers[this.target] = require('./web/server')(grunt, this.target,this.async());
     }
 
     var server  = servers[this.target];
@@ -29,7 +30,8 @@ module.exports = function(grunt) {
     var options = this.options({
       port:3000,
       database:'mock2easy',
-      doc:'doc'
+      doc:'doc',
+      keepAlive:true
     });
 
     server[action](options);
