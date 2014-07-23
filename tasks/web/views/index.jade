@@ -13,25 +13,30 @@ block content
             .form-group.has-feedback(style=" position: relative; ")
               input.form-control(type="text",ng-model="jsonPath",placeholder="输入内容筛选接口")
               span.glyphicon.glyphicon-search.form-control-feedback(style=" top: 0; ")
-            table.table.table-hover
-              thead
-                tr
-                  th PATH
-                  th 延时
-                    span.glyphicon.glyphicon-question-sign.text-muted(tooltip="模拟极端环境中，接口调用缓慢的情况")
-                  th 操作
-              tbody
-                tr(ng-repeat="i in data | filter: jsonPath ")
-                  td
-                    a.text-error(ng-bind="i.url|database",href="/detail/{{i.url | url}}",tooltip="{{i.note}}")
-                  td
+            .row(style="border-bottom: 2px solid #eee; ")
+              .col-md-8
+                h5 PATH
+              .col-md-2
+                h5 延时
+                  span.glyphicon.glyphicon-question-sign.text-muted(tooltip="模拟极端环境中，接口调用缓慢的情况",style="margin-left: 2px;")
+              .col-md-2
+                h5 操作
+
+            .row(style=" max-height: 400px; overflow-y: auto; ")
+              .col-md-12
+                .row(ng-repeat="i in data | filter: jsonPath ",style="padding:10px 0;border-bottom: 1px solid #eee;")
+                  .col-md-8
+                    a.text-error(ng-bind="i.url|database",href="/detail/{{i.url | url}}",tooltip="{{i.note}}",tooltip-placement="right")
+                  .col-md-2
                     button.btn.btn-default.btn-xs(ng-if="!i.lazyLoad")
-                      span.text-success.glyphicon.glyphicon-play(tooltip="获取接口无延时",ng-click="changeLazy($index)")
-                    button.btn.btn-default.btn-xs(ng-if="i.lazyLoad")
-                      span.text-warning.glyphicon.glyphicon-pause(tooltip="获取接口有 3s 延时",ng-click="changeLazy($index)")
-                  td
+                      span.text-success.glyphicon.glyphicon-play(tooltip="获取接口无延时",ng-click="changeLazy($index)",tooltip-placement="right")
+                    button.btn.btn-warning.btn-xs(ng-if="i.lazyLoad")
+                      span.glyphicon.glyphicon-pause(tooltip="获取接口有 3s 延时",ng-click="changeLazy($index)",tooltip-placement="right")
+                  .col-md-2
                     button.btn.btn-default.btn-xs
                       span.text-danger.glyphicon.glyphicon-remove(ng-click="del($index)",style="cursor:pointer;",tooltip="删除")
+
+
       .col-md-5
         .panel.panel-info.clearfix
           .panel-heading
