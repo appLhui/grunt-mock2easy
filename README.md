@@ -1,6 +1,6 @@
 # grunt-mock2easy
 
-> mock接口，生成md文档
+> 通过nodejs的服务实现ajax的跨域访问，利用mockjs动态生成json接口，模拟各种恶略环境测试系统是否健全，测试接口生成接口文档
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
@@ -30,7 +30,7 @@ grunt.initConfig({
                 port:3000,
                 database:'database',
                 doc:'doc',
-                keepAlive:false
+                keepAlive:true
             }
         }
    },
@@ -45,7 +45,7 @@ Type: `Number`
 
 Default value: 3100
 
-启动的服务的端口号，保证端口不冲突即可.
+启动的服务的端口号  
 
 #### options.database
 
@@ -69,11 +69,11 @@ Type: `Boolean`
 
 Default value: true
 
-默认为`false`，`true`时可以独立起一个服务提供接口，`false`时可以和别的grunt服务组合成为一个任务串
+默认为`true`，`true`时可以独立起一个服务提供接口，`false`时可以和别的grunt服务组合成为一个任务串
 
 
 
-## 和 grunt-contrib-connect 实现ajax请求跨域
+## grunt-contrib-connect 实现ajax请求跨域
 
 修改 `Gruntfile.js` 中 connect的配置
 ```js
@@ -96,6 +96,10 @@ Default value: true
 ```
 
 联调时只需要改变 `do.js` 中的  `hostname` 和 `port` 即可,
+
+## mockjs的支持
+
+支持所有的mockjs语法，[Mockjs语法样例](http://mockjs.com/demo/mock.html) 
 
 
 

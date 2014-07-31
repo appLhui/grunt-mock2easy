@@ -1,0 +1,11 @@
+<form name="import" role="form" novalidate="novalidate">
+    <div class="modal-header">
+        <h5>导入返回JSON数据</h5>
+    </div>
+    <div class="modal-body">
+        <textarea name="json" ng-required="true" ng-model="json" placeholder="导入新的JSON数据，之前的JSON数据将会被覆盖..." style="height: 350px;" class="form-control"></textarea>
+    </div>
+    <div class="modal-footer">
+        <button ng-click="importResponseParameters(json)" ng-disabled="import.$invalid" class="btn btn-primary">导入</button>
+    </div>
+</form>

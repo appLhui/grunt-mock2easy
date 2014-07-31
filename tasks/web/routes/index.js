@@ -23,6 +23,7 @@ module.exports = function(grunt) {
         var _data = [];
         var _i = 1;
         var _filse = [];
+        var s =   util.getAllFiles(path.resolve(global.options.database));
         util.getAllFiles(path.resolve(global.options.database)).forEach(function(file){
             var arry = file.split(global.options.database);
             String.prototype.endWith=function(endStr){
@@ -48,7 +49,7 @@ module.exports = function(grunt) {
                             lazyLoad:_json.lazyLoad == 'yes'
                         });
                         _i++;
-                        if(_i == _filse.length){
+                        if(_i == _filse.length+1){
                             res.json({data:_data});
                         }
                     }
@@ -58,9 +59,9 @@ module.exports = function(grunt) {
     });
 
     router.post('/load',function(req,res){
-        fs.readFile(path.resolve(global.options.database)+url.replace(/&/g,'\/'),'utf-8',function(err,data){
+        fs.readFile(path.resolve(global.options.database)+req.body.url.replace(/&/g,'\/'),'utf-8',function(err,data){
             if(err){
-                console.log("error");
+                console.log("获取接口详情出错："+err);
             }else{
                 if(data){
                     res.json(JSON.parse(data));
