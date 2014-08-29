@@ -117,3 +117,10 @@ Default value: false
 
 ## 基本界面
 
+![image](https://raw.githubusercontent.com/appLhui/grunt-mock2easy/master/img/index.png) 
+![image](https://raw.githubusercontent.com/appLhui/grunt-mock2easy/master/img/detail.png) 
+
+
+
+
+
