@@ -1,6 +1,6 @@
 # grunt-mock2easy
 
-> 通过nodejs的服务实现ajax的跨域访问，利用mockjs动态生成json接口，模拟各种恶略环境测试系统是否健全，测试接口生成接口文档
+> 通过nodejs的服务实现ajax的跨域访问，使用爬虫模拟登录获取接口，利用mockjs动态生成json接口，模拟多种服务器环境，测试接口并且生成接口文档
 
 ## Getting Started
 This plugin requires Grunt `~0.4.5`
@@ -43,7 +43,7 @@ grunt.initConfig({
 
 Type: `Number`
 
-Default value: 3100
+Default value: 3000
 
 启动的服务的端口号  
 
@@ -72,6 +72,16 @@ Default value: true
 默认为`true`，`true`时可以独立起一个服务提供接口，`false`时可以和别的grunt服务组合成为一个任务串
 
 
+#### options.isSpider
+
+Type: `Boolean`
+
+Default value: false
+
+默认为`false`，如果你的系统有很多的安全防护，不能使用改变IP和端口号来获取接口，请尝试这个方式。
+这个参数为是否使用爬虫获取接口，使用这个配置需要本地装有 `casperjs`，如果没有请先运行 `sudo npm install -g casperjs`,请先运行一次`grunt-mock2easy`,然后在 /database（默认）目录下 编辑修改适合自己的app.js文件。
+
+
 
 ## grunt-contrib-connect 实现ajax请求跨域
 
@@ -97,9 +107,13 @@ Default value: true
 
 联调时只需要改变 `do.js` 中的  `hostname` 和 `port` 即可,
 
+
+
 ## mockjs的支持
 
 支持所有的mockjs语法，[Mockjs语法样例](http://mockjs.com/demo/mock.html) 
 
+如果有好的建议和意见请联系我：lhui3it@gmail.com
 
+## 基本界面
 

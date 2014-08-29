@@ -2,7 +2,7 @@
     <div class="col-md-7">
         <div class="panel panel-info clearfix">
             <div class="panel-heading">
-                <h4 class="panel-title">接口详情</h4>
+                <h6 class="panel-title">接口详情</h6>
             </div>
             <div class="panel-body">
                 <div  class="form-group has-feedback">
@@ -43,7 +43,7 @@
         </div>
         <div class="panel panel-info">
             <div class="panel-heading clearfix">
-                <h4 class="panel-title pull-left">请求参数</h4><a ng-click="addRequiredParameters()" tooltip="添加" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></a>
+                <h6 class="panel-title pull-left">请求参数</h6><a ng-click="addRequiredParameters()" tooltip="添加" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></a>
             </div>
             <table class="table table-bordered tableList">
                 <thead>
@@ -70,9 +70,13 @@
                 </tbody>
             </table>
         </div>
+
         <div class="panel panel-info">
             <div class="panel-heading clearfix">
-                <h4 class="panel-title pull-left">返回接口</h4>
+                <h6 class="panel-title pull-left">返回接口
+                    <span tooltip="mock类型可以为我们提供boolean、number、arraryNumber、arrayString类型，如果不熟悉mockjs，请查看mockjs的文档" class="glyphicon glyphicon-question-sign"></span>
+                </h6>
+
                 <a ng-click="addResponseParameters('')" tooltip="添加" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></a><a ng-click="openWin()" tooltip="导入" style="margin-right:10px;" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-import"></span></a>
             </div>
             <table class="table table-bordered tableList">
@@ -113,15 +117,16 @@
     </div>
     <div style=" position: fixed; right: 10px; " class="col-md-5 well well-sm">
         <div style=" max-height: 590px; overflow-y: auto; " class="panel-body">
-            <h5>接口名称</h5>
+            <a href="http://mockjs.com/demo/mock.html" target="_blank">查看Mockjs例子&gt;&gt;</a>
+            <h6>接口名称</h6>
             <p ng-bind="data.interfaceName" ng-if="data.interfaceName.length" class="text-muted"></p>
             <p ng-if="!data.interfaceName.length" class="text-muted">--</p>
-            <h5>接口类型</h5>
+            <h6>接口类型</h6>
             <p ng-bind="data.interfaceType" class="text-muted"></p>
-            <h5>请求URL</h5>
+            <h6>请求URL</h6>
             <p ng-bind="data.interfaceUrl" ng-if="data.interfaceUrl.length" class="text-muted"></p>
             <p ng-if="!data.interfaceUrl.length" class="text-muted">--</p>
-            <h5>请求参数</h5>
+            <h6>请求参数</h6>
             <ul>
                 <li ng-repeat="i in data.requiredParameters">
                     <strong ng-if="i.name.length" ng-class="{'text-muted':!i.required}">{{i.name}}</strong>
@@ -129,7 +134,11 @@
                     <sapn>&nbsp;</sapn><span ng-if="i.remark.length" class="text-success">&nbsp;//{{i.remark}}</span>
                 </li>
             </ul>
-            <h5>返回接口</h5>
+            <h6>
+                返回接口
+
+            </h6>
+
             <div class="panel panel-default">
                 <div json2html="data.responseParameters" style="overflow-y: auto;" class="panel-body json-panel"></div>
             </div>

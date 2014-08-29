@@ -6,8 +6,8 @@
         <div class="col-md-7">
             <div class="panel panel-info">
                 <div class="panel-heading clearfix">
-                    <h4 class="panel-title pull-left">接口列表</h4>
-                    <a ng-click="clean()" tooltip="整理" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-cog"></span></a>
+                    <h6 class="panel-title pull-left">接口列表</h6>
+                    <a ng-click="clean()" tooltip-placement="bottom" tooltip="如果你的接口文档报错，可能是因为你升级了mock2easy，你可以点击此处帮你重新整理你的接口文档" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-cog"></span></a>
                 </div>
                 <div class="panel-body">
                     <div style=" position: relative; " class="form-group has-feedback">
@@ -47,12 +47,14 @@
         <div class="col-md-5">
             <div class="panel panel-info clearfix">
                 <div class="panel-heading">
-                    <h4 class="panel-title">添加新接口</h4>
+                    <h6 class="panel-title">添加新接口
+                        <span tooltip-placement="bottom" tooltip="接口路径不能重复，输入的接口必须为/开始且.json结尾(以后会支持多种格式)" class="glyphicon glyphicon-question-sign"></span>
+                    </h6>
                 </div>
                 <div class="panel-body">
                     <form novalidate="novalidate" name="form" role="form" class="navbar-form">
                         <div class="input-group">
-                            <input type="text" ng-required="true" ng-pattern="/^[/].*$/" name="url" ng-model="url" placeholder="接口必须以／开始" class="form-control"/><span class="input-group-btn">
+                            <input type="text" ng-required="true" ng-pattern="/^[/].*$/" name="url" ng-model="url" placeholder="接口必须以／开始且.json结尾(以后会支持多种格式)" class="form-control"/><span class="input-group-btn">
                 <button ng-disabled="form.$invalid" ng-click="add()" class="btn btn-default btn-success">添加</button></span>
                         </div>
                     </form>
@@ -60,19 +62,23 @@
             </div>
             <div class="panel panel-danger clearfix">
                 <div class="panel-heading">
-                    <h4 class="panel-title">错误日志</h4>
+                    <h6 class="panel-title">
+                        错误日志
+                        <span tooltip=" 验证代码请求和接口文档之间的差异：蓝色代表请求方式不正确，eg. POST 用成了 GET。黄色代表你的代码有更新，你的接口文档没有及时更新，请及时更新你的接口文档。 红色表示你的代码发出请求的时候，参数不满足当时的接口文档的约定。" style="margin-left: 2px;" class="glyphicon glyphicon-question-sign text-muted"></span>
+                    </h6>
                 </div>
                 <div class="panel-body">
-                    <div ng-repeat="i in log">
-                        <h5>{{i.url}}</h5>
-                        <div ng-if="i.methodError" class="alert alert-info">{{i.methodError}}</div>
-                        <div ng-if="i.reqError.length" class="alert alert-danger">
-                            <p ng-repeat="ii in i.reqError">{{ii}}</p>
-                        </div>
-                        <div ng-if="i.docError.length" class="alert alert-warning">
-                            <p ng-repeat="ii in i.docError">{{ii}}</p>
-                        </div>
-                    </div>
+                    <accordion close-others="true">
+                        <accordion-group heading="{{i.url}}" ng-repeat="i in log">
+                            <p ng-if="i.methodError" class="text-info">{{i.methodError}}</p>
+                            <div ng-if="i.reqError.length">
+                                <p class="text-danger" ng-repeat="ii in i.reqError">{{ii}}</p>
+                            </div>
+                            <div ng-if="i.docError.length">
+                                <p class="text-warning" ng-repeat="ii in i.docError">{{ii}}</p>
+                            </div>
+                        </accordion-group>
+                    </accordion>
                 </div>
             </div>
         </div>
