@@ -3,7 +3,7 @@
 
 module.exports = function(grunt, target,async) {
 
-  var app = require('./app')(grunt);
+  var app ;
   var util =new require('../web/routes/util')();
   var fs = require('fs');
   var path = require('path');
@@ -27,31 +27,54 @@ module.exports = function(grunt, target,async) {
 
   //自动创建node ajax跨域请求脚本
   var makeDo = function(grunt,options){
-    if(!fs.existsSync(path.resolve(options.database)+'/do.js')){
-      fs.mkdirSync(path.resolve(options.database));
+    app= require('./app')(grunt,options);
+
       var rOption = {
-        flags : 'r',
-        encoding : null,
-        mode : '0666'
+          flags : 'r',
+          encoding : null,
+          mode : '0666'
       }
 
       var wOption = {
-        flags: 'a',
-        encoding: null,
-        mode: '0666'
+          flags: 'a',
+          encoding: null,
+          mode: '0666'
       }
 
-      var fileReadStream = fs.createReadStream(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_do.tmp' ,rOption);
-      var fileWriteStream = fs.createWriteStream(path.resolve(options.database)+'/do.js' ,wOption);
+      //判断是否有文件夹
+      if(!fs.existsSync(path.resolve(options.database))) {
+          fs.mkdirSync(path.resolve(options.database));
+      }
 
-      fileReadStream.on('data',function(data){
-        fileWriteStream.write(data);
-      });
+      // 判断时候有do.js
+      if(!fs.existsSync(path.resolve(options.database)+'/do.js')){
 
-      fileReadStream.on('end',function(){
-        fileWriteStream.end();
-      });
-    };
+          var fileReadStream = fs.createReadStream(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_do.tmp' ,rOption);
+          var fileWriteStream = fs.createWriteStream(path.resolve(options.database)+'/do.js' ,wOption);
+
+          fileReadStream.on('data',function(data){
+            fileWriteStream.write(data);
+          });
+
+          fileReadStream.on('end',function(){
+            fileWriteStream.end();
+          });
+
+      };
+
+      // 判断时候有app.js
+      if(!fs.existsSync(path.resolve(options.database)+'/app.js')){
+          var fileReadStream = fs.createReadStream(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_app.tmp' ,rOption);
+          var fileWriteStream = fs.createWriteStream(path.resolve(options.database)+'/app.js' ,wOption);
+
+          fileReadStream.on('data',function(data){
+              fileWriteStream.write(data);
+          });
+
+          fileReadStream.on('end',function(){
+              fileWriteStream.end();
+          });
+      }
   }
 
 
@@ -59,6 +82,7 @@ module.exports = function(grunt, target,async) {
     start: function start(options) {
 
       makeDo(grunt,options);
+
 
       global.options = options;
 

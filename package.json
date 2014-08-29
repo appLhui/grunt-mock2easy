@@ -1,7 +1,7 @@
 {
   "name": "grunt-mock2easy",
   "description": "通过nodejs的服务实现ajax的跨域访问，利用mockjs动态生成json接口，模拟各种恶略环境测试系统是否健全，测试接口生成接口文档",
-  "version": "0.1.24",
+  "version": "0.2.4",
   "homepage": "https://github.com/appLhui/grunt-mock2easy",
   "author": {
     "name": "mofei",
@@ -50,12 +50,15 @@
     "debug": "~0.7.4",
     "jade": "~1.3.0",
     "mockjs": "~0.1.4",
-    "node.extend": "~1.0.10",
-    "node-promise": "~0.5.10",
-    "async": "~0.9.0"
+    "q": "~1.0.1",
+    "async": "~0.9.0",
+    "node.extend":"~1.1.0"
   },
   "readme": "# grunt-mock2easy\n\n> 通过nodejs的服务实现ajax的跨域访问，利用mockjs动态生成json接口，模拟各种恶略环境测试系统是否健全，测试接口生成接口文档\n\n## Getting Started\nThis plugin requires Grunt `~0.4.5`\n\nIf you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:\n\n```shell\nnpm install grunt-mock2easy --save-dev\n```\n\nOnce the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:\n\n```js\ngrunt.loadNpmTasks('grunt-mock2easy');\n```\n\n## The \"mock2easy\" task\n\n### Overview\nIn your project's Gruntfile, add a section named `mock2easy` to the data object passed into `grunt.initConfig()`.\n\n```js\ngrunt.initConfig({\n    mock2easy: {\n        test:{\n            options: {\n                port:3000,\n                database:'database',\n                doc:'doc',\n                keepAlive:true\n            }\n        }\n   },\n});\n```\n\n### Options\n\n#### options.port\n\nType: `Number`\n\nDefault value: 3100\n\n启动的服务的端口号  \n\n#### options.database\n\nType: `String`\n\nDefault value: `mock2easy`\n\n接口数据的生成位置\n\n#### options.doc\n\nType: `String`\n\nDefault value: `doc`\n\n接口文档的生成位置\n\n#### options.keepAlive\n\nType: `Boolean`\n\nDefault value: true\n\n默认为`true`，`true`时可以独立起一个服务提供接口，`false`时可以和别的grunt服务组合成为一个任务串\n\n\n\n## grunt-contrib-connect 实现ajax请求跨域\n\n修改 `Gruntfile.js` 中 connect的配置\n```js\n  \n  connect: {\n     server: {\n       options: {\n         middleware:  function(connect) {\n             return [\n               require('connect-livereload')(\n                 {port: globalSetting.liveReloadPort}\n               ),\n               require('./database/do')   //引入数据接口生成文件中的do.js脚本\n             ];\n           },\n       },\n     },\n   },\n\n```\n\n联调时只需要改变 `do.js` 中的  `hostname` 和 `port` 即可,\n\n## mockjs的支持\n\n支持所有的mockjs语法，[Mockjs语法样例](http://mockjs.com/demo/mock.html) \n\n\n\n",
   "readmeFilename": "README.md",
-  "_id": "grunt-mock2easy@0.1.23",
-  "_from": "grunt-mock2easy@"
+  "_id": "grunt-mock2easy@0.1.24",
+  "_from": "grunt-mock2easy@",
+  "bugs": {
+    "url": "https://github.com/appLhui/grunt-mock2easy/issues"
+  }
 }

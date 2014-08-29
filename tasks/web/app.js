@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 
-module.exports = function(grunt) {
+module.exports = function(grunt,options) {
 
   var app = express();
 
@@ -24,7 +24,7 @@ module.exports = function(grunt) {
 
   app.use('/', require('./routes/index')(grunt));
 
-  app.use('/**/*.json',require('./routes/getJson'));
+  app.use('/**/*.json',options.isSpider?require('./routes/getJsonBySpider')(grunt):require('./routes/getJson')(grunt));
 
 /// catch 404 and forward to error handler
   app.use(function(req, res, next) {

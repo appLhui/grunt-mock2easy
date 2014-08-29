@@ -31,7 +31,8 @@ module.exports = function(grunt) {
       port:3000,
       database:'mock2easy',
       doc:'doc',
-      keepAlive:true
+      keepAlive:true,
+      isSpider:false
     });
 
     server[action](options);

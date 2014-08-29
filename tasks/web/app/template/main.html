@@ -4,9 +4,10 @@
     </div>
     <div class="row">
         <div class="col-md-7">
-            <div class="panel panel-info clearfix">
-                <div class="panel-heading">
-                    <h4 class="panel-title">接口列表</h4>
+            <div class="panel panel-info">
+                <div class="panel-heading clearfix">
+                    <h4 class="panel-title pull-left">接口列表</h4>
+                    <a ng-click="clean()" tooltip="整理" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-cog"></span></a>
                 </div>
                 <div class="panel-body">
                     <div style=" position: relative; " class="form-group has-feedback">
@@ -62,7 +63,16 @@
                     <h4 class="panel-title">错误日志</h4>
                 </div>
                 <div class="panel-body">
-                    <p>暂时没有开放</p>
+                    <div ng-repeat="i in log">
+                        <h5>{{i.url}}</h5>
+                        <div ng-if="i.methodError" class="alert alert-info">{{i.methodError}}</div>
+                        <div ng-if="i.reqError.length" class="alert alert-danger">
+                            <p ng-repeat="ii in i.reqError">{{ii}}</p>
+                        </div>
+                        <div ng-if="i.docError.length" class="alert alert-warning">
+                            <p ng-repeat="ii in i.docError">{{ii}}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

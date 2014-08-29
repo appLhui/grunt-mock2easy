@@ -22,7 +22,7 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal',function($s
         addRequiredParameters:function(){
             $scope.data.requiredParameters.push({
                 name:'',
-                rule:'',
+                required:true,
                 remark:'',
                 nameVerify:'name_'+Date.parse(new Date()),
                 ruleVerify:'rule_'+Date.parse(new Date())
@@ -113,10 +113,20 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal',function($s
      */
 
     var json2Data = function(key,value,id,array,reData){
-        if(typeof(value)==='string' || typeof(value)==='boolean' || typeof(value)==='number'){
+        if(typeof(value)==='string'){
             reData.push({
                 id: (''+id).length%2!=0 ? '0' + id : id,
                 kind: typeof(value),
+                name: key,
+                rule: value,
+                array: array,
+                nameVerify:'name_'+Date.parse(new Date()),
+                ruleVerify:'rule_'+Date.parse(new Date())
+            });
+        }else if(typeof(value)==='boolean' || typeof(value)==='number'){
+            reData.push({
+                id: (''+id).length%2!=0 ? '0' + id : id,
+                kind: 'mock',
                 name: key,
                 rule: value,
                 array: array,

@@ -2,7 +2,7 @@
  * Created by lihui on 14-7-30.
  */
 
-module.exports = ['$scope','$http','$filter','$timeout',function($scope,$http,$filter,$timeout) {
+module.exports = ['$scope','$state','$http','$filter','$timeout',function($scope,$state,$http,$filter,$timeout) {
 
     angular.extend($scope,{
         data:{},
@@ -24,7 +24,7 @@ module.exports = ['$scope','$http','$filter','$timeout',function($scope,$http,$f
                 responseParameters: [],
                 interfaceUrl: $scope.url
             }).then(function(data){
-                window.location.href = '/detail/' + $filter('url')($scope.url);
+                $state.go('detail',{url: $filter('url')($scope.url)});
             });
         },
         del:function(i){
@@ -45,7 +45,13 @@ module.exports = ['$scope','$http','$filter','$timeout',function($scope,$http,$f
             }).then(function(data){
                 $scope.data[i].lazyLoad = !$scope.data[i].lazyLoad;
             });
+        },
+        clean:function(){
+            $http.post('/clean').then(function(){
+               $scope.render();
+            });
         }
+
     });
 
     $scope.render();
