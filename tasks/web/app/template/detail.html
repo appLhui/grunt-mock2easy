@@ -1,148 +1,157 @@
-<form name="addForm" role="form" novalidate="novalidate" class="row form-horizontal">
-    <div class="col-md-7">
-        <div class="panel panel-info clearfix">
-            <div class="panel-heading">
-                <h6 class="panel-title">接口详情</h6>
-            </div>
-            <div class="panel-body">
-                <div  class="form-group has-feedback">
-                    <label class="col-sm-3 control-label">是否需要延时加载：</label>
-                    <div class="col-sm-9">
-                        <label class="radio-inline">
-                            <input ng-model="data.lazyLoad" type="radio" value="no"/><span>NO</span>
-                        </label>
-                        <label class="radio-inline">
-                            <input ng-model="data.lazyLoad" type="radio" value="yes"/><span>YES</span>
-                        </label>
-                    </div>
-                </div>
-                <div ng-class="{'has-error':addForm.interfaceName.$dirty &amp;&amp; addForm.interfaceName.$invalid}" class="form-group has-feedback">
-                    <label class="col-sm-3 control-label">接口名称：</label>
-                    <div class="col-sm-9">
-                        <input ng-model="data.interfaceName" name="interfaceName" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm.interfaceName.$dirty &amp;&amp; addForm.interfaceName.$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-3 control-label">接口类型：</label>
-                    <div class="col-sm-9">
-                        <label class="radio-inline">
-                            <input ng-model="data.interfaceType" type="radio" name="interfaceType" value="GET"/><span>GET</span>
-                        </label>
-                        <label class="radio-inline">
-                            <input ng-model="data.interfaceType" type="radio" name="interfaceType" value="POST"/><span>POST</span>
-                        </label>
-                    </div>
-                </div>
-                <div ng-class="{'has-error':addForm.interfaceUrl.$dirty &amp;&amp; addForm.interfaceUrl.$invalid}" class="form-group has-feedback">
-                    <label class="col-sm-3 control-label">接口URL：</label>
-                    <div class="col-sm-9">
-                        <input ng-model="data.interfaceUrl" disabled="disabled" name="interfaceUrl" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm.interfaceUrl.$dirty &amp;&amp; addForm.interfaceUrl.$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="panel panel-info">
-            <div class="panel-heading clearfix">
-                <h6 class="panel-title pull-left">请求参数</h6><a ng-click="addRequiredParameters()" tooltip="添加" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></a>
-            </div>
-            <table class="table table-bordered tableList">
-                <thead>
-                <tr>
-                    <th style="width: 44px;">必填</th>
-                    <th>变量名</th>
-                    <th>备注</th>
-                    <th width="45">操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="i in data.requiredParameters">
-                    <td style=" text-align: center; vertical-align: middle; ">
-                        <input style="height: auto;width: auto;" type="checkbox"  ng-model="i.required">
-                    </td>
-                    <td ng-class="{'has-error':addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid}" class="form-group has-feedback">
-                        <input ng-model="i.name" dy-name="i.nameVerify" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
-                    </td>
-                    <td>
-                        <input ng-model="i.remark" class="form-control"/>
-                    </td>
-                    <td align="center"><a ng-click="removeRequiredParameters($index)" tooltip="删除" style="margin-top: 3px;" class="btn btn-sm glyphicon glyphicon-minus text-danger"></a></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+<form name="addForm" role="form" novalidate="novalidate" class="form-horizontal">
 
-        <div class="panel panel-info">
-            <div class="panel-heading clearfix">
-                <h6 class="panel-title pull-left">返回接口
-                    <span tooltip="mock类型可以为我们提供boolean、number、arraryNumber、arrayString类型，如果不熟悉mockjs，请查看mockjs的文档" class="glyphicon glyphicon-question-sign"></span>
-                </h6>
+   <div class="row" style="padding-bottom: 54px;">
+       <div class="col-md-7">
+           <div class="panel panel-info clearfix">
+               <div class="panel-heading">
+                   <h6 class="panel-title">接口详情</h6>
+               </div>
+               <div class="panel-body">
+                   <div  class="form-group has-feedback">
+                       <label class="col-sm-3 control-label">是否需要延时加载：</label>
+                       <div class="col-sm-9">
+                           <label class="radio-inline">
+                               <input ng-model="data.lazyLoad" type="radio" value="no"/><span>NO</span>
+                           </label>
+                           <label class="radio-inline">
+                               <input ng-model="data.lazyLoad" type="radio" value="yes"/><span>YES</span>
+                           </label>
+                       </div>
+                   </div>
+                   <div ng-class="{'has-error':addForm.interfaceName.$dirty &amp;&amp; addForm.interfaceName.$invalid}" class="form-group has-feedback">
+                       <label class="col-sm-3 control-label">接口名称：</label>
+                       <div class="col-sm-9">
+                           <input ng-model="data.interfaceName" name="interfaceName" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm.interfaceName.$dirty &amp;&amp; addForm.interfaceName.$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
+                       </div>
+                   </div>
+                   <div class="form-group">
+                       <label class="col-sm-3 control-label">接口类型：</label>
+                       <div class="col-sm-9">
+                           <label class="radio-inline">
+                               <input ng-model="data.interfaceType" type="radio" name="interfaceType" value="GET"/><span>GET</span>
+                           </label>
+                           <label class="radio-inline">
+                               <input ng-model="data.interfaceType" type="radio" name="interfaceType" value="POST"/><span>POST</span>
+                           </label>
+                       </div>
+                   </div>
+                   <div ng-class="{'has-error':addForm.interfaceUrl.$dirty &amp;&amp; addForm.interfaceUrl.$invalid}" class="form-group has-feedback">
+                       <label class="col-sm-3 control-label">接口URL：</label>
+                       <div class="col-sm-9">
+                           <input ng-model="data.interfaceUrl" disabled="disabled" name="interfaceUrl" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm.interfaceUrl.$dirty &amp;&amp; addForm.interfaceUrl.$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
+                       </div>
+                   </div>
+               </div>
+           </div>
+           <div class="panel panel-info">
+               <div class="panel-heading clearfix">
+                   <h6 class="panel-title pull-left">请求参数</h6><a ng-click="addRequiredParameters()" tooltip="添加" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></a>
+               </div>
+               <table class="table table-bordered tableList">
+                   <thead>
+                   <tr>
+                       <th style="width: 44px;">必填</th>
+                       <th>变量名</th>
+                       <th>备注</th>
+                       <th width="45">操作</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   <tr ng-repeat="i in data.requiredParameters">
+                       <td style=" text-align: center; vertical-align: middle; ">
+                           <input style="height: auto;width: auto;" type="checkbox"  ng-model="i.required">
+                       </td>
+                       <td ng-class="{'has-error':addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid}" class="form-group has-feedback">
+                           <input ng-model="i.name" dy-name="i.nameVerify" placeholder="必填项" ng-required="true" class="form-control"/>
+                           <span ng-if="addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
+                       </td>
+                       <td>
+                           <input ng-model="i.remark" class="form-control"/>
+                       </td>
+                       <td align="center"><a ng-click="removeRequiredParameters($index)" tooltip="删除" style="margin-top: 3px;" class="btn btn-sm glyphicon glyphicon-minus text-danger"></a></td>
+                   </tr>
+                   </tbody>
+               </table>
+           </div>
 
-                <a ng-click="addResponseParameters('')" tooltip="添加" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></a><a ng-click="openWin()" tooltip="导入" style="margin-right:10px;" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-import"></span></a>
-            </div>
-            <table class="table table-bordered tableList">
-                <thead>
-                <tr>
-                    <th>变量名</th>
-                    <th>变量规则</th>
-                    <th width="120">类型</th>
-                    <th>备注</th>
-                    <th width="45">操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="i in data.responseParameters | orderBy : 'id' " can-remove="data.responseParameters" list-id="{{i.id}}">
-                    <td ng-class="{'has-error':addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid}" class="form-group has-feedback">
-                        <input ng-model="i.name" dy-name="i.nameVerify" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
-                    </td>
-                    <td ng-class="{'has-error':addForm[i.ruleVerify].$dirty &amp;&amp; addForm[i.ruleVerify].$invalid}" class="form-group has-feedback"><strong ng-if="i.kind=='object'" style="margin: 6px 12px;display: inline-block;" class="text-info">{}</strong><strong ng-if="i.kind=='array(object)'" style="margin: 6px 12px;display: inline-block;" class="text-info">[{}]</strong>
-                        <input ng-model="i.rule" dy-name="i.ruleVerify" placeholder="必填项" ng-required="true" ng-if="i.kind!='object'&amp;&amp; i.kind!='array(object)'" class="form-control"/>
-                        <span ng-if="addForm[i.ruleVerify].$dirty &amp;&amp; addForm[i.ruleVerify].$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
-                    </td>
-                    <td align="center"><span ng-bind="i.kind" style="display:none;margin-top:6px;" class="disabled-select"></span>
-                        <select ng-model="i.kind" style="margin-top: 8px;">
-                            <option>string</option>
-                            <option>mock</option>
-                            <option>object</option>
-                            <option>array(object)</option>
-                        </select>
-                    </td>
-                    <td>
-                        <input ng-model="i.remark" class="form-control"/>
-                    </td>
-                    <td align="center"><a ng-click="addResponseParameters(i.id)" ng-if="i.kind=='object'||i.kind=='array(object)'" tooltip="添加子节点" style="margin-top: 3px;padding: 10px 0px;" class="btn btn-sm glyphicon glyphicon-plus text-success"></a><a ng-click="removeResponseParameters($index)" tooltip="删除" style="margin-top: 3px;padding: 10px 0px;" class="btn btn-sm glyphicon glyphicon-minus text-danger"></a></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+           <div class="panel panel-info">
+               <div class="panel-heading clearfix">
+                   <h6 class="panel-title pull-left">返回接口
+                       <span tooltip="mock类型可以为我们提供boolean、number、arraryNumber、arrayString类型，如果不熟悉mockjs，请查看mockjs的文档" class="glyphicon glyphicon-question-sign"></span>
+                   </h6>
+
+                   <a ng-click="addResponseParameters('')" tooltip="添加" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-plus"></span></a><a ng-click="openWin()" tooltip="导入" style="margin-right:10px;" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-import"></span></a>
+               </div>
+               <table class="table table-bordered tableList">
+                   <thead>
+                   <tr>
+                       <th>变量名</th>
+                       <th>变量规则</th>
+                       <th width="120">类型</th>
+                       <th>备注</th>
+                       <th width="45">操作</th>
+                   </tr>
+                   </thead>
+                   <tbody>
+                   <tr ng-repeat="i in data.responseParameters | orderBy : 'id' " can-remove="data.responseParameters" list-id="{{i.id}}">
+                       <td ng-class="{'has-error':addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid}" class="form-group has-feedback">
+                           <input ng-model="i.name" dy-name="i.nameVerify" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
+                       </td>
+                       <td ng-class="{'has-error':addForm[i.ruleVerify].$dirty &amp;&amp; addForm[i.ruleVerify].$invalid}" class="form-group has-feedback"><strong ng-if="i.kind=='object'" style="margin: 6px 12px;display: inline-block;" class="text-info">{}</strong><strong ng-if="i.kind=='array(object)'" style="margin: 6px 12px;display: inline-block;" class="text-info">[{}]</strong>
+                           <input ng-model="i.rule" dy-name="i.ruleVerify" placeholder="必填项" ng-required="true" ng-if="i.kind!='object'&amp;&amp; i.kind!='array(object)'" class="form-control"/>
+                           <span ng-if="addForm[i.ruleVerify].$dirty &amp;&amp; addForm[i.ruleVerify].$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
+                       </td>
+                       <td align="center"><span ng-bind="i.kind" style="display:none;margin-top:6px;" class="disabled-select"></span>
+                           <select ng-model="i.kind" style="margin-top: 8px;">
+                               <option>string</option>
+                               <option>mock</option>
+                               <option>object</option>
+                               <option>array(object)</option>
+                           </select>
+                       </td>
+                       <td>
+                           <input ng-model="i.remark" class="form-control"/>
+                       </td>
+                       <td align="center"><a ng-click="addResponseParameters(i.id)" ng-if="i.kind=='object'||i.kind=='array(object)'" tooltip="添加子节点" style="margin-top: 3px;padding: 10px 0px;" class="btn btn-sm glyphicon glyphicon-plus text-success"></a><a ng-click="removeResponseParameters($index)" tooltip="删除" style="margin-top: 3px;padding: 10px 0px;" class="btn btn-sm glyphicon glyphicon-minus text-danger"></a></td>
+                   </tr>
+                   </tbody>
+               </table>
+           </div>
+       </div>
+       <div class="col-md-5 well well-sm">
+           <div class="panel-body">
+               <a href="http://mockjs.com/demo/mock.html" target="_blank">查看Mockjs例子&gt;&gt;</a>
+               <h6>接口名称</h6>
+               <p ng-bind="data.interfaceName" ng-if="data.interfaceName.length" class="text-muted"></p>
+               <p ng-if="!data.interfaceName.length" class="text-muted">--</p>
+               <h6>接口类型</h6>
+               <p ng-bind="data.interfaceType" class="text-muted"></p>
+               <h6>请求URL</h6>
+               <p ng-bind="data.interfaceUrl" ng-if="data.interfaceUrl.length" class="text-muted"></p>
+               <p ng-if="!data.interfaceUrl.length" class="text-muted">--</p>
+               <h6>请求参数</h6>
+               <ul>
+                   <li ng-repeat="i in data.requiredParameters">
+                       <strong ng-if="i.name.length" ng-class="{'text-muted':!i.required}">{{i.name}}</strong>
+                       <span ng-if="!i.name.length">--</span>
+                       <sapn>&nbsp;</sapn><span ng-if="i.remark.length" class="text-success">&nbsp;//{{i.remark}}</span>
+                   </li>
+               </ul>
+               <h6>
+                   返回接口
+
+               </h6>
+
+               <div class="panel panel-default">
+                   <div json2html="data.responseParameters" style="overflow-y: auto;" class="panel-body json-panel"></div>
+               </div>
+           </div>
+
+       </div>
+   </div>
+    <div class="row well well-sm" style=" position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;text-align: center;margin-bottom:0;">
+            <a ng-disabled="addForm.$invalid" ng-click="submit()" class="btn btn-success">保存</a>
+            <a ui-sref="list" style="margin-left: 10px;" class="btn btn-default">取消</a>
     </div>
-    <div style=" position: fixed; right: 10px; " class="col-md-5 well well-sm">
-        <div style=" max-height: 590px; overflow-y: auto; " class="panel-body">
-            <a href="http://mockjs.com/demo/mock.html" target="_blank">查看Mockjs例子&gt;&gt;</a>
-            <h6>接口名称</h6>
-            <p ng-bind="data.interfaceName" ng-if="data.interfaceName.length" class="text-muted"></p>
-            <p ng-if="!data.interfaceName.length" class="text-muted">--</p>
-            <h6>接口类型</h6>
-            <p ng-bind="data.interfaceType" class="text-muted"></p>
-            <h6>请求URL</h6>
-            <p ng-bind="data.interfaceUrl" ng-if="data.interfaceUrl.length" class="text-muted"></p>
-            <p ng-if="!data.interfaceUrl.length" class="text-muted">--</p>
-            <h6>请求参数</h6>
-            <ul>
-                <li ng-repeat="i in data.requiredParameters">
-                    <strong ng-if="i.name.length" ng-class="{'text-muted':!i.required}">{{i.name}}</strong>
-                    <span ng-if="!i.name.length">--</span>
-                    <sapn>&nbsp;</sapn><span ng-if="i.remark.length" class="text-success">&nbsp;//{{i.remark}}</span>
-                </li>
-            </ul>
-            <h6>
-                返回接口
 
-            </h6>
-
-            <div class="panel panel-default">
-                <div json2html="data.responseParameters" style="overflow-y: auto;" class="panel-body json-panel"></div>
-            </div>
-        </div>
-        <div class="panel-footer"><a ng-disabled="addForm.$invalid" ng-click="submit()" class="btn btn-success">保存</a><a ui-sref="list" style="margin-left: 10px;" class="btn btn-default">取消</a></div>
-    </div>
 </form>

@@ -30,7 +30,9 @@ grunt.initConfig({
                 port:3000,
                 database:'database',
                 doc:'doc',
-                keepAlive:true
+                keepAlive:true,
+                isSpider:false,
+                ignoreField:[]
             }
         }
    },
@@ -81,6 +83,13 @@ Default value: false
 默认为`false`，如果你的系统有很多的安全防护，不能使用改变IP和端口号来获取接口，请尝试这个方式。
 这个参数为是否使用爬虫获取接口，使用这个配置需要本地装有 `casperjs`，如果没有请先运行 `sudo npm install -g casperjs`,请先运行一次`grunt-mock2easy`,然后在 /database（默认）目录下 编辑修改适合自己的app.js文件。
 
+#### options.ignoreField
+
+Type: `Array`
+
+Default value: []
+
+默认为[]，可以添加忽略的请求参数，例如：`__preventCache`等字段，可能不是我们想要的校验的参数
 
 
 ## grunt-contrib-connect 实现ajax请求跨域

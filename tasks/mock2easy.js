@@ -32,7 +32,8 @@ module.exports = function(grunt) {
       database:'mock2easy',
       doc:'doc',
       keepAlive:true,
-      isSpider:false
+      isSpider:false,
+      ignoreField:[]
     });
 
     server[action](options);

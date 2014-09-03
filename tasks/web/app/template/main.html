@@ -69,7 +69,12 @@
                 </div>
                 <div class="panel-body">
                     <accordion close-others="true">
-                        <accordion-group heading="{{i.url}}" ng-repeat="i in log">
+                        <accordion-group ng-repeat="i in log">
+                            <accordion-heading>
+                                {{i.url}}
+                                <a class="btn btn-default btn-xs pull-right" ui-sref="detail({url:i.urlFilter})"><span class="glyphicon glyphicon-edit text-info" ng-class="{'text-warning':i.docError.length,'text-danger':i.reqError.length}"></span></a>
+                            </accordion-heading>
+
                             <p ng-if="i.methodError" class="text-info">{{i.methodError}}</p>
                             <div ng-if="i.reqError.length">
                                 <p class="text-danger" ng-repeat="ii in i.reqError">{{ii}}</p>

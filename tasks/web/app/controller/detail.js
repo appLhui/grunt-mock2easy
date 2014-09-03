@@ -59,7 +59,7 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal',function($s
             }
 
             $scope.data.responseParameters.push({
-                id:_id,
+                id:id=='00'?'00'+_id:_id,
                 kind:'string',
                 name:'--',
                 rule:'--',

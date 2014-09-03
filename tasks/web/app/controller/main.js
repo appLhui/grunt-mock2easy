@@ -14,6 +14,11 @@ module.exports = ['$scope','$state','$http','$filter','$timeout',function($scope
                         o.urlFilter =  $filter('url')(o.url) ;
                     })
                 }
+                if(data.data.log.length){
+                  angular.forEach(data.data.log,function(o){
+                        o.urlFilter =  $filter('url')(o.url) ;
+                  });
+                }
                 angular.extend($scope,data.data);
             });
         },
@@ -22,6 +27,8 @@ module.exports = ['$scope','$state','$http','$filter','$timeout',function($scope
                 interfaceType: "GET",
                 requiredParameters: [],
                 responseParameters: [],
+                reqError: [],
+                docError: [],
                 interfaceUrl: $scope.url
             }).then(function(data){
                 $state.go('detail',{url: $filter('url')($scope.url)});
