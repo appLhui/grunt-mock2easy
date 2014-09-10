@@ -29,9 +29,9 @@ module.exports = function(grunt) {
         _filse.forEach(function(file){
             var arry = file.split(global.options.database);
             var _json = {};
-            fs.readFile(file,'utf-8',function(e,data){
-                if(e){
-                    grunt.log.error(e);
+            fs.readFile(file,'utf-8',function(err,data){
+                if(err){
+                    grunt.log.error(err);
                 }else{
                     if(data){
                         _json = JSON.parse(data);
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
     router.post('/load',function(req,res){
         fs.readFile(path.resolve(global.options.database)+req.body.url.replace(/&/g,'\/'),'utf-8',function(err,data){
             if(err){
-                console.log("获取接口详情出错："+err);
+                grunt.log.error(err);
             }else{
                 if(data){
                     res.json(JSON.parse(data));
@@ -80,19 +80,25 @@ module.exports = function(grunt) {
     router.post('/changeLazy',function(req,res){
         fs.readFile(path.resolve(global.options.database)+req.body.interfaceUrl,'utf-8',function(err,data){
             if(err){
-                console.log("error");
+              grunt.log.error(err);
             }else{
                 if(data){
-                    fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
-                        if(e) throw e;
-                        var _data =  JSON.parse(data);
+                    fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(err,fd){
+                        if(err){
+                          grunt.log.error(err);
+                        }else{
+                          var _data =  JSON.parse(data);
 
-                        _data.lazyLoad = _data.lazyLoad == 'yes' ? 'no' : 'yes';
-                        fs.write(fd,JSON.stringify(_data,undefined,5),0,'utf8',function(e){
-                            if(e) throw e;
-                            fs.closeSync(fd);
-                            res.json({success:1});
-                        })
+                          _data.lazyLoad = _data.lazyLoad == 'yes' ? 'no' : 'yes';
+                          fs.write(fd,JSON.stringify(_data,undefined,5),0,'utf8',function(err){
+                            if(err){
+                              grunt.log.error(err);
+                            }else{
+                              fs.closeSync(fd);
+                              res.json({success:1});
+                            }
+                          });
+                        }
                     });
                 }
             }
@@ -104,9 +110,9 @@ module.exports = function(grunt) {
     router.post('/del',function(req,res){
         grunt.log.error(path.resolve(global.options.database)+req.body.interfaceUrl);
 
-        fs.unlink(path.resolve(global.options.database)+req.body.interfaceUrl,function(e){
-            if(e){
-                grunt.log.error('删除文件夹错误');
+        fs.unlink(path.resolve(global.options.database)+req.body.interfaceUrl,function(err){
+            if(err){
+              grunt.log.error(err);
             }else{
                 res.json({success:1});
             }
@@ -114,24 +120,10 @@ module.exports = function(grunt) {
     });
 
 
-//获取已经生成的接口路径
+    //获取已经生成的接口路径
     router.post('/add',function(req,res){
-        var _arry = req.body.interfaceUrl.split('\/');
-        delete _arry[_arry.length-1];
-        grunt.log.error(path.resolve(global.options.database)+_arry.join('\/'));
-        util.mkdirSync(path.resolve(global.options.database)+_arry.join('\/'),0,function(e){
-            if(e){
-                grunt.log.error('创建文件夹错误');
-            }else{
-                fs.open(path.resolve(global.options.database)+req.body.interfaceUrl,"w",0644,function(e,fd){
-                    if(e) throw e;
-                    fs.write(fd,JSON.stringify(req.body),0,'utf8',function(e){
-                        if(e) throw e;
-                        fs.closeSync(fd);
-                        res.json({success:1});
-                    })
-                });
-            }
+        require('../server/createInterface')(grunt,req.body).then(function(){
+          res.json({success:1});
         });
     });
 
@@ -142,6 +134,12 @@ module.exports = function(grunt) {
         });
     });
 
+    router.post('/changeUrl',function(req,res){
+        require('../server/changeUrl')(grunt,req.body).then(function(){
+          res.json({success:1});
+        });
+    })
+
     //清理操作，用作于新版本接口变更调整
     router.post('/clean',function(req,res){
         var _filse = require('../server/getAllFiles')(grunt);
@@ -151,7 +149,7 @@ module.exports = function(grunt) {
             _i++;
             fs.readFile(file,'utf-8',function(err,data){
                 if(err){
-                    console.log("error");
+                  grunt.log.error(err);
                 }else{
                     if(data){
                         _json = JSON.parse(data);

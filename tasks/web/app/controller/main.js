@@ -1,8 +1,9 @@
 /**
  * Created by lihui on 14-7-30.
  */
+var fs = require('fs');
 
-module.exports = ['$scope','$state','$http','$filter','$timeout',function($scope,$state,$http,$filter,$timeout) {
+module.exports = ['$scope','$state','$http','$modal','$filter','$timeout',function($scope,$state,$http,$modal,$filter,$timeout) {
 
     angular.extend($scope,{
         data:{},
@@ -57,8 +58,40 @@ module.exports = ['$scope','$state','$http','$filter','$timeout',function($scope
             $http.post('/clean').then(function(){
                $scope.render();
             });
-        }
+        },
+        changeUrl:function(i){
+            var modalInstance = $modal.open({
+              template: fs.readFileSync(__dirname.replace('controller','') + 'template/modal/changeUrl.html'),
+              resolve: {
+                data: function () {
+                  return $scope.data;
+                },
+                i:function(){
+                  return i;
+                }
+              },
+              controller: ['$scope','$modalInstance','data','i',function($scope,$modalInstance,data,i){
+                angular.extend($scope,{
+                   url:data[i].url,
+                   data:data,
+                   change:function(newUrl){
+                     $http.post('/changeUrl', {
+                       url:$scope.url,
+                       newUrl:newUrl
+                     }).then(function(data){
+                       $modalInstance.close(true);
+                     });
+                   }
+                });
+              }]
+            });
 
+            modalInstance.result.then(function (reData) {
+              if(reData){
+                $scope.render();
+              }
+            });
+        }
     });
 
     $scope.render();

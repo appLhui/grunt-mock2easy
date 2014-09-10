@@ -10,4 +10,3 @@ require('./directive/directive');
 angular.module('app', ['ui.bootstrap','ui.router','filter','directive']).config(require('./routes'));
 
 angular.bootstrap(document, ['app']);
-

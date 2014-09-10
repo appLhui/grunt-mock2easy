@@ -20,7 +20,5 @@ module.exports = function(grunt){
             _filse.push(file);
         }
     });
-
     return  _filse;
-
 }

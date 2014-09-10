@@ -1,7 +1,7 @@
 {
   "name": "grunt-mock2easy",
   "description": "通过nodejs的服务实现ajax的跨域访问，利用mockjs动态生成json接口，模拟各种恶略环境测试系统是否健全，测试接口生成接口文档",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "homepage": "https://github.com/appLhui/grunt-mock2easy",
   "author": {
     "name": "mofei",
@@ -22,14 +22,16 @@
   },
   "scripts": {
     "test": "grunt test",
-    "build": "browserify -t brfs ./tasks/web/app/app.js -o ./tasks/web/public/bundle.js"
+    "build": "browserify  ./tasks/web/app/app.js -o ./tasks/web/public/bundle.js"
   },
   "devDependencies": {
     "grunt-contrib-jshint": "^0.9.2",
     "grunt-contrib-clean": "^0.5.0",
     "grunt-contrib-nodeunit": "^0.3.3",
     "grunt": "~0.4.0",
-    "brfs": "latest"
+    "brfs": "latest",
+    "browserify": "^5.11.1",
+    "beefy": "^2.1.1"
   },
   "peerDependencies": {
     "grunt": "~0.4.0"

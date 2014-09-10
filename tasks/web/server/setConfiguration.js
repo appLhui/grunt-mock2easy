@@ -39,28 +39,38 @@ module.exports = function(grunt,body){
 
         var _arry = body.interfaceUrl.split('\/');
         delete _arry[_arry.length-1];
-        util.mkdirSync(path.resolve(global.options.doc)+_arry.join('\/'),0,function(e){
-            if(e){
-                grunt.log.write(e);
+        util.mkdirSync(path.resolve(global.options.doc)+_arry.join('\/'),0,function(err){
+            if(err){
+              grunt.log.error(err);
             }else{
-                fs.open(path.resolve(global.options.doc)+body.interfaceUrl.replace(/.json/,'.md'),"w",0644,function(e,fd){
-                    if(e) throw e;
-                    fs.write(fd,_md.join(''),0,'utf8',function(e){
-                        if(e) throw e;
-                        fs.closeSync(fd);
-                    })
+                fs.open(path.resolve(global.options.doc)+body.interfaceUrl.replace(/.json/,'.md'),"w",0644,function(err,fd){
+                    if(err){
+                      grunt.log.error(err);
+                    }else{
+                      fs.write(fd,_md.join(''),0,'utf8',function(err){
+                        if(err){
+                          grunt.log.error(err);
+                        }else{
+                          fs.closeSync(fd);
+                        }
+
+                      });
+                    }
                 });
             }
         });
 
-        fs.open(path.resolve(global.options.database)+body.interfaceUrl,"w",0644,function(e,fd){
-            if(e){
-                grunt.log.write(e);
+        fs.open(path.resolve(global.options.database)+body.interfaceUrl,"w",0644,function(err,fd){
+            if(err){
+              grunt.log.error(err);
             }{
-                fs.write(fd,JSON.stringify(body,undefined,5),0,'utf8',function(e){
-                    if(e) throw e;
-                    fs.closeSync(fd);
-                    deferred.resolve();
+                fs.write(fd,JSON.stringify(body,undefined,5),0,'utf8',function(err){
+                    if(err){
+                      grunt.log.error(err);
+                    }else{
+                      fs.closeSync(fd);
+                      deferred.resolve();
+                    }
                 })
             }
         });

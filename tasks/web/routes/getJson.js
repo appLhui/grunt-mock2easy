@@ -11,6 +11,16 @@ module.exports = function(grunt,ignoreField){
         var params = extend(true, {}, req.body,req.query);
         var url =  req.originalUrl.split('?')[0];
         var method = req.method;
+        grunt.log.writeln('==============================================');
+        grunt.log.writeln('URL:'+ url);
+        grunt.log.writeln('Method:'+ method);
+        if(typeof params == 'object'){
+          grunt.log.writeln('Params:'+ JSON.stringify(params));
+        }else{
+          grunt.log.writeln('Params:'+ params);
+        }
+        grunt.log.writeln('==============================================');
+
 
         fs.readFile(path.resolve(global.options.database)+ url,'utf-8',function(err,data){
             if(err){

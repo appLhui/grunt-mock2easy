@@ -12,6 +12,7 @@ var extend = require('node.extend');
 module.exports = function(grunt){
     return function(req, res, next) {
         var child_process = require('child_process');
+        grunt.log.writeln("casperjs "+path.resolve(global.options.database)+"/app.js --url="+req.originalUrl.split('?')[0]+" --method="+req.method+" --params='"+JSON.stringify(extend(true, {}, req.body,req.query))+"'");
         child_process.exec("casperjs "+path.resolve(global.options.database)+"/app.js --url="+req.originalUrl.split('?')[0]+" --method="+req.method+" --params='"+JSON.stringify(extend(true, {}, req.body,req.query))+"'", function(error, stdout, stderr){
             res.send(stdout);
         });
