@@ -7,3 +7,4 @@ module.exports = angular.module('directive', [])
     .directive('json2html', require('./json2html'))
     .directive('mockjs', require('./mockjs'))
     .directive('canAdd', require('./canAdd'))
+    .directive('jsonVerify', require('./jsonVerify'));

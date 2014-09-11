@@ -3,8 +3,9 @@
         <h5>导入返回JSON数据</h5>
     </div>
     <div class="modal-body">
-        <textarea name="json" ng-required="true" ng-model="json" placeholder="导入新的JSON数据，之前的JSON数据将会被覆盖..." style="height: 350px;" class="form-control"></textarea>
+        <textarea name="json" json-verify ng-required="true" ng-model="json" placeholder="导入新的JSON数据，之前的JSON数据将会被覆盖..." style="height: 350px;" class="form-control"></textarea>
     </div>
+    <p ng-if="import.json.$error.json" class="text-danger" style=" margin-left: 18px; ">json格式不正确</p>
     <div class="modal-footer">
         <button ng-click="importResponseParameters(json)" ng-disabled="import.$invalid" class="btn btn-primary">导入</button>
     </div>

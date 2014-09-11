@@ -15,6 +15,9 @@ module.exports = function(grunt,body) {
     if(err){
       grunt.log.error(err);
     }else{
+      if(!!!body.interfaceName){
+        body.interfaceName = body.interfaceUrl;
+      }
       fs.open(path.resolve(global.options.database)+body.interfaceUrl,"w",0644,function(err,fd){
         if(err){
           grunt.log.error(err);

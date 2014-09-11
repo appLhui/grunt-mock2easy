@@ -46,17 +46,16 @@ module.exports = ['$scope','$state','$http','$modal','$filter','$timeout',functi
                 },1000);
             });
         },
-        changeLazy:function(i){
+        changeLazy:function(url){
 
             $http.post('/changeLazy', {
-                interfaceUrl: $scope.data[i].url
+                interfaceUrl: url
             }).then(function(data){
-                $scope.data[i].lazyLoad = !$scope.data[i].lazyLoad;
-            });
-        },
-        clean:function(){
-            $http.post('/clean').then(function(){
-               $scope.render();
+               angular.forEach($scope.data,function(o){
+                   if(o.url==url){
+                     return o.lazyLoad = !o.lazyLoad;
+                   }
+               });
             });
         },
         changeUrl:function(i){

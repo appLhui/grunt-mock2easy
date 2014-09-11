@@ -25,6 +25,7 @@ module.exports = function(grunt) {
 
         var _i = 1;
         var _filse = require('../server/getAllFiles')(grunt);
+        var _path = [];
 
         _filse.forEach(function(file){
             var arry = file.split(global.options.database);
@@ -39,6 +40,15 @@ module.exports = function(grunt) {
                             url:arry[arry.length-1],
                             note:_json.interfaceName,
                             lazyLoad:_json.lazyLoad == 'yes'
+                        });
+                        var _path_ = '';
+                        _json.interfaceUrl.split('/').forEach(function(o,i){
+                            if(i && _json.interfaceUrl.split('/').length - 1 > i){
+                              _path_ += '/' + o ;
+                              if(_path.indexOf(_path_)==-1){
+                                _path.push(_path_);
+                              }
+                            }
                         });
 
                         if(_json.methodError || _json.reqError.length || _json.docError.length){
@@ -56,7 +66,7 @@ module.exports = function(grunt) {
                         }
                         _i++;
                         if(_i == _filse.length+1){
-                            res.json({data:_data,log:_log});
+                            res.json({data:_data,log:_log,path:_path});
                         }
                     }
                 }
@@ -114,7 +124,9 @@ module.exports = function(grunt) {
             if(err){
               grunt.log.error(err);
             }else{
+              require('../server/cleanInterface')(grunt).then(function(){
                 res.json({success:1});
+              });
             }
         });
     });
@@ -123,61 +135,29 @@ module.exports = function(grunt) {
     //获取已经生成的接口路径
     router.post('/add',function(req,res){
         require('../server/createInterface')(grunt,req.body).then(function(){
-          res.json({success:1});
+          require('../server/cleanInterface')(grunt).then(function(){
+            res.json({success:1});
+          });
         });
     });
 
     //修改接口操作
     router.post('/modify',function(req,res){
         require('../server/setConfiguration')(grunt,req.body).then(function(){
+          require('../server/cleanInterface')(grunt).then(function(){
             res.json({success:1});
+          });
         });
     });
 
     router.post('/changeUrl',function(req,res){
         require('../server/changeUrl')(grunt,req.body).then(function(){
-          res.json({success:1});
+          require('../server/cleanInterface')(grunt).then(function(){
+            res.json({success:1});
+          });
         });
     })
 
-    //清理操作，用作于新版本接口变更调整
-    router.post('/clean',function(req,res){
-        var _filse = require('../server/getAllFiles')(grunt);
-        var setConfiguration = require('../server/setConfiguration');
-        var _i = 1;
-        _filse.forEach(function(file){
-            _i++;
-            fs.readFile(file,'utf-8',function(err,data){
-                if(err){
-                  grunt.log.error(err);
-                }else{
-                    if(data){
-                        _json = JSON.parse(data);
-
-                        _json.requiredParameters.forEach(function(o){
-                            o.remark = o.rule != undefined ? o.rule : o.remark;
-                            o.required = o.required != undefined ? o.required : true;
-                            delete o.rule;
-                        });
-                        _json.responseParameters.forEach(function(o){
-                            if(o.kind == 'boolean'|| o.kind == 'number'){
-                                o.rule = o.rule + '';
-                                o.kind = 'mock';
-                            }
-                        });
-                        _json.reqError = [];
-                        _json.docError = [];
-                        setConfiguration(grunt,_json).then(function(){
-                            if(_i == _filse.length+1){
-                                res.json({success:1});
-                            }
-                        });
-                    }
-                }
-            });
-        });
-
-    });
 
     return router;
 }

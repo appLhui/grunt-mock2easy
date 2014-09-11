@@ -7,11 +7,10 @@
             <div class="panel panel-info">
                 <div class="panel-heading clearfix">
                     <h6 class="panel-title pull-left">接口列表</h6>
-                    <a ng-click="clean()" tooltip-placement="bottom" tooltip="如果你的接口文档报错，可能是因为你升级了mock2easy，你可以点击此处帮你重新整理你的接口文档" class="btn btn-default btn-sm btn-xs pull-right"><span class="glyphicon glyphicon-cog"></span></a>
                 </div>
                 <div class="panel-body">
                     <div style=" position: relative; " class="form-group has-feedback">
-                        <input type="text" ng-model="jsonPath" placeholder="输入内容筛选接口" class="form-control"/><span style=" top: 0; " class="glyphicon glyphicon-search form-control-feedback"></span>
+                        <input type="text" ng-model="jsonPath" placeholder="输入内容筛选接口" typeahead="i for i in path" class="form-control"/><span style=" top: 0; " class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
                     <div style="border-bottom: 2px solid #eee; " class="row">
                         <div class="col-md-8">
@@ -29,8 +28,8 @@
                             <div ng-repeat="i in data | filter: jsonPath " style="padding:10px 0;border-bottom: 1px solid #eee;" class="row">
                                 <div class="col-md-8"><a ng-bind="i.url|database" ui-sref="detail({url:i.urlFilter})" tooltip="{{i.note}}" tooltip-placement="right" class="text-error"></a></div>
                                 <div class="col-md-2">
-                                    <button ng-if="!i.lazyLoad" class="btn btn-default btn-xs"><span tooltip="获取接口无延时" ng-click="changeLazy($index)" tooltip-placement="right" class="text-success glyphicon glyphicon-expand"></span></button>
-                                    <button ng-if="i.lazyLoad" class="btn btn-warning btn-xs"><span tooltip="获取接口有 3s 延时" ng-click="changeLazy($index)" tooltip-placement="right" class="glyphicon glyphicon-record"></span></button>
+                                    <button ng-if="!i.lazyLoad" class="btn btn-default btn-xs"><span tooltip="获取接口无延时" ng-click="changeLazy(i.url)" tooltip-placement="right" class="text-success glyphicon glyphicon-expand"></span></button>
+                                    <button ng-if="i.lazyLoad" class="btn btn-warning btn-xs"><span tooltip="获取接口有 3s 延时" ng-click="changeLazy(i.url)" tooltip-placement="right" class="glyphicon glyphicon-record"></span></button>
                                 </div>
                                 <div class="col-md-2">
                                     <button class="btn btn-default btn-xs">
@@ -57,10 +56,10 @@
                 <div class="panel-body">
                     <form novalidate="novalidate" name="form" role="form" class="navbar-form">
                         <div class="input-group">
-                            <input type="text" ng-required="true" name="url" ng-model="url" can-add="data" placeholder="接口必须以／开始且.json结尾(以后会支持多种格式)" class="form-control"/><span class="input-group-btn">
+                            <input type="text" ng-required="true" name="url" ng-model="url" can-add="data" typeahead="i for i in path" placeholder="接口必须以/开始且.json结尾(以后会支持多种格式)" class="form-control"/><span class="input-group-btn">
                             <button ng-disabled="form.$invalid" ng-click="add()" class="btn btn-default btn-success">添加</button></span>
                         </div>
-                        <p ng-if="form.url.$error.isOK" class="text-danger" style=" margin-top: 10px; ">接口必须以／开始且.json结尾</p>
+                        <p ng-if="form.url.$error.isOK" class="text-danger" style=" margin-top: 10px; ">接口必须以/开始且.json结尾</p>
                         <p ng-if="form.url.$error.isOnly" class="text-danger" style=" margin-top: 10px; ">接口已经存在</p>
                     </form>
                 </div>

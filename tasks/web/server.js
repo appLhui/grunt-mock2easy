@@ -80,48 +80,49 @@ module.exports = function(grunt, target,async) {
 
   return {
     start: function start(options) {
-
-      makeDo(grunt,options);
-
-
       global.options = options;
+      require('./server/cleanInterface')(grunt).then(function(){
+        makeDo(grunt,options);
 
-      if (server) {
-        this.stop();
+        if (server) {
+          this.stop();
 
-        if (grunt.task.current.flags.stop) {
-          finished();
+          if (grunt.task.current.flags.stop) {
+            finished();
 
-          return;
+            return;
+          }
         }
-      }
 
-      backup = JSON.parse(JSON.stringify(process.env)); // Clone process.env
+        backup = JSON.parse(JSON.stringify(process.env)); // Clone process.env
 
-      // For some weird reason, on Windows the process.env stringify produces a "Path"
-      // member instead of a "PATH" member, and grunt chokes when it can't find PATH.
-      if (!backup.PATH) {
-        if (backup.Path) {
-          backup.PATH = backup.Path;
-          delete backup.Path;
+        // For some weird reason, on Windows the process.env stringify produces a "Path"
+        // member instead of a "PATH" member, and grunt chokes when it can't find PATH.
+        if (!backup.PATH) {
+          if (backup.Path) {
+            backup.PATH = backup.Path;
+            delete backup.Path;
+          }
         }
-      }
 
 
-      done = grunt.task.current.async();
+        done = grunt.task.current.async();
 
-      // Set PORT for new processes
-      process.env.PORT = options.port;
+        // Set PORT for new processes
+        process.env.PORT = options.port;
 
-      server = process._servers[target] = app.listen(options.port, function() {
-        grunt.log.write('Mock服务已经启动，请访问地址：http://localhost:' + server.address().port);
-        if(!options.keepAlive){
+        server = process._servers[target] = app.listen(options.port, function() {
+          grunt.log.write('Mock服务已经启动，请访问地址：http://localhost:' + server.address().port);
+          if(!options.keepAlive){
             async();
-        }
+          }
+        });
+
+        process.on('exit', finished);
+        process.on('exit', this.stop);
+
       });
 
-      process.on('exit', finished);
-      process.on('exit', this.stop);
     },
 
     stop: function stop() {
