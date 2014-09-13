@@ -3,8 +3,40 @@
  */
 
 require('../util/mock');
-
+var $ = require('jquery');
 module.exports = function() {
+
+    // 格式化 除去数组中的注释 只保留第一个
+    var remarkFormat = function(json,isFrist){
+      var _reJson = {};
+      angular.forEach(json,function(o,i){
+        if(angular.isArray(o) && o.length){
+          var _reArray = [];
+           angular.forEach(o,function(oo,ii){
+             if(angular.isObject(oo)){
+                oo = remarkFormat(oo,isFrist && !!!ii);
+             }
+             _reArray.push(oo);
+           });
+           if(!isFrist){
+             _reJson[i.split('//')[0]] = _reArray;
+           }else{
+             _reJson[i] = _reArray;
+           }
+        }else if(angular.isObject(o)){
+          _reJson[i] = remarkFormat(o,true);
+        }else{
+           if(!isFrist){
+             _reJson[i.split('//')[0]] = o;
+           }else{
+             _reJson[i] = o;
+           }
+        }
+      });
+      return _reJson;
+    }
+
+
     return {
         scope:{
             json2html:'='
@@ -12,26 +44,33 @@ module.exports = function() {
         link: function($scope, $el) {
 
             function syntaxHighlight(json) {
+                json = remarkFormat(json,true);
+
                 if (typeof json != 'string') {
                     json = JSON.stringify(json, undefined, 100);
                 }
                 json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g,'<br/>').replace(/\s/g,"&nbsp;");
                 return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                    var cls = 'number';
                     if (/^"/.test(match)) {
                         if (/:$/.test(match)) {
-                            cls = 'key';
-                            return '<span class="' + cls + '">' + match + '</span>';
+                            match = match.split('//');
+                            if(match.length == 2){
+                              return '<span remark="'+match[1]+'" style="color: #97089C;">' + match[0] + '":</span>';
+                            }else{
+                              return '<span style="color: #97089C;">' + match[0] + '</span>';
+                            }
+
                         } else {
-                            cls = 'string';
-                            return '<span class="' + cls + '">' + match + '</span>';
+                            return '<span style="color: #129C22;">' + match + '</span>';
                         }
                     } else if (/true|false/.test(match)) {
-                        cls = 'boolean';
+                       return '<span style="color: #0A0A80;">' + match + '</span>';
                     } else if (/null/.test(match)) {
-                        cls = 'null';
+                       return '<span style="color: #070EB1;">' + match + '</span>';
+                    }else{
+                       return '<span style="color: #003BF7;">' + match + '</span>';
                     }
-                    return '<span class="' + cls + '">' + match + '</span>';
+
                 });
             }
 
@@ -94,8 +133,13 @@ module.exports = function() {
                 });
 
                 json =  angular.fromJson(angular.toJson(json).replace(/\"(\d+)\"/g,function(key){
+
                     if(hashObj[key.replace(/\"/g,'')]){
-                        return '"'+hashObj[key.replace(/\"/g,'')].name+'"';
+                        if(hashObj[key.replace(/\"/g,'')].remark){
+                          return '"'+hashObj[key.replace(/\"/g,'')].name + '//'+ hashObj[key.replace(/\"/g,'')].remark + '"';
+                        }else{
+                          return '"'+hashObj[key.replace(/\"/g,'')].name + '"';
+                        }
                     }else{
                         return key;
                     }
@@ -103,15 +147,20 @@ module.exports = function() {
                 return json;
             }
 
-
             $scope.$watch('json2html',function(to){
-
                 if(to){
                     var hashObj = {};
                     angular.forEach(to,function(o,i){
                         hashObj[o.id] = o;
                     });
                     $el.html(syntaxHighlight(Mock.mock(response2json(hashObj))));
+                    angular.forEach($("[remark]"),function(o){
+                        var _e = $(o);
+                        var _brs = _e.nextAll('br');
+                        if(_brs.length){
+                          $(_brs[0]).before('&nbsp;&nbsp;&nbsp;<span style=" color: #999333;font-weight: normal;">//&nbsp;'+_e.attr('remark')+'</span>');
+                        }
+                    });
                 }
             },true);
 

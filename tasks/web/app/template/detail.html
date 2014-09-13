@@ -134,7 +134,7 @@
                    <li ng-repeat="i in data.requiredParameters">
                        <strong ng-if="i.name.length" ng-class="{'text-muted':!i.required}">{{i.name}}</strong>
                        <span ng-if="!i.name.length">--</span>
-                       <sapn>&nbsp;</sapn><span ng-if="i.remark.length" class="text-success">&nbsp;//{{i.remark}}</span>
+                       <sapn>&nbsp;</sapn><span ng-if="i.remark.length" style="color: #999333;">&nbsp;//&nbsp;{{i.remark}}</span>
                    </li>
                </ul>
                <h6>

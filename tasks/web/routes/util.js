@@ -110,7 +110,11 @@ module.exports = function(grunt){
 
       json =  JSON.parse(JSON.stringify(json).replace(/\"(\d+)\"/g,function(key){
         if(hashObj[key.replace(/\"/g,'')]){
-          return '"'+hashObj[key.replace(/\"/g,'')].name+'"';
+          if(hashObj[key.replace(/\"/g,'')].remark){
+            return '"'+hashObj[key.replace(/\"/g,'')].name + '//'+ hashObj[key.replace(/\"/g,'')].remark + '"';
+          }else{
+            return '"'+hashObj[key.replace(/\"/g,'')].name + '"';
+          }
         }else{
           return key;
         }

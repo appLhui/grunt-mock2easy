@@ -23,21 +23,7 @@ a {
     font-weight: 500;
 }
 
-.json-panel .key{
-    color: #97089C;
-}
 
-.json-panel .string{
-    color: #129C22;
-}
-
-.json-panel .number{
-    color: #003BF7;
-}
-
-.json-panel .boolean{
-    color: #0A0A80;
-}
 
 .remove-hide .glyphicon-minus{
     display: none;

@@ -73,6 +73,7 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal',function($s
             $scope.data.responseParameters.splice(i,1);
         },
         submit:function(){
+            $('[json2html]').html();
             $http.post('/modify',angular.fromJson($scope.data)).then(function(){
                 window.location.href = '/';
             });
