@@ -23,7 +23,12 @@ module.exports = function(grunt,options) {
 
   app.use('/', require('./routes/index')(grunt));
 
-  app.use('/**/*.json',options.isSpider?require('./routes/getJsonBySpider')(grunt):require('./routes/getJson')(grunt,options.ignoreField));
+  if(!!options.curl){
+      app.use('/**/*.json',require('./routes/getJsonByCurl')(grunt));
+  }else{
+      app.use('/**/*.json',options.isSpider?require('./routes/getJsonBySpider')(grunt):require('./routes/getJson')(grunt,options.ignoreField));
+  }
+
 
 /// catch 404 and forward to error handler
   app.use(function(req, res, next) {
