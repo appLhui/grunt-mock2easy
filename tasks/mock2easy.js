@@ -35,7 +35,7 @@ module.exports = function(grunt) {
       isSpider:false,
       ignoreField:[]
     });
+        server[action](options);
 
-    server[action](options);
   });
 };

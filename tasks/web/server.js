@@ -41,10 +41,7 @@ module.exports = function(grunt, target,async) {
           mode: '0666'
       }
 
-      //判断是否有文件夹
-      if(!fs.existsSync(path.resolve(options.database))) {
-          fs.mkdirSync(path.resolve(options.database));
-      }
+
 
       // 判断时候有do.js
       if(!fs.existsSync(path.resolve(options.database)+'/do.js')){
@@ -81,6 +78,14 @@ module.exports = function(grunt, target,async) {
   return {
     start: function start(options) {
       global.options = options;
+        //判断是否有文件夹
+        if(!fs.existsSync(path.resolve(options.database))) {
+            fs.mkdirSync(path.resolve(options.database));
+        }
+        //判断是否有文件夹
+        if(!fs.existsSync(path.resolve(options.doc))) {
+            fs.mkdirSync(path.resolve(options.doc));
+        }
       require('./server/cleanInterface')(grunt).then(function(){
         makeDo(grunt,options);
 

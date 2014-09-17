@@ -10,7 +10,7 @@
                 </div>
                 <div class="panel-body">
                     <div style=" position: relative; " class="form-group has-feedback">
-                        <input type="text" ng-model="jsonPath" placeholder="输入内容筛选接口" typeahead="i for i in path" class="form-control"/><span style=" top: 0; " class="glyphicon glyphicon-search form-control-feedback"></span>
+                        <input type="text" ng-model="jsonPath" placeholder="输入内容筛选接口" typeahead="i for i in path | filter:$viewValue" class="form-control"/><span style=" top: 0; " class="glyphicon glyphicon-search form-control-feedback"></span>
                     </div>
                     <div style="border-bottom: 2px solid #eee; " class="row">
                         <div class="col-md-8">
@@ -56,7 +56,7 @@
                 <div class="panel-body">
                     <form novalidate="novalidate" name="form" role="form" class="navbar-form">
                         <div class="input-group">
-                            <input type="text" ng-required="true" name="url" ng-model="url" can-add="data" typeahead="i for i in path" placeholder="接口必须以/开始且.json结尾(以后会支持多种格式)" class="form-control"/><span class="input-group-btn">
+                            <input type="text" ng-required="true" name="url" ng-model="url" can-add="data" typeahead="i for i in path | filter:$viewValue" placeholder="接口必须以/开始且.json结尾(以后会支持多种格式)" class="form-control"/><span class="input-group-btn">
                             <button ng-disabled="form.$invalid" ng-click="add()" class="btn btn-default btn-success">添加</button></span>
                         </div>
                         <p ng-if="form.url.$error.isOK" class="text-danger" style=" margin-top: 10px; ">接口必须以/开始且.json结尾</p>

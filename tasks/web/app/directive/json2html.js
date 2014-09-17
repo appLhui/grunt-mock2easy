@@ -26,7 +26,7 @@ module.exports = function() {
         }else if(angular.isObject(o)){
           _reJson[i] = remarkFormat(o,true);
         }else{
-           if(!isFrist){
+           if(!isFrist && angular.isString(i)){
              _reJson[i.split('//')[0]] = o;
            }else{
              _reJson[i] = o;

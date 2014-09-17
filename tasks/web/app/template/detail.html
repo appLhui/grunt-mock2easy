@@ -66,7 +66,7 @@
                            <span ng-if="addForm[i.nameVerify].$dirty &amp;&amp; addForm[i.nameVerify].$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
                        </td>
                        <td>
-                           <input ng-model="i.remark" class="form-control"/>
+                           <input symbol-filter ng-model="i.remark" class="form-control"/>
                        </td>
                        <td align="center"><a ng-click="removeRequiredParameters($index)" tooltip="删除" style="margin-top: 3px;" class="btn btn-sm glyphicon glyphicon-minus text-danger"></a></td>
                    </tr>
@@ -110,7 +110,7 @@
                            </select>
                        </td>
                        <td>
-                           <input ng-model="i.remark" class="form-control"/>
+                           <input symbol-filter ng-model="i.remark" class="form-control"/>
                        </td>
                        <td align="center"><a ng-click="addResponseParameters(i.id)" ng-if="i.kind=='object'||i.kind=='array(object)'" tooltip="添加子节点" style="margin-top: 3px;padding: 10px 0px;" class="btn btn-sm glyphicon glyphicon-plus text-success"></a><a ng-click="removeResponseParameters($index)" tooltip="删除" style="margin-top: 3px;padding: 10px 0px;" class="btn btn-sm glyphicon glyphicon-minus text-danger"></a></td>
                    </tr>

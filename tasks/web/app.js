@@ -7,7 +7,6 @@ var bodyParser = require('body-parser');
 
 
 module.exports = function(grunt,options) {
-
   var app = express();
 
 // view engine setup

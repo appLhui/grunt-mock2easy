@@ -17,11 +17,20 @@ module.exports = function(grunt){
   var util = new require('../routes/util')(grunt);
 
 
+
   require('../util/rmdirSync')(grunt,path.resolve(global.options.doc),function(){
+
+
+    if(!fs.existsSync(path.resolve(options.doc))) {
+      fs.mkdirSync(path.resolve(options.doc));
+    }
     var _i = 1;
     var _menu = '### 接口文档目录\n';
-    _filse.forEach(function(file){
+    if(!!!_filse.length){
+      deferred.resolve();
+    }
 
+    _filse.forEach(function(file){
       fs.readFile(file,'utf-8',function(err,data){
         if(err){
           grunt.log.error(err);
@@ -46,7 +55,6 @@ module.exports = function(grunt){
             _i++;
 
             setConfiguration(grunt,_json).then(function(){
-
               if(_i == _filse.length+1){
                 util.mkdirSync(path.resolve(global.options.doc),0,function(err){
                   if(err){
@@ -70,14 +78,15 @@ module.exports = function(grunt){
                 });
               }
 
-
-
             });
           }
         }
       });
     });
-  });
+
+
+
+});
 
   return deferred.promise;
 }
