@@ -3,14 +3,34 @@
  */
 
 module.exports = function(grunt){
-    var util = new require('../routes/util')(grunt);
     var path = require('path');
+    var fs = require('fs');
 
     var _data = [];
     var _i = 1;
     var _filse = [];
-    var s =   util.getAllFiles(path.resolve(global.options.database));
-    util.getAllFiles(path.resolve(global.options.database)).forEach(function(file){
+
+    var getAllFiles = function(root){
+        function getAllFiles(root) {
+            var result = [], files = fs.readdirSync(root)
+            files.forEach(function(file) {
+                var pathname = root+ "/" + file
+                    , stat = fs.lstatSync(pathname)
+                if (stat === undefined) return
+                // 不是文件夹就是文件
+                if (!stat.isDirectory()) {
+                    result.push(pathname)
+                    // 递归自身
+                } else {
+                    result = result.concat(getAllFiles(pathname))
+                }
+            });
+            return result
+        }
+        return getAllFiles(root);
+    }
+
+    getAllFiles(path.resolve(global.options.database)).forEach(function(file){
         var arry = file.split(global.options.database);
         String.prototype.endWith=function(endStr){
             var d=this.length-endStr.length;

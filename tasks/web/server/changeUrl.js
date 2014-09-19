@@ -4,7 +4,7 @@
 
 
 module.exports = function(grunt,req){
-    var util = new require('../routes/util')(grunt);
+
     var path = require('path');
     var fs = require('fs');
     var deferred = require('Q').defer();

@@ -2,24 +2,26 @@
  * Created by lihui on 14-8-25.
  */
 
-var util =new require('./util')();
-var fs = require('fs');
-var Mock = require('mockjs');
-var path = require('path');
-var extend = require('node.extend');
-
-var obj2StrParams = function(obj){
-    var param = [];
-
-    for (var prop in obj) {
-        param.push(prop + "=" + encodeURIComponent(obj[prop]));
-    }
-
-    return param.join('&');
-}
 
 
 module.exports = function(grunt){
+
+    var fs = require('fs');
+    var Mock = require('mockjs');
+    var path = require('path');
+    var extend = require('node.extend');
+    var colors = require('colors');
+
+    var obj2StrParams = function(obj){
+        var param = [];
+
+        for (var prop in obj) {
+            param.push(prop + "=" + encodeURIComponent(obj[prop]));
+        }
+
+        return param.join('&');
+    }
+
     return function(req, res, next) {
         var child_process = require('child_process');
 
@@ -29,12 +31,12 @@ module.exports = function(grunt){
             '--data "'+obj2StrParams(extend(true, {}, req.body,req.query,{secToken:global.options.curl.secToken}))+'" ',
             "-H 'Cookie: login_aliyunid_ticket=",global.options.curl.login_aliyunid_ticket,"; '"
         ];
-
-        grunt.log.writeln('==================Curl执行命令====================');
-        grunt.log.writeln(sh.join(''));
-        grunt.log.writeln('=================================================');
-
-        child_process.exec(sh.join(''),function(error, stdout, stderr){
+        sh = sh.join('');
+        grunt.log.writeln();
+        grunt.log.writeln('+---------------------Curl命令--------------------------'.yellow);
+        grunt.log.writeln('| '.yellow + sh.green);
+        grunt.log.writeln('+-------------------------------------------------------'.yellow);
+        child_process.exec(sh,function(error, stdout, stderr){
             res.send(stdout);
         });
     }

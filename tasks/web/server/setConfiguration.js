@@ -8,23 +8,13 @@ module.exports = function(grunt,body){
         var fs = require('fs');
         var Mock = require('mockjs');
         var deferred = require('Q').defer();
-        var util = new require('../routes/util')(grunt);
         var _reqStr = '';
 
-           fs.open(path.resolve(global.options.database)+body.interfaceUrl,"w",0644,function(err,fd){
-               if(err){
-                   grunt.log.error(err);
-               }{
-                   fs.write(fd,JSON.stringify(body,undefined,5),0,'utf8',function(err){
-                       if(err){
-                           grunt.log.error(err);
-                       }else{
-                           fs.closeSync(fd);
-                           writeDoc();
-                       }
-                   })
-               }
-           });
+        var createFile = require('../util/createFile');
+
+        createFile(path.resolve(global.options.database)+body.interfaceUrl,JSON.stringify(body,undefined,5),grunt).then(function(){
+            writeDoc();
+        });
 
 
            //获取 注释的开始 和结束的坐标，以及换行的坐标
@@ -108,7 +98,7 @@ module.exports = function(grunt,body){
                    hashObj[o.id] = o;
                }
 
-               var _str = responseParameters.length?JSON.stringify(Mock.mock(util.response2json(hashObj)), undefined,1):'';
+               var _str = responseParameters.length?JSON.stringify(Mock.mock(require('../util/response2json')(hashObj,grunt)), undefined,1):'';
                var _md =['## ',
                    body.interfaceName,
                    ,'\n',
@@ -126,26 +116,13 @@ module.exports = function(grunt,body){
                var _arry = body.interfaceUrl.split('\/');
                delete _arry[_arry.length-1];
                deferred.resolve();
-               util.mkdirSync(path.resolve(global.options.doc)+_arry.join('\/'),0,function(err){
-                   if(err){
-                       grunt.log.error(err);
-                   }else{
-                       fs.open(path.resolve(global.options.doc)+body.interfaceUrl.replace(/.json/,'.md'),"w",0644,function(err,fd){
-                           if(err){
-                               grunt.log.error(err);
-                           }else{
-                               fs.write(fd,_md.join(''),0,'utf8',function(err){
-                                   if(err){
-                                       grunt.log.error(err);
-                                   }else{
-                                       fs.closeSync(fd);
-                                       deferred.resolve();
-                                   }
-                               });
-                           }
-                       });
-                   }
+
+               var _urlArray = body.interfaceUrl.split('\/');
+
+               createFile(path.resolve(global.options.doc)+body.interfaceUrl.replace(/.json/,'.md'),_md.join(''),grunt).then(function(){
+                   deferred.resolve();
                });
+
            }
 
 

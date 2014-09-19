@@ -14,7 +14,7 @@ module.exports = function(grunt,options) {
   app.set('view engine', 'jade');
 
   app.use(favicon());
-  app.use(logger('dev'));
+//  app.use(logger('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded());
   app.use(cookieParser());

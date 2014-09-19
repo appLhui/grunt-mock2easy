@@ -4,10 +4,9 @@
 module.exports = function(grunt, target,async) {
 
   var app ;
-  var util =new require('../web/routes/util')();
   var fs = require('fs');
   var path = require('path');
-
+  var colors = require('colors');
 
   if (!process._servers) {
     process._servers = {};
@@ -41,7 +40,14 @@ module.exports = function(grunt, target,async) {
           mode: '0666'
       }
 
-
+      //判断是否有文件夹
+      if(!fs.existsSync(path.resolve(options.database))) {
+          fs.mkdirSync(path.resolve(options.database));
+      }
+      //判断是否有文件夹
+      if(!fs.existsSync(path.resolve(options.doc))) {
+          fs.mkdirSync(path.resolve(options.doc));
+      }
 
       // 判断时候有do.js
       if(!fs.existsSync(path.resolve(options.database)+'/do.js')){
@@ -61,15 +67,15 @@ module.exports = function(grunt, target,async) {
 
       // 判断时候有app.js
       if(!fs.existsSync(path.resolve(options.database)+'/app.js')){
-          var fileReadStream = fs.createReadStream(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_app.tmp' ,rOption);
-          var fileWriteStream = fs.createWriteStream(path.resolve(options.database)+'/app.js' ,wOption);
+          var fileReadStream2 = fs.createReadStream(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_app.tmp' ,rOption);
+          var fileWriteStream2 = fs.createWriteStream(path.resolve(options.database)+'/app.js' ,wOption);
 
-          fileReadStream.on('data',function(data){
-              fileWriteStream.write(data);
+          fileReadStream2.on('data',function(data){
+              fileWriteStream2.write(data);
           });
 
-          fileReadStream.on('end',function(){
-              fileWriteStream.end();
+          fileReadStream2.on('end',function(){
+              fileWriteStream2.end();
           });
       }
   }
@@ -78,16 +84,10 @@ module.exports = function(grunt, target,async) {
   return {
     start: function start(options) {
       global.options = options;
-        //判断是否有文件夹
-        if(!fs.existsSync(path.resolve(options.database))) {
-            fs.mkdirSync(path.resolve(options.database));
-        }
-        //判断是否有文件夹
-        if(!fs.existsSync(path.resolve(options.doc))) {
-            fs.mkdirSync(path.resolve(options.doc));
-        }
-      require('./server/cleanInterface')(grunt).then(function(){
+
         makeDo(grunt,options);
+
+        require('./server/cleanInterface')(grunt).then(function(){
 
         if (server) {
           this.stop();
@@ -117,7 +117,7 @@ module.exports = function(grunt, target,async) {
         process.env.PORT = options.port;
 
         server = process._servers[target] = app.listen(options.port, function() {
-          grunt.log.write('Mock服务已经启动，请访问地址：http://localhost:' + server.address().port);
+          grunt.log.write(('Mock服务已经启动，请访问地址：http://localhost:' + server.address().port).bold.cyan);
           if(!options.keepAlive){
             async();
           }
