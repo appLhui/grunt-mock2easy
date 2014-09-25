@@ -18,6 +18,8 @@ module.exports = function(grunt){
   require('../util/rmdirSync')(grunt,path.resolve(global.options.doc),function(){
 
     var _i = 1;
+    var _path = [];
+
     var _menu = '### 接口文档目录\n';
     if(!!!_filse.length){
       deferred.resolve();
@@ -48,8 +50,8 @@ module.exports = function(grunt){
                     if(!!!_json.docError){
                         _json.docError = [];
                     }
-                    _menu +=  _i + '. ['+_json.interfaceName+'](./'+global.options.doc+_json.interfaceUrl.replace('.json','.md')+')\n';
-                    _i++;
+                    _path.push('['+_json.interfaceName+'](./'+global.options.doc+_json.interfaceUrl.replace('.json','.md')+')\n');
+
                     setConfiguration(grunt,_json).then(function(){
                         callback();
                     });
@@ -57,6 +59,9 @@ module.exports = function(grunt){
             }
         });
     },function(){
+        _path.sort().forEach(function(o,i){
+          _menu +=  (i+1) + '.' + o;
+        });
         require('../util/createFile')(path.resolve(global.options.doc)+'/menu.md',_menu,grunt).then(function(){
             deferred.resolve();
         });

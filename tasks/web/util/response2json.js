@@ -1,12 +1,15 @@
 /**
  * Created by lihui on 14-9-18.
+ *
+ * is2Web 是否这个数据是给web端的请求
+ *
  */
 
 var util = require('util');
 var extend = require('node.extend');
 
 
-module.exports = function(hashObj,grunt){
+module.exports = function(hashObj,grunt,is2Web){
     try{
         var json = {};
         for (var k in hashObj) {
@@ -69,10 +72,12 @@ module.exports = function(hashObj,grunt){
 
         json =  JSON.parse(JSON.stringify(json).replace(/\"(\d+)\"/g,function(key){
             if(hashObj[key.replace(/\"/g,'')]){
-                if(hashObj[key.replace(/\"/g,'')].remark){
-                    return '"'+hashObj[key.replace(/\"/g,'')].name + '//'+ hashObj[key.replace(/\"/g,'')].remark + '"';
-                }else{
+                if(is2Web){
                     return '"'+hashObj[key.replace(/\"/g,'')].name + '"';
+                }else if(!hashObj[key.replace(/\"/g,'')].remark){
+                    return '"'+hashObj[key.replace(/\"/g,'')].name + '"';
+                }else{
+                    return '"'+hashObj[key.replace(/\"/g,'')].name + '//'+ hashObj[key.replace(/\"/g,'')].remark + '"';
                 }
             }else{
                 return key;

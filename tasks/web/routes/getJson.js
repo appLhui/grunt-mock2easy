@@ -43,7 +43,7 @@ module.exports = function(grunt,ignoreField){
                         require('../server/verifyReqParameter')(grunt)(url,method,params,_data,ignoreField);
 
                         setTimeout(function(){
-                            res.send(Mock.mock(require('../util/response2json')(hashObj,grunt)));
+                            res.send(Mock.mock(require('../util/response2json')(hashObj,grunt,true)));
                         },_data.lazyLoad=="yes"?3000:0);
                     }
                 }
