@@ -60,7 +60,7 @@ module.exports = function(grunt){
         });
     },function(){
         _path.sort().forEach(function(o,i){
-          _menu +=  (i+1) + '.' + o;
+          _menu +=  (i+1) + '. ' + o;
         });
         require('../util/createFile')(path.resolve(global.options.doc)+'/menu.md',_menu,grunt).then(function(){
             deferred.resolve();

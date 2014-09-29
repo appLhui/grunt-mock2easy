@@ -3,10 +3,11 @@
 
 module.exports = function(grunt, target,async) {
 
-  var app ;
   var fs = require('fs');
   var path = require('path');
   var colors = require('colors');
+  var _ = require('underscore');
+
 
   if (!process._servers) {
     process._servers = {};
@@ -26,108 +27,97 @@ module.exports = function(grunt, target,async) {
 
   //自动创建node ajax跨域请求脚本
   var makeDo = function(grunt,options){
-    app= require('./app')(grunt,options);
-
-      var rOption = {
-          flags : 'r',
-          encoding : null,
-          mode : '0666'
-      }
-
-      var wOption = {
-          flags: 'a',
-          encoding: null,
-          mode: '0666'
-      }
-
-      //判断是否有文件夹
-      if(!fs.existsSync(path.resolve(options.database))) {
-          fs.mkdirSync(path.resolve(options.database));
-      }
-      //判断是否有文件夹
-      if(!fs.existsSync(path.resolve(options.doc))) {
-          fs.mkdirSync(path.resolve(options.doc));
-      }
-
-      // 判断时候有do.js
-      if(!fs.existsSync(path.resolve(options.database)+'/do.js')){
-
-          var fileReadStream = fs.createReadStream(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_do.tmp' ,rOption);
-          var fileWriteStream = fs.createWriteStream(path.resolve(options.database)+'/do.js' ,wOption);
-
-          fileReadStream.on('data',function(data){
-            fileWriteStream.write(data);
+    var deferred = require('Q').defer();
+    require('async').parallel([
+        function(callback){
+          if(!fs.existsSync(path.resolve(options.database))) {
+            fs.mkdirSync(path.resolve(options.database));
+          }
+          fs.readFile(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_do.tmp','utf-8',function(err,data) {
+            if (err) {
+              grunt.log.error(err);
+            } else {
+              require('./util/writeFile')(path.resolve(options.database) + '/do.js', _.template(data)({
+                port: options.port
+              }), grunt).then(function () {
+                callback();
+              });
+            }
           });
+        },
+        function(callback){
+          if(!fs.existsSync(path.resolve(options.doc))) {
+            fs.mkdirSync(path.resolve(options.doc));
+          }
+          if(!fs.existsSync(path.resolve(options.database)+'/app.js')){
 
-          fileReadStream.on('end',function(){
-            fileWriteStream.end();
-          });
+            fs.readFile(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_app.tmp','utf-8',function(err,data) {
+              if (err) {
+                grunt.log.error(err);
+              } else {
+                require('./util/writeFile')(path.resolve(options.database)+'/app.js', _.template(data)({
 
-      };
-
-      // 判断时候有app.js
-      if(!fs.existsSync(path.resolve(options.database)+'/app.js')){
-          var fileReadStream2 = fs.createReadStream(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_app.tmp' ,rOption);
-          var fileWriteStream2 = fs.createWriteStream(path.resolve(options.database)+'/app.js' ,wOption);
-
-          fileReadStream2.on('data',function(data){
-              fileWriteStream2.write(data);
-          });
-
-          fileReadStream2.on('end',function(){
-              fileWriteStream2.end();
-          });
-      }
+                }), grunt).then(function () {
+                  callback();
+                });
+              }
+            });
+          } else{
+            callback();
+          }
+        }
+      ],
+      function(err, results){
+        deferred.resolve();
+      });
+    return deferred.promise;
   }
 
 
   return {
     start: function start(options) {
-      global.options = options;
+        global.options = options;
 
-        makeDo(grunt,options);
+        makeDo(grunt,options).then(function(){
+          require('./server/cleanInterface')(grunt).then(function(){
 
-        require('./server/cleanInterface')(grunt).then(function(){
+            if (server) {
+              this.stop();
 
-        if (server) {
-          this.stop();
+              if (grunt.task.current.flags.stop) {
+                finished();
 
-          if (grunt.task.current.flags.stop) {
-            finished();
+                return;
+              }
+            }
 
-            return;
-          }
-        }
+            backup = JSON.parse(JSON.stringify(process.env)); // Clone process.env
 
-        backup = JSON.parse(JSON.stringify(process.env)); // Clone process.env
-
-        // For some weird reason, on Windows the process.env stringify produces a "Path"
-        // member instead of a "PATH" member, and grunt chokes when it can't find PATH.
-        if (!backup.PATH) {
-          if (backup.Path) {
-            backup.PATH = backup.Path;
-            delete backup.Path;
-          }
-        }
+            // For some weird reason, on Windows the process.env stringify produces a "Path"
+            // member instead of a "PATH" member, and grunt chokes when it can't find PATH.
+            if (!backup.PATH) {
+              if (backup.Path) {
+                backup.PATH = backup.Path;
+                delete backup.Path;
+              }
+            }
 
 
-        done = grunt.task.current.async();
+            done = grunt.task.current.async();
 
-        // Set PORT for new processes
-        process.env.PORT = options.port;
+            // Set PORT for new processes
+            process.env.PORT = options.port;
 
-        server = process._servers[target] = app.listen(options.port, function() {
-          grunt.log.write(('Mock服务已经启动，请访问地址：http://localhost:' + server.address().port).bold.cyan);
-          if(!options.keepAlive){
-            async();
-          }
+            server = process._servers[target] = require('./app')(grunt,options).listen(options.port, function() {
+              grunt.log.write(('Mock服务已经启动，请访问地址：http://localhost:' + server.address().port).bold.cyan);
+              if(!options.keepAlive){
+                async();
+              }
+            });
+            process.on('exit', finished);
+            process.on('exit', this.stop);
+          });
         });
-
-        process.on('exit', finished);
-        process.on('exit', this.stop);
-
-      });
-
     },
 
     stop: function stop() {
@@ -144,7 +134,6 @@ module.exports = function(grunt, target,async) {
       if (backup) {
         process.env = JSON.parse(JSON.stringify(backup));
       }
-
       finished();
     }
   };
