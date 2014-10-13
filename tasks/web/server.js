@@ -116,6 +116,8 @@ module.exports = function(grunt, target,async) {
             });
             process.on('exit', finished);
             process.on('exit', this.stop);
+          },function(err){
+            grunt.log.error(err);
           });
         });
     },

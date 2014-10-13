@@ -29,42 +29,59 @@ module.exports = function(grunt){
         fs.readFile(file,'utf-8',function(err,data){
             if(err){
                 grunt.log.error(err);
+                callback(err);
             }else{
-                if(data){
-                    _json = JSON.parse(data);
+                 try{
+                   if(data) {
+                     _json = JSON.parse(data);
 
-                    _json.requiredParameters.forEach(function(o){
-                        o.remark = o.rule != undefined ? o.rule : o.remark;
-                        o.required = o.required != undefined ? o.required : true;
-                        delete o.rule;
-                    });
-                    _json.responseParameters.forEach(function(o){
-                        if(o.kind == 'boolean'|| o.kind == 'number'){
-                            o.rule = o.rule + '';
-                            o.kind = 'mock';
-                        }
-                    });
-                    if(!!!_json.reqError){
-                        _json.reqError = [];
-                    }
-                    if(!!!_json.docError){
-                        _json.docError = [];
-                    }
-                    _path.push('['+_json.interfaceName+'](./'+global.options.doc+_json.interfaceUrl.replace('.json','.md')+')\n');
+                     _json.requiredParameters.forEach(function (o) {
+                       o.remark = o.rule != undefined ? o.rule : o.remark;
+                       o.required = o.required != undefined ? o.required : true;
+                       delete o.rule;
+                     });
+                     _json.responseParameters.forEach(function (o) {
+                       if (o.kind == 'boolean' || o.kind == 'number') {
+                         o.rule = o.rule + '';
+                         o.kind = 'mock';
+                       }
+                     });
+                     if (!!!_json.reqError) {
+                       _json.reqError = [];
+                     }
+                     if (!!!_json.docError) {
+                       _json.docError = [];
+                     }
+                     _path.push('[' + _json.interfaceName + '](./' + global.options.doc + _json.interfaceUrl.replace('.json', '.md') + ')\n');
 
-                    setConfiguration(grunt,_json).then(function(){
-                        callback();
-                    });
-                }
+                     setConfiguration(grunt, _json).then(function () {
+                       callback();
+                     },function(err){
+                       callback(err);
+                     });
+                   } else{
+                     callback();
+                   }
+                 }catch (err){
+                   grunt.log.error(err);
+                   callback(err);
+                 }
             }
+
         });
-    },function(){
-        _path.sort().forEach(function(o,i){
-          _menu +=  (i+1) + '. ' + o;
-        });
-        require('../util/createFile')(path.resolve(global.options.doc)+'/menu.md',_menu,grunt).then(function(){
+    },function(err){
+        if(err){
+          deferred.reject(err);
+        }else {
+          _path.sort().forEach(function(o,i){
+            _menu +=  (i+1) + '. ' + o;
+          });
+          require('../util/createFile')(path.resolve(global.options.doc)+'/menu.md',_menu,grunt).then(function(){
             deferred.resolve();
-        });
+          },function(err){
+            deferred.reject(err);
+          });
+        }
     });
 
 });

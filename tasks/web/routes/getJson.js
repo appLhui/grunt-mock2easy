@@ -40,15 +40,17 @@ module.exports = function(grunt,ignoreField){
                             hashObj[o.id] = o;
                         }
                         //检验请求方式 和 请求参数
-                        require('../server/verifyReqParameter')(grunt)(url,method,params,_data,ignoreField);
-
-                        setTimeout(function(){
+                        try{
+                          require('../server/verifyReqParameter')(grunt)(url,method,params,_data,ignoreField);
+                          setTimeout(function(){
                             res.send(Mock.mock(require('../util/response2json')(hashObj,grunt,true)));
-                        },_data.lazyLoad=="yes"?3000:0);
+                          },_data.lazyLoad=="yes"?global.options.lazyLoadTime:0);
+                        } catch (err){
+                          res.send(500,err);
+                        }
                     }
                 }
             });
-
     };
 }
 

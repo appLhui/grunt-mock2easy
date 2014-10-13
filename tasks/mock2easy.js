@@ -29,13 +29,17 @@ module.exports = function(grunt) {
     var action  = this.args.shift() || 'start';
     var options = this.options({
       port:3000,
+      lazyLoadTime:3000,
       database:'mock2easy',
       doc:'doc',
       keepAlive:true,
       isSpider:false,
       ignoreField:[]
     });
-    server[action](options);
-
+    try{
+      server[action](options);
+    } catch (e){
+      grunt.log.writeln(e.red);
+    }
   });
 };

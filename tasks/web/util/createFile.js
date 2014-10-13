@@ -22,14 +22,19 @@ module.exports = function(url,doc,grunt){
     if(fs.existsSync(_path)) {
         require('./writeFile')(url,doc,grunt).then(function(){
             deferred.resolve();
-        });
+        },function(err){
+            deferred.reject(err);
+      });
     }else{
         mkdirp(_path, function (err) {
             if(err){
                 grunt.log.error(err);
+                deferred.reject(err);
             }else{
                 require('./writeFile')(url,doc,grunt).then(function(){
                     deferred.resolve();
+                },function(err){
+                    deferred.reject(err);
                 });
             }
         });

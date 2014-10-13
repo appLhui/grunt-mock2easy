@@ -28,6 +28,7 @@ grunt.initConfig({
         test:{
             options: {
                 port:3000,
+                lazyLoadTime:3000,
                 database:'database',
                 doc:'doc',
                 keepAlive:true,
@@ -47,7 +48,15 @@ Type: `Number`
 
 Default value: 3000
 
-启动的服务的端口号  
+启动的服务的端口号 
+
+#### options.lazyLoadTime
+
+Type: `Number`
+
+Default value: 3000
+
+启动接口延时加载，调用接口的延迟时间 
 
 #### options.database
 

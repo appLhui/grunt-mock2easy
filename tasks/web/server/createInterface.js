@@ -15,6 +15,8 @@ module.exports = function(grunt,body) {
     }
   require('../util/createFile')(path.resolve(global.options.database)+body.interfaceUrl,JSON.stringify(body),grunt).then(function(){
       deferred.resolve();
+  },function(err){
+      deferred.reject(err);
   });
 
   return deferred.promise;

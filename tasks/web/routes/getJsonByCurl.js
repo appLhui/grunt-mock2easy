@@ -23,22 +23,31 @@ module.exports = function(grunt){
     }
 
     return function(req, res, next) {
-        var child_process = require('child_process');
+        try{
+          var child_process = require('child_process');
 
-        var sh = ['curl',' ',
-            global.options.curl.domain,
-            req.originalUrl.split('?')[0],' ',
-            '--data "'+obj2StrParams(extend(true, {}, req.body,req.query,{secToken:global.options.curl.secToken}))+'" ',
-            "-H 'Cookie: login_aliyunid_ticket=",global.options.curl.login_aliyunid_ticket,"; '"
-        ];
-        sh = sh.join('');
-        grunt.log.writeln();
-        grunt.log.writeln('+---------------------Curl命令--------------------------'.yellow);
-        grunt.log.writeln('| '.yellow + sh.green);
-        grunt.log.writeln('+-------------------------------------------------------'.yellow);
-        child_process.exec(sh,function(error, stdout, stderr){
-            res.send(stdout);
-        });
+          var sh = ['curl',' ',
+              global.options.curl.domain,
+              req.originalUrl.split('?')[0],' ',
+              '--data "'+obj2StrParams(extend(true, {}, req.body,req.query,{secToken:global.options.curl.secToken}))+'" ',
+              "-H 'Cookie: login_aliyunid_ticket=",global.options.curl.login_aliyunid_ticket,"; '"
+          ];
+          sh = sh.join('');
+          grunt.log.writeln();
+          grunt.log.writeln('+---------------------Curl命令--------------------------'.yellow);
+          grunt.log.writeln('| '.yellow + sh.green);
+          grunt.log.writeln('+-------------------------------------------------------'.yellow);
+          child_process.exec(sh,function(err, stdout, stderr){
+            if(err){
+              res.json(500,err);
+            }else{
+              res.send(stdout);
+            }
+          });
+        } catch(err){
+          res.json(500,err);
+        }
+
     }
 };
 

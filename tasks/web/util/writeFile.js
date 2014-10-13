@@ -15,10 +15,12 @@ module.exports = function(url,doc,grunt){
     fs.open(url,"w",0644,function(err,fd){
         if(err){
             grunt.log.error(err);
+            deferred.reject(err);
         }else{
             fs.write(fd,doc,0,'utf8',function(err){
                 if(err){
                     grunt.log.error(err);
+                    deferred.reject(err);
                 }else{
                     fs.closeSync(fd);
                     deferred.resolve();

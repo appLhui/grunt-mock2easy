@@ -6,15 +6,17 @@ module.exports = function(grunt) {
 
     var router = express.Router();
 
+
     router.get('/', function(req, res) {
-        res.render('index', { title: 'Express' });
+      res.render('index');
     });
 
-
-//获取已经生成的接口路径
+    //获取已经生成的接口路径
     router.post('/getList',function(req,res){
         require('../server/loadInterface')(grunt,require('../server/getAllFiles')(grunt)).then(function(o){
             res.json(o);
+        },function(err){
+            res.send(500,'［'+ err +'］接口读取有异常！');
         });
     });
 
@@ -22,9 +24,15 @@ module.exports = function(grunt) {
         fs.readFile(path.resolve(global.options.database)+req.body.url.replace(/&/g,'\/'),'utf-8',function(err,data){
             if(err){
                 grunt.log.error(err);
+                res.send(500,err);
             }else{
                 if(data){
-                    res.json(JSON.parse(data));
+                    try{
+                      res.json(JSON.parse(data));
+                    } catch (err){
+                      res.send(500,'接口读取有异常！');
+                    }
+
                 }
             }
         });
@@ -35,12 +43,15 @@ module.exports = function(grunt) {
         fs.readFile(path.resolve(global.options.database)+req.body.interfaceUrl,'utf-8',function(err,data){
             if(err){
               grunt.log.error(err);
+              res.send(500,err);
             }else{
                 if(data){
                     var _data =  JSON.parse(data);
                     _data.lazyLoad = _data.lazyLoad == 'yes' ? 'no' : 'yes';
                     require('../util/writeFile')((global.options.database)+req.body.interfaceUrl,JSON.stringify(_data,undefined,5),grunt).then(function(){
-                        res.json({success:1});
+                        res.json({success:true});
+                    },function(err){
+                        res.send(500,err);
                     });
                 }
             }
@@ -53,9 +64,12 @@ module.exports = function(grunt) {
         fs.unlink(path.resolve(global.options.database)+req.body.interfaceUrl,function(err){
             if(err){
               grunt.log.error(err);
+              res.send(500,err);
             }else{
               require('../server/cleanInterface')(grunt).then(function(){
-                res.json({success:1});
+                res.json({success:true});
+              },function(err){
+                res.json(500,err);
               });
             }
         });
@@ -66,8 +80,12 @@ module.exports = function(grunt) {
     router.post('/add',function(req,res){
         require('../server/createInterface')(grunt,req.body).then(function(){
           require('../server/cleanInterface')(grunt).then(function(){
-            res.json({success:1});
+            res.json({success:true});
+          },function(err){
+            res.json(500,err);
           });
+        },function(err){
+          res.json(500,err);
         });
     });
 
@@ -75,16 +93,24 @@ module.exports = function(grunt) {
     router.post('/modify',function(req,res){
         require('../server/setConfiguration')(grunt,req.body).then(function(){
           require('../server/cleanInterface')(grunt).then(function(){
-            res.json({success:1});
+            res.json({success:true});
+          },function(err){
+            res.json(500,err);
           });
+        },function(err){
+          res.json(500,err);
         });
     });
 
     router.post('/changeUrl',function(req,res){
         require('../server/changeUrl')(grunt,req.body).then(function(){
           require('../server/cleanInterface')(grunt).then(function(){
-            res.json({success:1});
+            res.json({success:true});
+          },function(err){
+            res.json(500,err);
           });
+        },function(err){
+          res.json(500,err);
         });
     })
 

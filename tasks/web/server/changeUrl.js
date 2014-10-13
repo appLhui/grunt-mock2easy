@@ -13,6 +13,7 @@ module.exports = function(grunt,req){
     fs.readFile(path.resolve(global.options.database)+req.url,'utf-8',function(err,data){
       if(err){
         grunt.log.error(err);
+        deferred.reject(err);
       }else {
         if (data) {
           _json = JSON.parse(data);
@@ -20,6 +21,8 @@ module.exports = function(grunt,req){
           fs.unlinkSync(path.resolve(global.options.database)+req.url);
           require('./createInterface')(grunt,_json).then(function(){
               deferred.resolve();
+          },function(err){
+              deferred.reject(err);
           });
         }
       }
