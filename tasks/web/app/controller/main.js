@@ -35,9 +35,9 @@ module.exports = ['$scope','$state','$http','$modal','$filter','$timeout',functi
                 $state.go('detail',{url: $filter('url')($scope.url)});
             });
         },
-        del:function(i){
+        del:function(url){
             $http.post('/del', {
-                interfaceUrl: $scope.data[i].url
+                interfaceUrl: url
             }).then(function(data){
                 $scope.render();
                 $scope.suc = true;
@@ -58,20 +58,20 @@ module.exports = ['$scope','$state','$http','$modal','$filter','$timeout',functi
                });
             });
         },
-        changeUrl:function(i){
+        changeUrl:function(url){
             var modalInstance = $modal.open({
               template: fs.readFileSync(__dirname.replace('controller','') + 'template/modal/changeUrl.html'),
               resolve: {
                 data: function () {
                   return $scope.data;
                 },
-                i:function(){
-                  return i;
+                url:function(){
+                  return url;
                 }
               },
-              controller: ['$scope','$modalInstance','data','i',function($scope,$modalInstance,data,i){
+              controller: ['$scope','$modalInstance','data','url',function($scope,$modalInstance,data,url){
                 angular.extend($scope,{
-                   url:data[i].url,
+                   url:url,
                    data:data,
                    change:function(newUrl){
                      $http.post('/changeUrl', {

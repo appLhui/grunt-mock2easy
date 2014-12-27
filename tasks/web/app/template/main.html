@@ -28,15 +28,15 @@
                             <div ng-repeat="i in data | filter: jsonPath " style="padding:10px 0;border-bottom: 1px solid #eee;" class="row">
                                 <div class="col-md-8"><a ng-bind="i.url|database" ui-sref="detail({url:i.urlFilter})" tooltip="{{i.note}}" tooltip-placement="right" class="text-error"></a></div>
                                 <div class="col-md-2">
-                                    <button ng-if="!i.lazyLoad" class="btn btn-default btn-xs"><span tooltip="获取接口无延时" ng-click="changeLazy(i.url)" tooltip-placement="right" class="text-success glyphicon glyphicon-expand"></span></button>
-                                    <button ng-if="i.lazyLoad" class="btn btn-warning btn-xs"><span tooltip="获取接口有 3s 延时" ng-click="changeLazy(i.url)" tooltip-placement="right" class="glyphicon glyphicon-record"></span></button>
+                                    <button ng-if="!i.lazyLoad" class="btn btn-default btn-xs"  ng-click="changeLazy(i.url)"><span tooltip="获取接口无延时" tooltip-placement="right" class="text-success glyphicon glyphicon-expand"></span></button>
+                                    <button ng-if="i.lazyLoad" class="btn btn-warning btn-xs"  ng-click="changeLazy(i.url)"><span tooltip="获取接口有 3s 延时" tooltip-placement="right" class="glyphicon glyphicon-record"></span></button>
                                 </div>
                                 <div class="col-md-2">
-                                    <button class="btn btn-default btn-xs">
-                                        <span ng-click="del($index)" style="cursor:pointer;" tooltip="删除" class="text-danger glyphicon glyphicon-remove"></span>
+                                    <button ng-click="del(i.url)" class="btn btn-default btn-xs">
+                                        <span  style="cursor:pointer;" tooltip="删除" class="text-danger glyphicon glyphicon-remove"></span>
                                     </button>
-                                    <button class="btn btn-default btn-xs">
-                                        <span ng-click="changeUrl($index)" style="cursor:pointer;" tooltip="更改接口路径" class="glyphicon glyphicon-log-out"></span>
+                                    <button ng-click="changeUrl(i.url)" class="btn btn-default btn-xs">
+                                        <span  style="cursor:pointer;" tooltip="更改接口路径" class="glyphicon glyphicon-log-out"></span>
                                     </button>
                                 </div>
                                 <div class="col-md-8"><small>{{i.note}}</small></div>

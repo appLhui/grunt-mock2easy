@@ -8,6 +8,11 @@ app.use(express.urlencoded());
 
 function mockRewrite(req, res, next){
 
+
+   for(var name in req.body){
+        req.body[name] = encodeURI(req.body[name]);
+    }
+
     var _write = JSON.stringify(req.body);
 
     var options = {

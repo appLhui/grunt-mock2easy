@@ -19,7 +19,7 @@ module.exports = function(grunt,ignoreField){
         if(typeof params == 'object'){
           grunt.log.writeln('| '.yellow+'Params => '.bold);
             for (var i in params) {
-                grunt.log.writeln('| '.yellow+'   '+ i +':'+ params[i].green);
+                grunt.log.writeln('| '.yellow+'   '+ i +':'+ decodeURI(params[i]).green);
             }
         }else{
           grunt.log.writeln('| '.yellow+'Params =>'.bold+ params.green);
