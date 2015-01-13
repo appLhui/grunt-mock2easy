@@ -84,6 +84,9 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal',function($s
         template: fs.readFileSync(__dirname.replace('controller','') + 'template/modal/importJson.html'),
         controller: ['$scope','$modalInstance',function($scope,$modalInstance){
           $scope.importResponseParameters = function(json){
+            json = json.replace(/"(?:.|\s)*?":/g, function (m) {
+              return m.replace(/\|/g,'@_@');
+            });
             $modalInstance.close(json);
           }
         }]

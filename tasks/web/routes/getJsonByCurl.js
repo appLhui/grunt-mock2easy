@@ -29,8 +29,8 @@ module.exports = function(grunt){
           var sh = ['curl',' ',
               global.options.curl.domain,
               req.originalUrl.split('?')[0],' ',
-              '--data "'+obj2StrParams(extend(true, {}, req.body,req.query,{secToken:global.options.curl.secToken}))+'" ',
-              "-H 'Cookie: login_aliyunid_ticket=",global.options.curl.login_aliyunid_ticket,"; '"
+              '--data "'+obj2StrParams(extend(true, {}, req.body,req.query,global.options.curl.parameter))+'" ',
+              "-H 'Cookie: ",global.options.curl.Cookie,"; '"
           ];
           sh = sh.join('');
           grunt.log.writeln();

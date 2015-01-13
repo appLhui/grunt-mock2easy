@@ -7,6 +7,15 @@
                    <h6 class="panel-title">接口详情</h6>
                </div>
                <div class="panel-body">
+
+                   <div ng-class="{'has-error':addForm.interfaceUrl.$dirty &amp;&amp; addForm.interfaceUrl.$invalid}" class="form-group has-feedback">
+                       <label class="col-sm-3 control-label">接口请求地址：</label>
+                       <div class="col-sm-9 form-control-static">
+                           <span class=" text-info" ng-bind="data.interfaceUrl"> </span>
+                       </div>
+                   </div>
+
+
                    <div  class="form-group has-feedback">
                        <label class="col-sm-3 control-label">是否需要延时加载：</label>
                        <div class="col-sm-9">
@@ -18,12 +27,7 @@
                            </label>
                        </div>
                    </div>
-                   <div ng-class="{'has-error':addForm.interfaceName.$dirty &amp;&amp; addForm.interfaceName.$invalid}" class="form-group has-feedback">
-                       <label class="col-sm-3 control-label">接口名称：</label>
-                       <div class="col-sm-9">
-                           <input ng-model="data.interfaceName" name="interfaceName" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm.interfaceName.$dirty &amp;&amp; addForm.interfaceName.$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
-                       </div>
-                   </div>
+
                    <div class="form-group">
                        <label class="col-sm-3 control-label">接口类型：</label>
                        <div class="col-sm-9">
@@ -35,12 +39,14 @@
                            </label>
                        </div>
                    </div>
-                   <div ng-class="{'has-error':addForm.interfaceUrl.$dirty &amp;&amp; addForm.interfaceUrl.$invalid}" class="form-group has-feedback">
-                       <label class="col-sm-3 control-label">接口URL：</label>
+
+                   <div ng-class="{'has-error':addForm.interfaceName.$dirty &amp;&amp; addForm.interfaceName.$invalid}" class="form-group has-feedback">
+                       <label class="col-sm-3 control-label">接口备注：</label>
                        <div class="col-sm-9">
-                           <input ng-model="data.interfaceUrl" disabled="disabled" name="interfaceUrl" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm.interfaceUrl.$dirty &amp;&amp; addForm.interfaceUrl.$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
+                           <input ng-model="data.interfaceName" name="interfaceName" placeholder="必填项" ng-required="true" class="form-control"/><span ng-if="addForm.interfaceName.$dirty &amp;&amp; addForm.interfaceName.$invalid" tooltip="必填项" class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
                        </div>
                    </div>
+
                </div>
            </div>
            <div class="panel panel-info">
