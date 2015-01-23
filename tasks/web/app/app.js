@@ -5,8 +5,9 @@ require('./util/ui-bootstrap-tpls');
 
 require('./filter/filter');
 require('./directive/directive');
+require('./service/service');
 
 
-angular.module('app', ['ui.bootstrap','ui.router','filter','directive']).config(require('./routes'));
+angular.module('app', ['ui.bootstrap','ui.router','filter','directive','service']).config(require('./routes'));
 
 angular.bootstrap(document, ['app']);

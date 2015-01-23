@@ -112,7 +112,19 @@ module.exports = function(grunt) {
         },function(err){
           res.json(500,err);
         });
-    })
+    });
+
+    router.post('/recordUrl',function(req,res){
+      var _data = req.body;
+
+      require('../server/getJsonByCurl')(grunt, function (error, stdout) {
+        if(error){
+          return  res.json(500,error);
+        }
+        res.json(JSON.parse(stdout));
+      },'',_data.interfaceUrl,_data.requiredParameters,_data.cookie);
+
+    });
 
 
     return router;

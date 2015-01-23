@@ -8,4 +8,5 @@ module.exports = angular.module('directive', [])
     .directive('mockjs', require('./mockjs'))
     .directive('canAdd', require('./canAdd'))
     .directive('symbolFilter', require('./symbolFilter'))
-    .directive('jsonVerify', require('./jsonVerify'));
+    .directive('jsonVerify', require('./jsonVerify'))
+    .directive('jsonFormat', require('./jsonFormat'));

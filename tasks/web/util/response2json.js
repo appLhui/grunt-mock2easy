@@ -82,7 +82,7 @@ module.exports = function(hashObj,grunt,is2Web){
             }else{
                 return key;
             }
-        }).replace(/@_@/g,'|'));
+        }).replace(/\^/g,'|'));
 
         return json;
     }catch (e){

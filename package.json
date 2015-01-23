@@ -1,7 +1,7 @@
 {
   "name": "grunt-mock2easy",
   "description": "通过nodejs的服务实现ajax的跨域访问，利用mockjs动态生成json接口，模拟各种恶略环境测试系统是否健全，测试接口生成接口文档",
-  "version": "0.2.32",
+  "version": "0.3.0",
   "homepage": "https://github.com/appLhui/grunt-mock2easy",
   "author": {
     "name": "mofei",
@@ -37,11 +37,10 @@
     "grunt": "~0.4.0"
   },
   "keywords": [
+    "mock",
     "gruntplugin",
     "mockjs",
-    "mockJSON",
-    "mock",
-    "crossdomain"
+    "postman"
   ],
   "dependencies": {
     "colors": "~0.6.2",
@@ -60,8 +59,8 @@
     "node.extend": "~1.1.0",
     "underscore": "~1.7.0"
   },
-  "_id": "grunt-mock2easy@0.2.31",
-  "_from": "grunt-mock2easy@*",
+  "_id": "grunt-mock2easy@0.2.32",
+  "_from": "grunt-mock2easy@",
   "bugs": {
     "url": "https://github.com/appLhui/grunt-mock2easy/issues"
   },
@@ -91,5 +90,6 @@
   "publish_time": 1419672078526,
   "_cnpm_publish_time": 1419672078526,
   "_shasum": "44d815e87623dd408612b39239de2e36f107009d",
-  "_resolved": "http://registry.npm.alibaba-inc.com/grunt-mock2easy/download/grunt-mock2easy-0.2.31.tgz"
+  "_resolved": "http://registry.npm.alibaba-inc.com/grunt-mock2easy/download/grunt-mock2easy-0.2.31.tgz",
+  "readmeFilename": "README.md"
 }

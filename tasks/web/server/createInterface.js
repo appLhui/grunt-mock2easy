@@ -13,6 +13,7 @@ module.exports = function(grunt,body) {
     if(!!!body.interfaceName){
         body.interfaceName = body.interfaceUrl;
     }
+
   require('../util/createFile')(path.resolve(global.options.database)+body.interfaceUrl,JSON.stringify(body),grunt).then(function(){
       deferred.resolve();
   },function(err){
