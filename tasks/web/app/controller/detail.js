@@ -10,12 +10,14 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data'
     data:{
       interfaceType:'GET',
       requiredParameters:[],
-      responseParameters:[]
+      responseParameters:[],
+
     },
     render:function(){
       $http.post('/load',{url:$stateParams.url}).then(function(data){
         data.data.lazyLoad = !!data.data.lazyLoad && data.data.lazyLoad == 'yes'?'yes':'no';
         angular.extend($scope,{data:data.data});
+//        $scope.data.responseParametersType = true;
       });
 
     },

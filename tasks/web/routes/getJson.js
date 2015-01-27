@@ -43,6 +43,9 @@ module.exports = function(grunt,ignoreField){
                         try{
                           require('../server/verifyReqParameter')(grunt)(url,method,params,_data,ignoreField);
                           setTimeout(function(){
+                            if(_data.responseParametersType){
+                              return res.send(JSON.parse(_data.responseJson));
+                            }
                             res.send(Mock.mock(require('../util/response2json')(hashObj,grunt,true)));
                           },_data.lazyLoad=="yes"?global.options.lazyLoadTime:0);
                         } catch (err){
