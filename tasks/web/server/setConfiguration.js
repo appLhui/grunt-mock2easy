@@ -62,13 +62,9 @@ module.exports = function(grunt,body){
 
        var writeDoc = function(){
            if(body.requiredParameters.length>0){
-               _reqStr = '#### 请求参数\n';
-               body.requiredParameters.forEach(function(o){
-                   if(o.remark && o.remark.length){
-                       _reqStr += '\t'+ o.name + ': `' + o.remark + '`\n';
-                   }else{
-                       _reqStr += '\t'+ o.name + '\n';
-                   }
+               _reqStr = '#### 请求参数\n|序号 |参数名 |是否必填 |说明 |\n| -------- | -------- |-------- |-------- |  \n';
+               body.requiredParameters.forEach(function(o,i){
+                   _reqStr += '|'+(i+1)+'. |'+ o.name+' |'+ (o.required?'必填':'非必填')+' |'+(o.remark && o.remark.length ?o.remark:'')+' |\n';
                });
            }
 
@@ -127,7 +123,7 @@ module.exports = function(grunt,body){
                '#### 请求URL\n',
                '\t',body.interfaceUrl,'\n',
                _reqStr,
-               '#### 返回接口\n```js\n',
+               '#### 返回接口\n```json\n',
                json2md(_str,getCoord(_str)),
                '\n```'
            ];

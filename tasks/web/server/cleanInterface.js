@@ -20,7 +20,7 @@ module.exports = function(grunt){
     var _i = 1;
     var _path = [];
 
-    var _menu = '### 接口文档目录\n';
+    var _menu = '### 接口文档目录\n|序号 |接口请求地址 |接口说明 |\n| -------- | -------- |-------- | \n';
     if(!!!_filse.length){
       deferred.resolve();
     }
@@ -52,7 +52,7 @@ module.exports = function(grunt){
                      if (!!!_json.docError) {
                        _json.docError = [];
                      }
-                     _path.push('[' + _json.interfaceName + '](.' + _json.interfaceUrl.replace('.json', '.md') + ')\n');
+                     _path.push('|[' + _json.interfaceName + '](./' + global.options.doc + _json.interfaceUrl.replace('.json', '.md') + ')|'+_json.interfaceName+'|\n');
 
                      setConfiguration(grunt, _json).then(function () {
                        callback();
@@ -74,8 +74,9 @@ module.exports = function(grunt){
           deferred.reject(err);
         }else {
           _path.sort().forEach(function(o,i){
-            _menu +=  (i+1) + '. ' + o;
+            _menu += '|'+ (i+1) + '. ' + o;
           });
+
           require('../util/createFile')(path.resolve(global.options.doc)+'/menu.md',_menu,grunt).then(function(){
             deferred.resolve();
           },function(err){

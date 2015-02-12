@@ -4,7 +4,7 @@
 
 ## Demo
 
-click[grunt-mock2easy-demo](https://github.com/appLhui/grunt-mock2easy-demo) 
+click [grunt-mock2easy-demo](https://github.com/appLhui/grunt-mock2easy-demo) 
 
 
 ## Getting Started
@@ -156,13 +156,19 @@ Default value: []
 
 ## mockjs的支持
 
+文档生成默认在 `./doc/`,push 到 git 上可以直接查看
+
 支持所有的mockjs语法，[Mockjs语法样例](http://mockjs.com/demo/mock.html) 
 
 如果有好的建议和意见请联系我：lhui3it@gmail.com
 
+[grunt-mock2easy-demo](https://github.com/appLhui/grunt-mock2easy-demo) 
+
 ## 基本界面
 
 ![image](https://raw.githubusercontent.com/appLhui/grunt-mock2easy/master/img/index.png) 
+
+
 ![image](https://raw.githubusercontent.com/appLhui/grunt-mock2easy/master/img/detail.png) 
 
 

@@ -44,27 +44,6 @@ module.exports = function(grunt, target,async) {
               });
             }
           });
-        },
-        function(callback){
-          if(!fs.existsSync(path.resolve(options.doc))) {
-            fs.mkdirSync(path.resolve(options.doc));
-          }
-          if(!fs.existsSync(path.resolve(options.database)+'/app.js')){
-
-            fs.readFile(path.resolve('')+'/node_modules/grunt-mock2easy/tasks/_app.tmp','utf-8',function(err,data) {
-              if (err) {
-                grunt.log.error(err);
-              } else {
-                require('./util/writeFile')(path.resolve(options.database)+'/app.js', _.template(data)({
-
-                }), grunt).then(function () {
-                  callback();
-                });
-              }
-            });
-          } else{
-            callback();
-          }
         }
       ],
       function(err, results){
