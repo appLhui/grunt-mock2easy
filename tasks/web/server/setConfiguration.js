@@ -123,7 +123,7 @@ module.exports = function(grunt,body){
                '#### 请求URL\n',
                '\t',body.interfaceUrl,'\n',
                _reqStr,
-               '#### 返回接口\n```json\n',
+               '#### 返回接口\n```js\n',
                json2md(_str,getCoord(_str)),
                '\n```'
            ];

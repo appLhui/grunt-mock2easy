@@ -52,7 +52,7 @@ module.exports = function(grunt){
                      if (!!!_json.docError) {
                        _json.docError = [];
                      }
-                     _path.push('|[' + _json.interfaceName + '](./' + global.options.doc + _json.interfaceUrl.replace('.json', '.md') + ')|'+_json.interfaceName+'|\n');
+                     _path.push('|[' + _json.interfaceUrl + '](./' + global.options.doc + _json.interfaceUrl.replace('.json', '.md') + ')|'+_json.interfaceName+'|\n');
 
                      setConfiguration(grunt, _json).then(function () {
                        callback();
