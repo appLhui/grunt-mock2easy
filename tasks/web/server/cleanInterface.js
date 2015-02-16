@@ -34,7 +34,7 @@ module.exports = function(grunt){
                  try{
                    if(data) {
                      _json = JSON.parse(data);
-
+                     _json.interfaceUrl = _json.interfaceUrl.split('.')[0] + global.options.interfaceSuffix;
                      _json.requiredParameters.forEach(function (o) {
                        o.remark = o.rule != undefined ? o.rule : o.remark;
                        o.required = o.required != undefined ? o.required : true;
@@ -52,7 +52,7 @@ module.exports = function(grunt){
                      if (!!!_json.docError) {
                        _json.docError = [];
                      }
-                     _path.push('|[' + _json.interfaceUrl + '](./' + global.options.doc + _json.interfaceUrl.replace('.json', '.md') + ')|'+_json.interfaceName+'|\n');
+                     _path.push('|[' + _json.interfaceUrl + '](../' + global.options.doc + _json.interfaceUrl.replace(global.options.interfaceSuffix, '.md') + ')|'+_json.interfaceName+'|\n');
 
                      setConfiguration(grunt, _json).then(function () {
                        callback();

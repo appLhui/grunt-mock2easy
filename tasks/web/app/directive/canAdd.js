@@ -14,7 +14,7 @@ module.exports = function() {
       $ctrl.$parsers.push(function(val){
         if(val){
           val = val.trim();
-          if(!!!val.indexOf('/') && val.indexOf('.json') == val.length - 5 && val.indexOf('//') == -1){
+          if(!!!val.indexOf('/') && val.indexOf($attr.interfaceSuffix) == val.length - $attr.interfaceSuffix.length && val.indexOf('//') == -1){
             $ctrl.$setValidity('isOK',true);
           }else{
             $ctrl.$setValidity('isOK',false);

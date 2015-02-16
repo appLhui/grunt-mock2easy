@@ -3,12 +3,13 @@
  */
 var fs = require('fs');
 
-module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout','json2Data', function ($scope, $state, $http, $modal, $filter, $timeout,json2Data) {
+module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 'json2Data', 'config', function ($scope, $state, $http, $modal, $filter, $timeout, json2Data, config) {
 
   angular.extend($scope, {
+    interfaceSuffix: config.interfaceSuffix,
     data: {},
-    recordData:{
-      requiredParameters:[]
+    recordData: {
+      requiredParameters: []
     },
     suc: false,
     render: function () {
@@ -66,7 +67,10 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout','
         template: fs.readFileSync(__dirname.replace('controller', '') + 'template/modal/changeUrl.html'),
         resolve: {
           data: function () {
-            return $scope.data;
+            return {
+              config: $scope.data,
+              interfaceSuffix: $scope.interfaceSuffix
+            };
           },
           url: function () {
             return url;
@@ -75,7 +79,8 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout','
         controller: ['$scope', '$modalInstance', 'data', 'url', function ($scope, $modalInstance, data, url) {
           angular.extend($scope, {
             url: url,
-            data: data,
+            data: data.config,
+            interfaceSuffix: data.interfaceSuffix,
             change: function (newUrl) {
               $http.post('/changeUrl', {
                 url: $scope.url,
@@ -95,17 +100,17 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout','
       });
     },
     record: {
-      requiredParameters :[],
+      requiredParameters: [],
       addRequiredParameter: function () {
         $scope.recordData.requiredParameters.push({
-          key:'',
-          value:''
+          key: '',
+          value: ''
         });
       },
-      removeRequiredParameter:function(i){
-        $scope.recordData.requiredParameters.splice(i,1);
+      removeRequiredParameter: function (i) {
+        $scope.recordData.requiredParameters.splice(i, 1);
       },
-      submitRecord:function(){
+      submitRecord: function () {
         $http.post('/recordUrl', $scope.recordData).then(function (data) {
           var modalInstance = $modal.open({
             template: fs.readFileSync(__dirname.replace('controller', '') + 'template/modal/curlResult.html'),
@@ -113,19 +118,20 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout','
               data: function () {
                 $scope.recordData.responseParameters = data.data;
                 $scope.recordData.path = $scope.path;
+                $scope.recordData.interfaceSuffix = $scope.interfaceSuffix;
                 return $scope.recordData;
               }
             },
-            controller: ['$scope', '$modalInstance', 'data' ,function ($scope, $modalInstance, data) {
+            controller: ['$scope', '$modalInstance', 'data' , function ($scope, $modalInstance, data) {
               angular.extend($scope, {
                 data: data,
-                record:function(){
+                record: function () {
                   var _requiredParameters = [];
-                  angular.forEach($scope.data.requiredParameters,function(o,i){
+                  angular.forEach($scope.data.requiredParameters, function (o, i) {
                     _requiredParameters.push({
                       name: o.key,
                       remark: o.value,
-                      nameVerify: "name_"+ i,
+                      nameVerify: "name_" + i,
                       ruleVerify: "rule_" + i,
                       required: true
                     })
@@ -133,8 +139,8 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout','
 
                   var _responseParameters = [];
                   var _id = 0;
-                  angular.forEach($scope.data.responseParameters,function(o,i){
-                    json2Data(i,o,_id,[],_responseParameters);
+                  angular.forEach($scope.data.responseParameters, function (o, i) {
+                    json2Data(i, o, _id, [], _responseParameters);
                     _id += 1;
                   });
 

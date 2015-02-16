@@ -12,7 +12,9 @@ module.exports = function(grunt,body){
 
     var createFile = require('../util/createFile');
 
-    createFile(path.resolve(global.options.database)+body.interfaceUrl,JSON.stringify(body,undefined,5),grunt).then(function(){
+
+    createFile(path.resolve(global.options.database)+body.interfaceUrl.replace(global.options.interfaceSuffix,'.json'),JSON.stringify(body,undefined,5),grunt).then(function(){
+
       try{
         writeDoc();
       }catch (err){
@@ -135,7 +137,7 @@ module.exports = function(grunt,body){
 
            var _urlArray = body.interfaceUrl.split('\/');
 
-           createFile(path.resolve(global.options.doc)+body.interfaceUrl.replace(/.json/,'.md'),_md.join(''),grunt).then(function(){
+           createFile(path.resolve(global.options.doc)+body.interfaceUrl.replace(global.options.interfaceSuffix,'.md'),_md.join(''),grunt).then(function(){
                deferred.resolve();
            },function(err){
                deferred.reject(err);

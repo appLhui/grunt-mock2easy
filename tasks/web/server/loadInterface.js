@@ -26,9 +26,11 @@ module.exports = function(grunt,files){
                    try{
                        if(data){
                            _json = JSON.parse(data);
+                           var _url = arry[arry.length-1];
                            result.data.push({
-                             url:arry[arry.length-1],
+                             url: _url.split('.')[0]+global.options.interfaceSuffix,
                              note:_json.interfaceName,
+                             isJsonp:_json.isJsonp,
                              lazyLoad:_json.lazyLoad == 'yes'
                            });
                            var _path_ = '';

@@ -10,7 +10,9 @@ module.exports = function(grunt,req){
     var deferred = require('Q').defer();
     var _json = {};
 
-    fs.readFile(path.resolve(global.options.database)+req.url,'utf-8',function(err,data){
+    var _url = req.url.replace(global.options.interfaceSuffix,'.json');
+
+    fs.readFile(path.resolve(global.options.database)+_url,'utf-8',function(err,data){
       if(err){
         grunt.log.error(err);
         deferred.reject(err);
@@ -18,7 +20,7 @@ module.exports = function(grunt,req){
         if (data) {
           _json = JSON.parse(data);
           _json.interfaceUrl = req.newUrl;
-          fs.unlinkSync(path.resolve(global.options.database)+req.url);
+          fs.unlinkSync(path.resolve(global.options.database)+_url);
           require('./createInterface')(grunt,_json).then(function(){
               deferred.resolve();
           },function(err){

@@ -14,7 +14,6 @@ module.exports = function(grunt,options) {
   app.set('view engine', 'jade');
 
   app.use(favicon());
-//  app.use(logger('dev'));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded());
   app.use(cookieParser());
@@ -24,9 +23,9 @@ module.exports = function(grunt,options) {
   app.use('/', require('./routes/index')(grunt));
 
   if(!!options.curl){
-      app.use('/**/*.json',require('./routes/getJsonByCurl')(grunt));
+      app.use('/**/*'+options.interfaceSuffix,require('./routes/getJsonByCurl')(grunt));
   }else{
-      app.use('/**/*.json',options.isSpider?require('./routes/getJsonBySpider')(grunt):require('./routes/getJson')(grunt,options.ignoreField));
+      app.use('/**/*'+options.interfaceSuffix,options.isSpider?require('./routes/getJsonBySpider')(grunt):require('./routes/getJson')(grunt,options.ignoreField));
   }
 
 

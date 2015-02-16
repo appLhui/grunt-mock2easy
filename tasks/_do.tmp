@@ -1,58 +1,51 @@
-var express = require('express');
 var http = require('http');
-var app = express();
 
-app.use(express.json());
-app.use(express.urlencoded());
+module.exports = function(req, res){
 
 
-function mockRewrite(req, res, next){
+  for(var name in req.body){
+    req.body[name] = encodeURI(req.body[name]);
+  }
 
+  var _write = JSON.stringify(req.body);
 
-   for(var name in req.body){
-        req.body[name] = encodeURI(req.body[name]);
-    }
+  var options = {
+    hostname: '127.0.0.1',
+    port: <%=port%>,
+    path: req.url,
+    method: req.method
+  };
 
-    var _write = JSON.stringify(req.body);
+  console.log(res)
 
-    var options = {
-        hostname: '127.0.0.1',
-        port: <%=port%>,
-        path: req.url,
-        method: req.method
+  if(req.method == 'POST'){
+    options.headers =  {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-cache',
+      'Content-Length': _write.length || 0
     };
+  }
 
+  var _req = http.request(options, function(_res) {
 
-    if(req.method == 'POST'){
-        options.headers =  {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache',
-            'Content-Length': _write.length || 0
-        };
-    }
-
-    var _req = http.request(options, function(_res) {
-        _res.setEncoding('utf8');
-        var data = '';
-        _res.on('data', function (chunk) {
-            data += chunk;
-        });
-        _res.on('end',function(){
-            res.send(data);
-        });
+    var data = '';
+    _res.on('data', function (chunk) {
+      data += chunk;
     });
-
-    _req.on('error', function(e) {
-        console.log('problem with request: ' + e.message);
+    _res.on('end',function(){
+      res.end(data);
     });
+  });
 
-    if(req.method == 'POST'){
-        _req.write(_write);
-    }
+  _req.on('error', function(e) {
+    console.log('problem with request: ' + e.message);
+  });
 
-    _req.end();
+  if(req.method == 'POST'){
+    _req.write(_write);
+  }
+
+  _req.end();
 };
 
-app.all('*.json',mockRewrite);
 
-module.exports = app;

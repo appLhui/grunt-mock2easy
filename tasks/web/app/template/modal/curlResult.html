@@ -2,15 +2,15 @@
     <form novalidate="novalidate" name="form" role="form" class="navbar-form">
 
         <div class="input-group">
-            <input type="text" ng-required="true" name="url" ng-model="data.url" can-add="data"
+            <input type="text" ng-required="true" name="url" interface-suffix="{{data.interfaceSuffix}}" ng-model="data.url" can-add="data"
                    typeahead="i for i in data.path | filter:$viewValue"
-                   placeholder="将要录制接口的访问url,接口必须以/开始且.json结尾(以后会支持多种格式)" class="form-control"/>
+                   placeholder="将要录制接口的访问url,接口必须以/开始且{{data.interfaceSuffix}}结尾" class="form-control"/>
             <span class="input-group-btn">
                 <button ng-disabled="form.$invalid" ng-click="record()" class="btn btn-default btn-success">录制</button>
             </span>
         </div>
         <p ng-if="form.url.$error.isOK" class="text-danger" style=" margin-top: 10px; ">
-            接口必须以/开始且.json结尾</p>
+            接口必须以/开始且{{data.interfaceSuffix}}结尾</p>
 
         <p ng-if="form.url.$error.isOnly" class="text-danger" style=" margin-top: 10px; ">接口已经存在</p>
     </form>

@@ -34,7 +34,8 @@ module.exports = function(grunt) {
       doc:'doc',
       keepAlive:true,
       isSpider:false,
-      ignoreField:[]
+      ignoreField:[],
+      interfaceSuffix:'.json'
     });
     try{
       server[action](options);

@@ -14,7 +14,7 @@ module.exports = function(grunt,body) {
         body.interfaceName = body.interfaceUrl;
     }
 
-  require('../util/createFile')(path.resolve(global.options.database)+body.interfaceUrl,JSON.stringify(body),grunt).then(function(){
+  require('../util/createFile')(path.resolve(global.options.database)+body.interfaceUrl.replace(global.options.interfaceSuffix,'.json'),JSON.stringify(body),grunt).then(function(){
       deferred.resolve();
   },function(err){
       deferred.reject(err);
