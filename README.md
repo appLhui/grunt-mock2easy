@@ -1,6 +1,6 @@
 # grunt-mock2easy
 
-> 通过nodejs的服务实现ajax的跨域访问，使用Curl获取接口，利用mockjs动态生成json接口，模拟多种服务器环境，测试接口并且生成接口文档
+> 通过nodejs的服务实现ajax的跨域访问，使用Curl获取接口，利用mockjs动态生成json接口，支持jsonp格式，模拟多种服务器环境，测试接口并且生成接口文档
 
 ## Demo
 
@@ -178,26 +178,35 @@ Default value: []
 #### 主界面
 
 1. 方面模拟访问延时状态，轻松检查 loading 状态是否合理处理。
+
 2. 录制接口（类似 postman 操作），轻松通过 curl ( 保证系统支持curl命令 )访问远程接口，并将接口录制入本地接口库。
+
 3. 访问本地接口库，自动检查接口是否存在异常，轻松保持本地接口库代码和 js 调用接口代码保持一致，并且确保接口文档实时和脚本保持一致。
+
 
 ![image](https://raw.githubusercontent.com/appLhui/grunt-mock2easy/master/img/index.png) 
 
 #### 接口操作页面
 
 1. 动态接口，使用 [Mockjs](http://mockjs.com/demo/mock.html)  作为支持，可以动态随机生成接口。
+
 2. 动态接口，可以轻松在任何一个节点上加上注释。
+
 3. 静态接口，如果接口数据过于复杂，mock2easy  无法满足您的需求，请选用静态接口。
+
+4. json 和 jsonp 互相切换
 
 ![image](https://raw.githubusercontent.com/appLhui/grunt-mock2easy/master/img/detail.png) 
 
 #### 接口文档
 
  [接口菜单>>](https://github.com/appLhui/grunt-mock2easy-demo/blob/master/doc/menu.md)
+
  
 ![image](https://raw.githubusercontent.com/appLhui/grunt-mock2easy/master/img/md_menu.png) 
 
  [接口详情>>](https://github.com/appLhui/grunt-mock2easy-demo/blob/master/doc/demo/jsondemo.md)
+
 
 ![image](https://raw.githubusercontent.com/appLhui/grunt-mock2easy/master/img/md_detail.png) 
 
