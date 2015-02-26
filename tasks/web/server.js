@@ -6,7 +6,9 @@ module.exports = function(grunt, target,async) {
   var fs = require('fs');
   var path = require('path');
   var colors = require('colors');
-  var _ = require('underscore');
+  global._ = require('underscore');
+
+  _.templateSettings = {interpolate : /{{([\s\S]+?)}}/g};
 
 
   if (!process._servers) {
@@ -57,6 +59,8 @@ module.exports = function(grunt, target,async) {
     start: function start(options) {
         global.options = options;
 
+        global.language = require('./server/translate')(grunt,options.preferredLanguage);
+
         makeDo(grunt,options).then(function(){
           require('./server/cleanInterface')(grunt).then(function(){
 
@@ -88,7 +92,7 @@ module.exports = function(grunt, target,async) {
             process.env.PORT = options.port;
 
             server = process._servers[target] = require('./app')(grunt,options).listen(options.port, function() {
-              grunt.log.write(('Mock服务已经启动，请访问地址：http://localhost:' + server.address().port).bold.cyan);
+              grunt.log.write(('mock2easy is starting , please visit : http://localhost:' + server.address().port).bold.cyan);
               if(!options.keepAlive){
                 async();
               }

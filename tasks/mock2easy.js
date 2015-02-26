@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 
   var servers = {};
 
-  grunt.registerMultiTask('mock2easy', 'mock接口，生成md文档', function() {
+  grunt.registerMultiTask('mock2easy', '', function() {
 
 
     if (!servers[this.target]) {
@@ -35,7 +35,8 @@ module.exports = function(grunt) {
       keepAlive:true,
       isSpider:false,
       ignoreField:[],
-      interfaceSuffix:'.json'
+      interfaceSuffix:'.json',
+      preferredLanguage:'cn'
     });
     try{
       server[action](options);

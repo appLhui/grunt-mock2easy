@@ -1,17 +1,17 @@
 <div>
   <div ng-if="suc" class="alert alert-success">
     <button type="button" ng-click="suc=false" class="close">&times;</button>
-    <span>操作成功</span>
+    <span>{{'SUCCESS'|translate}}</span>
   </div>
   <div class="row">
     <div class="col-md-7">
       <div class="panel panel-info">
         <div class="panel-heading clearfix">
-          <h6 class="panel-title pull-left">接口列表</h6>
+          <h6 class="panel-title pull-left">{{'MAIN-LIST-TITLE'|translate}}</h6>
         </div>
         <div class="panel-body">
           <div style=" position: relative; " class="form-group has-feedback">
-            <input type="text" ng-model="jsonPath" placeholder="输入内容筛选接口" typeahead="i for i in path | filter:$viewValue" class="form-control"/>
+            <input type="text" ng-model="jsonPath" placeholder="{{'MAIN-LIST-Filter'|translate}}" typeahead="i for i in path | filter:$viewValue" class="form-control"/>
             <span style="top: 0; " class="glyphicon glyphicon-search form-control-feedback"></span>
           </div>
           <div style="border-bottom: 2px solid #eee; " class="row">
@@ -19,12 +19,12 @@
               <h5>PATH</h5>
             </div>
             <div class="col-md-2">
-              <h5>延时
-                <span tooltip="模拟极端环境中，接口调用缓慢的情况" style="margin-left: 2px;" class="glyphicon glyphicon-question-sign text-muted"></span>
+              <h5>{{'MAIN-LIST-DELAY'|translate}}
+                <span tooltip="{{'MAIN-LIST-DELAY-EXPLANATION'|translate}}" style="margin-left: 2px;" class="glyphicon glyphicon-question-sign text-muted"></span>
               </h5>
             </div>
             <div class="col-md-2">
-              <h5>操作
+              <h5>{{'MAIN-LIST-OPERATING'|translate}}
                 <div style=" max-height: 400px; overflow-y: auto; " class="row"></div>
               </h5>
             </div>
@@ -37,18 +37,18 @@
                 </div>
                 <div class="col-md-2">
                   <button ng-if="!i.lazyLoad" class="btn btn-default btn-xs" ng-click="changeLazy(i.url)">
-                    <span tooltip="获取接口无延时"  tooltip-placement="right" class="text-success glyphicon glyphicon-expand"></span>
+                    <span class="text-success glyphicon glyphicon-expand"></span>
                   </button>
                   <button ng-if="i.lazyLoad" class="btn btn-warning btn-xs"  ng-click="changeLazy(i.url)">
-                    <span tooltip="获取接口有 3s 延时" tooltip-placement="right" class="glyphicon glyphicon-record"></span>
+                    <span class="glyphicon glyphicon-record"></span>
                   </button>
                 </div>
                 <div class="col-md-2">
                   <button ng-click="del(i.url)" class="btn btn-default btn-xs">
-                    <span style="cursor:pointer;" tooltip="删除" class="text-danger glyphicon glyphicon-remove"></span>
+                    <span style="cursor:pointer;" tooltip="{{'DELETE'|translate}}" class="text-danger glyphicon glyphicon-remove"></span>
                   </button>
                   <button ng-click="changeUrl(i.url)" class="btn btn-default btn-xs">
-                    <span style="cursor:pointer;" tooltip="更改接口路径" class="glyphicon glyphicon-log-out"></span>
+                    <span style="cursor:pointer;" tooltip="{{'MAIN-LIST-CHANGE'|translate}}" class="glyphicon glyphicon-log-out"></span>
                   </button>
                 </div>
                 <div class="col-md-12">
@@ -64,30 +64,30 @@
     <div class="col-md-5">
       <div class="panel panel-info clearfix">
         <div class="panel-heading">
-          <h6 class="panel-title">添加新接口
-            <span tooltip-placement="bottom" tooltip="接口路径不能重复，输入的接口必须为/开始且{{interfaceSuffix}}结尾" class="glyphicon glyphicon-question-sign"></span>
+          <h6 class="panel-title">{{'MAIN-ADD-TITLE'|translate}}
+            <span tooltip-placement="bottom" tooltip="{{'MAIN-ADD-TITLE-EXPLANATION'|translate:'{interfaceSuffix:interfaceSuffix}'}}" class="glyphicon glyphicon-question-sign"></span>
           </h6>
         </div>
         <div class="panel-body">
           <form novalidate="novalidate" name="form" role="form" class="navbar-form">
             <div class="input-group">
-              <input type="text" ng-required="true" name="url" ng-model="url" interface-suffix="{{interfaceSuffix}}" can-add="data" typeahead="i for i in path | filter:$viewValue" placeholder="接口必须以/开始且{{interfaceSuffix}}结尾" class="form-control"/>
+              <input type="text" ng-required="true" name="url" ng-model="url" interface-suffix="{{interfaceSuffix}}" can-add="data" typeahead="i for i in path | filter:$viewValue" placeholder="{{'MAIN-ADD-EXPLANATION'|translate:'{interfaceSuffix:interfaceSuffix}'}}" class="form-control"/>
               <span class="input-group-btn">
                 <button ng-disabled="form.$invalid" ng-click="add()" class="btn btn-default btn-success">
-                  添加
+                  {{'ADD'|translate}}
                 </button>
               </span>
             </div>
-            <p ng-if="form.url.$error.isOK" class="text-danger" style=" margin-top: 10px; ">接口必须以/开始且{{interfaceSuffix}}结尾</p>
-            <p ng-if="form.url.$error.isOnly" class="text-danger" style=" margin-top: 10px; ">接口已经存在</p>
+            <p ng-if="form.url.$error.isOK" class="text-danger" style=" margin-top: 10px; ">{{'MAIN-ADD-EXPLANATION'|translate:'{interfaceSuffix:interfaceSuffix}'}}</p>
+            <p ng-if="form.url.$error.isOnly" class="text-danger" style=" margin-top: 10px; ">{{'ERROR-ALREADY-EXISTS'|translate}}</p>
           </form>
         </div>
       </div>
 
       <div class="panel panel-info clearfix">
         <div class="panel-heading">
-          <h6 class="panel-title">录制新接口
-            <span tooltip-placement="bottom" tooltip="录制接口必须保证你的电脑支持Curl，可以通过访问将返回的结果记录下来" class="glyphicon glyphicon-question-sign"></span>
+          <h6 class="panel-title">{{'MAIN-RECORD-TITLE'|translate}}
+            <span tooltip-placement="bottom" tooltip="{{'MAIN-RECORD-TITLE-EXPLANATION'|translate}} " class="glyphicon glyphicon-question-sign"></span>
           </h6>
         </div>
         <div class="panel-body">
@@ -103,16 +103,16 @@
                     <li><a ng-click="recordData.interfaceType='GET'" href="#">GET</a></li>
                   </ul>
                 </div>
-                <input type="text" ng-required="true" placeholder="请求的url地址" ng-model="recordData.interfaceUrl" class="form-control">
+                <input type="text" ng-required="true" placeholder="{{'MAIN-RECORD-URL-EXPLANATION'|translate}}" ng-model="recordData.interfaceUrl" class="form-control">
               </div>
             </div>
             <div class="form-group">
               <div class="col-sm-12">
-                <input type="text" class="form-control " ng-model="recordData.cookie" placeholder="Cookie(选填)">
+                <input type="text" class="form-control " ng-model="recordData.cookie" placeholder="Cookie({{'OPTIONAL'|translate}})">
               </div>
             </div>
-            <h6>入参
-              <a tooltip="添加" ng-click="record.addRequiredParameter()"  class="btn btn-default btn-sm btn-xs pull-right ng-scope">
+            <h6>{{'PARAMETERS'|translate}}
+              <a tooltip="{{'ADD'|translate}}" ng-click="record.addRequiredParameter()"  class="btn btn-default btn-sm btn-xs pull-right ng-scope">
                 <span class="glyphicon glyphicon-plus"></span>
               </a>
             </h6>
@@ -127,12 +127,12 @@
               </div>
               <div class="col-sm-2 control-label">
                 <button class="btn btn-default btn-xs">
-                  <span ng-click="record.removeRequiredParameter()" style="cursor:pointer;"  tooltip="删除" class="text-danger glyphicon glyphicon-remove ng-scope"></span>
+                  <span ng-click="record.removeRequiredParameter()" style="cursor:pointer;"  tooltip="{{'DELETE'|translate}}" class="text-danger glyphicon glyphicon-remove ng-scope"></span>
                 </button>
               </div>
             </div>
             <hr>
-            <a ng-click="record.submitRecord()" ng-disabled="recordForm.$invalid" class="btn btn-success">录制</a>
+            <a ng-click="record.submitRecord()" ng-disabled="recordForm.$invalid" class="btn btn-success">{{'RECORD'|translate}}</a>
           </form>
         </div>
       </div>
@@ -141,8 +141,8 @@
       <div class="panel panel-danger clearfix">
         <div class="panel-heading">
           <h6 class="panel-title">
-            错误日志
-            <span tooltip=" 验证代码请求和接口文档之间的差异：蓝色代表请求方式不正确，eg. POST 用成了 GET。黄色代表你的代码有更新，你的接口文档没有及时更新，请及时更新你的接口文档。 红色表示你的代码发出请求的时候，参数不满足当时的接口文档的约定。" style="margin-left: 2px;" class="glyphicon glyphicon-question-sign text-muted"></span>
+            {{'MAIN-ERROR-LOG-TITLE'|translate}}
+            <span tooltip=" {{'MAIN-ERROR-LOG-TITLE-EXPLANATION'|translate}}" style="margin-left: 2px;" class="glyphicon glyphicon-question-sign text-muted"></span>
           </h6>
         </div>
         <div class="panel-body">

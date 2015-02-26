@@ -29,7 +29,7 @@ module.exports = function(grunt,callback,domain,url,query,cookie){
     ];
     sh = sh.join('');
     grunt.log.writeln();
-    grunt.log.writeln('+---------------------Curl命令--------------------------'.yellow);
+    grunt.log.writeln(('+---------------------'+global.language['SERVER-CURL-LOG']+'--------------------------').yellow);
     grunt.log.writeln('| '.yellow + sh.green);
     grunt.log.writeln('+-------------------------------------------------------'.yellow);
     child_process.exec(sh,function(error, stdout, stderr){

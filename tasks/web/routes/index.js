@@ -9,7 +9,8 @@ module.exports = function (grunt) {
 
   router.get('/', function (req, res) {
     res.render('index', {
-      interfaceSuffix: global.options.interfaceSuffix
+      interfaceSuffix: global.options.interfaceSuffix,
+      language: JSON.stringify(global.language)
     });
   });
 
@@ -18,7 +19,7 @@ module.exports = function (grunt) {
     require('../server/loadInterface')(grunt, require('../server/getAllFiles')(grunt)).then(function (o) {
       res.json(o);
     }, function (err) {
-      res.send(500, '［' + err + '］接口读取有异常！');
+      res.send(500,err);
     });
   });
 
@@ -32,7 +33,7 @@ module.exports = function (grunt) {
           try {
             res.json(JSON.parse(data));
           } catch (err) {
-            res.send(500, '接口读取有异常！');
+            res.send(500, err);
           }
 
         }

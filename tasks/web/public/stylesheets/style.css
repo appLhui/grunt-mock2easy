@@ -7,32 +7,35 @@ a {
   color: #00B7FF;
 }
 
-.tableList input{
-    height: 100%;
-    width: 100%;
-    border-color: #ffffff;
-    border-radius: 0;
+.tableList input {
+  width: 100%;
+  float: right;
+  height: 38px;
+  border-color: #ffffff;
+  border-radius: 0;
+  box-shadow: none;
 }
-.tableList td{
-    padding: 0 !important;
+
+.tableList td {
+  padding: 0 !important;
 }
- textarea{
-    resize: none;
+
+textarea {
+  resize: none;
 }
+
 .json-panel {
-    font-weight: 500;
+  font-weight: 500;
 }
 
-
-
-.remove-hide .glyphicon-minus{
-    display: none;
+.remove-hide .glyphicon-minus {
+  display: none;
 }
 
-.remove-hide select{
-    display: none;
+.remove-hide select {
+  display: none;
 }
 
-.remove-hide .disabled-select{
-   display: block !important;
+.remove-hide .disabled-select {
+  display: block !important;
 }

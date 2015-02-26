@@ -20,7 +20,7 @@ module.exports = function(grunt){
     var _i = 1;
     var _path = [];
 
-    var _menu = '### 接口文档目录\n|序号 |接口请求地址 |接口说明 |\n| -------- | -------- |-------- | \n';
+    var _menu = global.language['SERVER-MENU-TITLE'];
     if(!!!_filse.length){
       deferred.resolve();
     }

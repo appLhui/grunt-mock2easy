@@ -25,7 +25,7 @@ module.exports = function(grunt,options) {
   if(!!options.curl){
       app.use('/**/*'+options.interfaceSuffix,require('./routes/getJsonByCurl')(grunt));
   }else{
-      app.use('/**/*'+options.interfaceSuffix,options.isSpider?require('./routes/getJsonBySpider')(grunt):require('./routes/getJson')(grunt,options.ignoreField));
+      app.use('/**/*'+options.interfaceSuffix,require('./routes/getJson')(grunt,options.ignoreField));
   }
 
 

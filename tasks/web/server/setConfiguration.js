@@ -64,9 +64,9 @@ module.exports = function(grunt,body){
 
        var writeDoc = function(){
            if(body.requiredParameters.length>0){
-               _reqStr = '#### 请求参数\n|序号 |参数名 |是否必填 |说明 |\n| -------- | -------- |-------- |-------- |  \n';
+               _reqStr = global.language['SERVER-PARAMETER-TITLE'];
                body.requiredParameters.forEach(function(o,i){
-                   _reqStr += '|'+(i+1)+'. |'+ o.name+' |'+ (o.required?'必填':'非必填')+' |'+(o.remark && o.remark.length ?o.remark:'')+' |\n';
+                   _reqStr += '|'+(i+1)+'. |'+ o.name+' |'+ (o.required?global.language['REQUIRED']:global.language['OPTIONAL'])+' |'+(o.remark && o.remark.length ?o.remark:'')+' |\n';
                });
            }
 
@@ -120,12 +120,12 @@ module.exports = function(grunt,body){
            var _md =['## ',
                body.interfaceName,
                ,'\n',
-               '#### 接口类型\n',
+               '#### '+global.language['DETAIL-TYPE']+'\n',
                '\t',body.interfaceType,'\n',
-               '#### 请求URL\n',
+               '#### '+global.language['DETAIL-URL']+'\n',
                '\t',body.interfaceUrl,'\n',
                _reqStr,
-               '#### 返回接口\n```js\n',
+               '#### '+global.language['DETAIL-RETURN-INTERFACE']+'\n```js\n',
                json2md(_str,getCoord(_str)),
                '\n```'
            ];

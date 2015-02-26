@@ -6,11 +6,12 @@ module.exports = function (grunt, ignoreField) {
   var colors = require('colors');
 
   return function (req, res, next) {
+
     var params = extend(true, {}, req.body, req.query);
     var url = req.originalUrl.split('?')[0];
     var method = req.method;
     grunt.log.writeln();
-    grunt.log.writeln('+---------------------请求接口--------------------------'.yellow);
+    grunt.log.writeln(('+---------------------' + global.language["DETAIL-TITLE"]+'--------------------------').yellow);
     grunt.log.writeln('| '.yellow + 'URL => '.bold + url.green);
     grunt.log.writeln('| '.yellow + 'Method => '.bold + method.green);
     if (typeof params == 'object') {
@@ -25,8 +26,8 @@ module.exports = function (grunt, ignoreField) {
 
     fs.readFile(path.resolve(global.options.database) + url.replace(global.options.interfaceSuffix,'.json'), 'utf-8', function (err, data) {
       if (err) {
-        grunt.log.writeln(('请求接口 => ' + url.replace(global.options.interfaceSuffix,'.json') + ' 未创建').red);
-        res.send({"code": "404", "message": '接口' + url.replace(global.options.interfaceSuffix,'.json') + '未创建', "success": "false"});
+        grunt.log.writeln(_.template(global.language['SERVER-ERROR-LOG'])({url:url.replace(global.options.interfaceSuffix,'.json')}).red);
+        res.send({"code": "404", "message": _.template(global.language['SERVER-ERROR-LOG'])({url:url.replace(global.options.interfaceSuffix,'.json')}), "success": "false"});
       } else {
         if (data) {
           var _data = JSON.parse(data);
