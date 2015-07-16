@@ -9,6 +9,10 @@ module.exports = function() {
     // 格式化 除去数组中的注释 只保留第一个
     var remarkFormat = function(json,isFrist){
       var _reJson = {};
+        //加上这句，不然会把[]变成{}
+        if(angular.isArray(json)){
+            _reJson = [];
+        }
       angular.forEach(json,function(o,i){
         if(angular.isArray(o) && o.length){
           var _reArray = [];
