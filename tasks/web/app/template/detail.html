@@ -150,7 +150,7 @@
                                                       class="text-info">{}</strong><strong
             ng-if="i.kind=='array(object)'" style="margin: 6px 12px;display: inline-block;"
             class="text-info">[{}]</strong>
-            <input ng-model="i.rule" dy-name="i.ruleVerify" placeholder="{{'REQUIRED'|translate}}" ng-required="true"
+            <input ng-model="i.rule" array2str dy-name="i.ruleVerify" placeholder="{{'REQUIRED'|translate}}" ng-required="true"
                    ng-if="i.kind!='object'&amp;&amp; i.kind!='array(object)'" class="form-control"/>
                 <span ng-if="addForm[i.ruleVerify].$dirty &amp;&amp; addForm[i.ruleVerify].$invalid" tooltip="{{'REQUIRED'|translate}}"
                       class="glyphicon glyphicon-exclamation-sign form-control-feedback"></span>
