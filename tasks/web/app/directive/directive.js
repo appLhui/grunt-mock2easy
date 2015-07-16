@@ -10,4 +10,5 @@ module.exports = angular.module('directive', [])
     .directive('symbolFilter', require('./symbolFilter'))
     .directive('jsonVerify', require('./jsonVerify'))
     .directive('isJson', require('./isJson'))
-    .directive('jsonFormat', require('./jsonFormat'));
+    .directive('jsonFormat', require('./jsonFormat'))
+    .directive('array2str', require('./array2str'));

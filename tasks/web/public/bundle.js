@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
- * jQuery JavaScript Library v2.1.3
+ * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
  *
  * Includes Sizzle.js
@@ -10,7 +10,7 @@
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2014-12-18T15:11Z
+ * Date: 2015-04-28T16:01Z
  */
 
 (function( global, factory ) {
@@ -68,7 +68,7 @@ var
 	// Use the correct document accordingly with window argument (sandbox)
 	document = window.document,
 
-	version = "2.1.3",
+	version = "2.1.4",
 
 	// Define a local copy of jQuery
 	jQuery = function( selector, context ) {
@@ -532,7 +532,12 @@ jQuery.each("Boolean Number String Function Array Date RegExp Object Error".spli
 });
 
 function isArraylike( obj ) {
-	var length = obj.length,
+
+	// Support: iOS 8.2 (not reproducible in simulator)
+	// `in` check used to prevent JIT error (gh-2145)
+	// hasOwn isn't used here due to false negatives
+	// regarding Nodelist length in IE
+	var length = "length" in obj && obj.length,
 		type = jQuery.type( obj );
 
 	if ( type === "function" || jQuery.isWindow( obj ) ) {
@@ -9229,7 +9234,7 @@ app.config(['$translateProvider', function ($translateProvider) {
 }]);
 
 angular.bootstrap(document, ['app']);
-},{"./directive/directive":7,"./filter/filter":16,"./routes":18,"./service/service":20,"./util/angular":23,"./util/angular-translate":21,"./util/angular-ui-router":22,"./util/json2":24,"./util/ui-bootstrap-tpls":26}],3:[function(require,module,exports){
+},{"./directive/directive":8,"./filter/filter":17,"./routes":19,"./service/service":21,"./util/angular":24,"./util/angular-translate":22,"./util/angular-ui-router":23,"./util/json2":25,"./util/ui-bootstrap-tpls":27}],3:[function(require,module,exports){
 (function (Buffer){
 /**
  * Created by lihui on 14-7-31.
@@ -9343,7 +9348,7 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data'
 
 }];
 }).call(this,require("buffer").Buffer)
-},{"buffer":27,"jquery":1}],4:[function(require,module,exports){
+},{"buffer":28,"jquery":1}],4:[function(require,module,exports){
 (function (Buffer){
 /**
  * Created by lihui on 14-7-30.
@@ -9516,7 +9521,26 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 
 
 }];
 }).call(this,require("buffer").Buffer)
-},{"buffer":27}],5:[function(require,module,exports){
+},{"buffer":28}],5:[function(require,module,exports){
+
+module.exports = function() {
+    return {
+        restrict: 'A',
+        require:'ngModel',
+        link: function($scope, $el, $attr, $ctrl) {
+
+            $scope.$watch($attr.ngModel,function(inputValue){
+                if(angular.isArray(inputValue)){
+                    $ctrl.$setViewValue(angular.toJson(inputValue));
+                    $ctrl.$render();
+                }
+            });
+
+        }
+    }
+}
+
+},{}],6:[function(require,module,exports){
 /**
  * Created by lihui on 14-9-10.
  * 验证新接口是否验证通过
@@ -9555,7 +9579,7 @@ module.exports = function() {
     }
   }
 }
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -9583,7 +9607,7 @@ module.exports = function() {
         }
     }
 }
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -9596,9 +9620,10 @@ module.exports = angular.module('directive', [])
     .directive('symbolFilter', require('./symbolFilter'))
     .directive('jsonVerify', require('./jsonVerify'))
     .directive('isJson', require('./isJson'))
-    .directive('jsonFormat', require('./jsonFormat'));
+    .directive('jsonFormat', require('./jsonFormat'))
+    .directive('array2str', require('./array2str'));
 
-},{"./canAdd":5,"./canRemove":6,"./dyName":8,"./isJson":9,"./json2html":10,"./jsonFormat":11,"./jsonVerify":12,"./mockjs":13,"./symbolFilter":14}],8:[function(require,module,exports){
+},{"./array2str":5,"./canAdd":6,"./canRemove":7,"./dyName":9,"./isJson":10,"./json2html":11,"./jsonFormat":12,"./jsonVerify":13,"./mockjs":14,"./symbolFilter":15}],9:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -9620,7 +9645,7 @@ module.exports = function() {
     };
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * Created by lihui on 15-1-26.
  */
@@ -9644,7 +9669,7 @@ module.exports = function () {
   }
 }
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -9656,6 +9681,10 @@ module.exports = function() {
     // 格式化 除去数组中的注释 只保留第一个
     var remarkFormat = function(json,isFrist){
       var _reJson = {};
+        //加上这句，不然会把[]变成{}
+        if(angular.isArray(json)){
+            _reJson = [];
+        }
       angular.forEach(json,function(o,i){
         if(angular.isArray(o) && o.length){
           var _reArray = [];
@@ -9814,7 +9843,7 @@ module.exports = function() {
         }
     };
 }
-},{"../util/mock":25,"jquery":1}],11:[function(require,module,exports){
+},{"../util/mock":26,"jquery":1}],12:[function(require,module,exports){
 /**
  * Created by lihui on 15-1-22.
  *
@@ -9885,7 +9914,7 @@ module.exports = function () {
     }
   };
 }
-},{"../util/mock":25,"jquery":1}],12:[function(require,module,exports){
+},{"../util/mock":26,"jquery":1}],13:[function(require,module,exports){
 /**
  * Created by lihui on 14-9-11.
  */
@@ -9909,7 +9938,7 @@ module.exports = function() {
     }
   }
 }
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -9926,7 +9955,7 @@ module.exports = function() {
         }
     };
 }
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Created by lihui on 14-9-16.
  */
@@ -9950,7 +9979,7 @@ module.exports = function() {
     }
   }
 }
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-30.
  */
@@ -9960,7 +9989,7 @@ module.exports = function(){
         return val.replace(/database/g,'');
     }
 }
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-30.
  */
@@ -9969,7 +9998,7 @@ module.exports = angular.module('filter', [])
     .filter('url', require('./url'))
     .filter('database',require('./database'))
 
-},{"./database":15,"./url":17}],17:[function(require,module,exports){
+},{"./database":16,"./url":18}],18:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-30.
  */
@@ -9980,7 +10009,7 @@ module.exports = function(){
     }
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function (Buffer){
 /**
  * Created by lihui on 14-7-30.
@@ -9997,7 +10026,7 @@ module.exports = ['$stateProvider', '$urlRouterProvider', '$provide', function (
     })
     .state('detail', {
       url: "/detail/:url",
-      template: Buffer("PGZvcm0gbmFtZT0iYWRkRm9ybSIgcm9sZT0iZm9ybSIgbm92YWxpZGF0ZT0ibm92YWxpZGF0ZSIgY2xhc3M9ImZvcm0taG9yaXpvbnRhbCI+Cgo8ZGl2IGNsYXNzPSJyb3ciIHN0eWxlPSJwYWRkaW5nLWJvdHRvbTogNTRweDsiPgo8ZGl2IGNsYXNzPSJjb2wtbWQtNyI+CiAgPGRpdiBjbGFzcz0icGFuZWwgcGFuZWwtaW5mbyBjbGVhcmZpeCI+CiAgICA8ZGl2IGNsYXNzPSJwYW5lbC1oZWFkaW5nIj4KICAgICAgPGg2IGNsYXNzPSJwYW5lbC10aXRsZSI+e3snREVUQUlMLVRJVExFJ3x0cmFuc2xhdGV9fTwvaDY+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9InBhbmVsLWJvZHkiPgoKICAgICAgPGRpdiBuZy1jbGFzcz0ieydoYXMtZXJyb3InOmFkZEZvcm0uaW50ZXJmYWNlVXJsLiRkaXJ0eSAmYW1wOyZhbXA7IGFkZEZvcm0uaW50ZXJmYWNlVXJsLiRpbnZhbGlkfSIKICAgICAgICAgICBjbGFzcz0iZm9ybS1ncm91cCBoYXMtZmVlZGJhY2siPgogICAgICAgIDxsYWJlbCBjbGFzcz0iY29sLXNtLTMgY29udHJvbC1sYWJlbCI+e3snREVUQUlMLVVSTCd8dHJhbnNsYXRlfX3vvJo8L2xhYmVsPgoKICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tOSBmb3JtLWNvbnRyb2wtc3RhdGljIj4KICAgICAgICAgIDxzcGFuIGNsYXNzPSIgdGV4dC1pbmZvIiBuZy1iaW5kPSJkYXRhLmludGVyZmFjZVVybCI+IDwvc3Bhbj4KICAgICAgICA8L2Rpdj4KICAgICAgPC9kaXY+CgoKICAgICAgPGRpdiBjbGFzcz0iZm9ybS1ncm91cCBoYXMtZmVlZGJhY2siPgogICAgICAgIDxsYWJlbCBjbGFzcz0iY29sLXNtLTMgY29udHJvbC1sYWJlbCI+e3snREVUQUlMLUxBWlktTE9BRCd8dHJhbnNsYXRlfX3vvJo8L2xhYmVsPgoKICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tOSI+CiAgICAgICAgICA8bGFiZWwgY2xhc3M9InJhZGlvLWlubGluZSI+CiAgICAgICAgICAgIDxpbnB1dCBuZy1tb2RlbD0iZGF0YS5sYXp5TG9hZCIgdHlwZT0icmFkaW8iIHZhbHVlPSJubyIvPjxzcGFuPk5PPC9zcGFuPgogICAgICAgICAgPC9sYWJlbD4KICAgICAgICAgIDxsYWJlbCBjbGFzcz0icmFkaW8taW5saW5lIj4KICAgICAgICAgICAgPGlucHV0IG5nLW1vZGVsPSJkYXRhLmxhenlMb2FkIiB0eXBlPSJyYWRpbyIgdmFsdWU9InllcyIvPjxzcGFuPllFUzwvc3Bhbj4KICAgICAgICAgIDwvbGFiZWw+CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgoKICAgICAgPGRpdiBjbGFzcz0iZm9ybS1ncm91cCI+CiAgICAgICAgPGxhYmVsIGNsYXNzPSJjb2wtc20tMyBjb250cm9sLWxhYmVsIj57eydERVRBSUwtVFlQRSd8dHJhbnNsYXRlfX3vvJo8L2xhYmVsPgoKICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tOSI+CiAgICAgICAgICA8bGFiZWwgY2xhc3M9InJhZGlvLWlubGluZSI+CiAgICAgICAgICAgIDxpbnB1dCBuZy1tb2RlbD0iZGF0YS5pbnRlcmZhY2VUeXBlIiB0eXBlPSJyYWRpbyIgbmFtZT0iaW50ZXJmYWNlVHlwZSIgdmFsdWU9IkdFVCIvPjxzcGFuPkdFVDwvc3Bhbj4KICAgICAgICAgIDwvbGFiZWw+CiAgICAgICAgICA8bGFiZWwgY2xhc3M9InJhZGlvLWlubGluZSI+CiAgICAgICAgICAgIDxpbnB1dCBuZy1tb2RlbD0iZGF0YS5pbnRlcmZhY2VUeXBlIiB0eXBlPSJyYWRpbyIgbmFtZT0iaW50ZXJmYWNlVHlwZSIgdmFsdWU9IlBPU1QiLz48c3Bhbj5QT1NUPC9zcGFuPgogICAgICAgICAgPC9sYWJlbD4KICAgICAgICA8L2Rpdj4KICAgICAgPC9kaXY+CgogICAgICA8ZGl2IGNsYXNzPSJmb3JtLWdyb3VwIj4KICAgICAgICA8bGFiZWwgY2xhc3M9ImNvbC1zbS0zIGNvbnRyb2wtbGFiZWwiPmpzb25w77yaPC9sYWJlbD4KCiAgICAgICAgPGRpdiBjbGFzcz0iY29sLXNtLTMiPgogICAgICAgICAgPGxhYmVsIGNsYXNzPSJjaGVja2JveC1pbmxpbmUiPgogICAgICAgICAgICA8aW5wdXQgbmctbW9kZWw9ImRhdGEuaXNKc29ucCIgdHlwZT0iY2hlY2tib3giIG5hbWU9ImlzSnNvbnAiLz48c3Bhbj57eydERVRBSUwtSlNPTlAnfHRyYW5zbGF0ZX19PC9zcGFuPgogICAgICAgICAgPC9sYWJlbD4KICAgICAgICA8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tNiI+CiAgICAgICAgICA8aW5wdXQgY2xhc3M9ImZvcm0tY29udHJvbCIgbmctbW9kZWw9ImRhdGEuanNvbnBDYWxsYmFjayIgbmctcmVxdWlyZWQ9InRydWUiIG5nLWlmPSJkYXRhLmlzSnNvbnAiIHBsYWNlaG9sZGVyPSJqc29ucENhbGxiYWNrIi8+CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgoKCiAgICAgIDxkaXYgbmctY2xhc3M9InsnaGFzLWVycm9yJzphZGRGb3JtLmludGVyZmFjZU5hbWUuJGRpcnR5ICZhbXA7JmFtcDsgYWRkRm9ybS5pbnRlcmZhY2VOYW1lLiRpbnZhbGlkfSIKICAgICAgICAgICBjbGFzcz0iZm9ybS1ncm91cCBoYXMtZmVlZGJhY2siPgogICAgICAgIDxsYWJlbCBjbGFzcz0iY29sLXNtLTMgY29udHJvbC1sYWJlbCI+e3snREVUQUlMLVJFTUFSSyd8dHJhbnNsYXRlfX3vvJo8L2xhYmVsPgoKICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tOSI+CiAgICAgICAgICA8aW5wdXQgbmctbW9kZWw9ImRhdGEuaW50ZXJmYWNlTmFtZSIgbmFtZT0iaW50ZXJmYWNlTmFtZSIgcGxhY2Vob2xkZXI9Int7J1JFUVVJUkVEJ3x0cmFuc2xhdGV9fSIgbmctcmVxdWlyZWQ9InRydWUiCiAgICAgICAgICAgICAgICAgY2xhc3M9ImZvcm0tY29udHJvbCIvPjxzcGFuCiAgICAgICAgICBuZy1pZj0iYWRkRm9ybS5pbnRlcmZhY2VOYW1lLiRkaXJ0eSAmYW1wOyZhbXA7IGFkZEZvcm0uaW50ZXJmYWNlTmFtZS4kaW52YWxpZCIgdG9vbHRpcD0ie3snUkVRVUlSRUQnfHRyYW5zbGF0ZX19IgogICAgICAgICAgY2xhc3M9ImdseXBoaWNvbiBnbHlwaGljb24tZXhjbGFtYXRpb24tc2lnbiBmb3JtLWNvbnRyb2wtZmVlZGJhY2siPjwvc3Bhbj4KICAgICAgICA8L2Rpdj4KICAgICAgPC9kaXY+CgogICAgPC9kaXY+CiAgPC9kaXY+CiAgPGRpdiBjbGFzcz0icGFuZWwgcGFuZWwtaW5mbyI+CiAgICA8ZGl2IGNsYXNzPSJwYW5lbC1oZWFkaW5nIGNsZWFyZml4Ij4KICAgICAgPGg2IGNsYXNzPSJwYW5lbC10aXRsZSBwdWxsLWxlZnQiPnt7J0RFVEFJTC1SRVFVRVNULVBBUkFNRVRFUlMnfHRyYW5zbGF0ZX19PC9oNj4KICAgICAgPGEgbmctY2xpY2s9ImFkZFJlcXVpcmVkUGFyYW1ldGVycygpIiB0b29sdGlwPSJ7eydBREQnfHRyYW5zbGF0ZX19IiBjbGFzcz0iYnRuIGJ0bi1kZWZhdWx0IGJ0bi1zbSBidG4teHMgcHVsbC1yaWdodCI+CiAgICAgICAgPHNwYW4gY2xhc3M9ImdseXBoaWNvbiBnbHlwaGljb24tcGx1cyI+PC9zcGFuPgogICAgICA8L2E+CiAgICA8L2Rpdj4KICAgIDx0YWJsZSBjbGFzcz0idGFibGUgdGFibGUtYm9yZGVyZWQgdGFibGVMaXN0Ij4KICAgICAgPHRoZWFkPgogICAgICA8dHI+CiAgICAgICAgPHRoIHN0eWxlPSJ3aWR0aDogNDRweDsiPnt7J1JFUVVJUkVEJ3x0cmFuc2xhdGV9fTwvdGg+CiAgICAgICAgPHRoPnt7J0RFVEFJTC1QQVJBTUVURVJTLU5BTUUnfHRyYW5zbGF0ZX19PC90aD4KICAgICAgICA8dGg+e3snREVUQUlMLVJFTUFSSyd8dHJhbnNsYXRlfX08L3RoPgogICAgICAgIDx0aCB3aWR0aD0iNDUiPnt7J09QRVJBVElORyd8dHJhbnNsYXRlfX08L3RoPgogICAgICA8L3RyPgogICAgICA8L3RoZWFkPgogICAgICA8dGJvZHk+CiAgICAgIDx0ciBuZy1yZXBlYXQ9ImkgaW4gZGF0YS5yZXF1aXJlZFBhcmFtZXRlcnMiPgogICAgICAgIDx0ZCBzdHlsZT0iIHRleHQtYWxpZ246IGNlbnRlcjsgdmVydGljYWwtYWxpZ246IG1pZGRsZTsgIj4KICAgICAgICAgIDxpbnB1dCAgc3R5bGU9ImhlaWdodDogYXV0bzt3aWR0aDogYXV0bztmbG9hdDogbm9uZTsiIHR5cGU9ImNoZWNrYm94IiBuZy1tb2RlbD0iaS5yZXF1aXJlZCI+CiAgICAgICAgPC90ZD4KICAgICAgICA8dGQgbmctY2xhc3M9InsnaGFzLWVycm9yJzphZGRGb3JtW2kubmFtZVZlcmlmeV0uJGRpcnR5ICZhbXA7JmFtcDsgYWRkRm9ybVtpLm5hbWVWZXJpZnldLiRpbnZhbGlkfSIKICAgICAgICAgICAgY2xhc3M9ImZvcm0tZ3JvdXAgaGFzLWZlZWRiYWNrIj4KICAgICAgICAgIDxpbnB1dCBuZy1tb2RlbD0iaS5uYW1lIiBkeS1uYW1lPSJpLm5hbWVWZXJpZnkiIHBsYWNlaG9sZGVyPSJ7eydSRVFVSVJFRCd8dHJhbnNsYXRlfX0iIG5nLXJlcXVpcmVkPSJ0cnVlIgogICAgICAgICAgICAgICAgIGNsYXNzPSJmb3JtLWNvbnRyb2wiLz4KICAgICAgICAgICAgICA8c3BhbiBuZy1pZj0iYWRkRm9ybVtpLm5hbWVWZXJpZnldLiRkaXJ0eSAmYW1wOyZhbXA7IGFkZEZvcm1baS5uYW1lVmVyaWZ5XS4kaW52YWxpZCIgdG9vbHRpcD0ie3snUkVRVUlSRUQnfHRyYW5zbGF0ZX19IgogICAgICAgICAgICAgICAgICAgIGNsYXNzPSJnbHlwaGljb24gZ2x5cGhpY29uLWV4Y2xhbWF0aW9uLXNpZ24gZm9ybS1jb250cm9sLWZlZWRiYWNrIj48L3NwYW4+CiAgICAgICAgPC90ZD4KICAgICAgICA8dGQ+CiAgICAgICAgICA8aW5wdXQgc3ltYm9sLWZpbHRlciBuZy1tb2RlbD0iaS5yZW1hcmsiIGNsYXNzPSJmb3JtLWNvbnRyb2wiLz4KICAgICAgICA8L3RkPgogICAgICAgIDx0ZCBhbGlnbj0iY2VudGVyIj4KICAgICAgICAgIDxhIG5nLWNsaWNrPSJyZW1vdmVSZXF1aXJlZFBhcmFtZXRlcnMoJGluZGV4KSIgdG9vbHRpcD0ie3snREVMRVRFJ3x0cmFuc2xhdGV9fSIgc3R5bGU9Im1hcmdpbi10b3A6IDNweDsiIGNsYXNzPSJidG4gYnRuLXNtIGdseXBoaWNvbiBnbHlwaGljb24tbWludXMgdGV4dC1kYW5nZXIiPjwvYT4KICAgICAgICA8L3RkPgogICAgICA8L3RyPgogICAgICA8L3Rib2R5PgogICAgPC90YWJsZT4KICA8L2Rpdj4KICA8dGFic2V0IGp1c3RpZmllZD0idHJ1ZSI+CiAgICA8dGFiIGhlYWRpbmc9Int7J0RFVEFJTC1SRVRVUk4tRFlOQU1JQy1JTlRFUkZBQ0UnfHRyYW5zbGF0ZX19IiBzZWxlY3Q9ImRhdGEucmVzcG9uc2VQYXJhbWV0ZXJzVHlwZT1mYWxzZSI+CgogICAgICA8ZGl2IGNsYXNzPSJjbGVhcmZpeCIgc3R5bGU9ImJvcmRlci1yaWdodDogMXB4IHNvbGlkICNlM2UzZTM7cGFkZGluZzogMTBweDtib3JkZXItbGVmdDogMXB4IHNvbGlkICNlM2UzZTM7Ij4KICAgICAgICA8YSBuZy1jbGljaz0iYWRkUmVzcG9uc2VQYXJhbWV0ZXJzKCcnKSIgdG9vbHRpcD0ie3snQUREJ3x0cmFuc2xhdGV9fSIgY2xhc3M9ImJ0biBidG4tZGVmYXVsdCBidG4tc20gYnRuLXhzIHB1bGwtcmlnaHQiPgogICAgICAgICAgPHNwYW4gY2xhc3M9ImdseXBoaWNvbiBnbHlwaGljb24tcGx1cyI+PC9zcGFuPgogICAgICAgIDwvYT4KICAgICAgICA8YSBuZy1jbGljaz0ib3BlbldpbigpIiB0b29sdGlwPSJ7eydJTVBPUlQnfHRyYW5zbGF0ZX19IiBzdHlsZT0ibWFyZ2luLXJpZ2h0OjEwcHg7IgogICAgICAgICAgIGNsYXNzPSJidG4gYnRuLWRlZmF1bHQgYnRuLXNtIGJ0bi14cyBwdWxsLXJpZ2h0Ij4KICAgICAgICAgIDxzcGFuIGNsYXNzPSJnbHlwaGljb24gZ2x5cGhpY29uLWltcG9ydCI+PC9zcGFuPgogICAgICAgIDwvYT4KICAgICAgPC9kaXY+CiAgICAgIDx0YWJsZSBjbGFzcz0idGFibGUgdGFibGUtYm9yZGVyZWQgdGFibGVMaXN0Ij4KICAgICAgICA8dGhlYWQ+CiAgICAgICAgPHRyPgogICAgICAgICAgPHRoPnt7J0RFVEFJTC1QQVJBTUVURVJTLU5BTUUnfHRyYW5zbGF0ZX19PC90aD4KICAgICAgICAgIDx0aD57eydWQVJJQVRJT04tTEFXJ3x0cmFuc2xhdGV9fTwvdGg+CiAgICAgICAgICA8dGggd2lkdGg9IjEyMCI+e3snVFlQRSd8dHJhbnNsYXRlfX08L3RoPgogICAgICAgICAgPHRoPnt7J0RFVEFJTC1SRU1BUksnfHRyYW5zbGF0ZX19PC90aD4KICAgICAgICAgIDx0aCB3aWR0aD0iNDUiPnt7J09QRVJBVElORyd8dHJhbnNsYXRlfX08L3RoPgogICAgICAgIDwvdHI+CiAgICAgICAgPC90aGVhZD4KICAgICAgICA8dGJvZHkgdmFsaWduPSJiYXNlbGluZSI+CiAgICAgICAgPHRyIG5nLXJlcGVhdD0iaSBpbiBkYXRhLnJlc3BvbnNlUGFyYW1ldGVycyB8IG9yZGVyQnkgOiAnaWQnICIgY2FuLXJlbW92ZT0iZGF0YS5yZXNwb25zZVBhcmFtZXRlcnMiCiAgICAgICAgICAgIGxpc3QtaWQ9Int7aS5pZH19Ij4KICAgICAgICAgIDx0ZCBuZy1jbGFzcz0ieydoYXMtZXJyb3InOmFkZEZvcm1baS5uYW1lVmVyaWZ5XS4kZGlydHkgJmFtcDsmYW1wOyBhZGRGb3JtW2kubmFtZVZlcmlmeV0uJGludmFsaWR9IgogICAgICAgICAgICAgIGNsYXNzPSJmb3JtLWdyb3VwIGhhcy1mZWVkYmFjayIgc3R5bGU9InBvc2l0aW9uOiByZWxhdGl2ZTsiPgoKICAgICAgICAgICAgPHNwYW4gbmctaWY9ImkuaWQubGVuZ3RoIT0yIiBjbGFzcz0idGV4dC1kYW5nZXIiIHN0eWxlPSJ0b3A6IDlweDtsZWZ0OiB7eyhpLmlkLmxlbmd0aC8yIC0gMSkqNn19JTtwb3NpdGlvbjogYWJzb2x1dGU7Ij4mbm90Ozwvc3Bhbj4KICAgICAgICAgICAgPGlucHV0IG5nLW1vZGVsPSJpLm5hbWUiIGR5LW5hbWU9ImkubmFtZVZlcmlmeSIgcGxhY2Vob2xkZXI9Int7J1JFUVVJUkVEJ3x0cmFuc2xhdGV9fSIgbmctcmVxdWlyZWQ9InRydWUiCiAgICAgICAgICAgICAgICAgICBjbGFzcz0iZm9ybS1jb250cm9sIiAgc3R5bGU9IndpZHRoOnt7MTAwLShpLmlkLmxlbmd0aC8yIC0gMSkqNn19JSIgLz48c3BhbgogICAgICAgICAgICBuZy1pZj0iYWRkRm9ybVtpLm5hbWVWZXJpZnldLiRkaXJ0eSAmYW1wOyZhbXA7IGFkZEZvcm1baS5uYW1lVmVyaWZ5XS4kaW52YWxpZCIgdG9vbHRpcD0ie3snUkVRVUlSRUQnfHRyYW5zbGF0ZX19IgogICAgICAgICAgICBjbGFzcz0iZ2x5cGhpY29uIGdseXBoaWNvbi1leGNsYW1hdGlvbi1zaWduIGZvcm0tY29udHJvbC1mZWVkYmFjayI+PC9zcGFuPgogICAgICAgICAgPC90ZD4KICAgICAgICAgIDx0ZCBuZy1jbGFzcz0ieydoYXMtZXJyb3InOmFkZEZvcm1baS5ydWxlVmVyaWZ5XS4kZGlydHkgJmFtcDsmYW1wOyBhZGRGb3JtW2kucnVsZVZlcmlmeV0uJGludmFsaWR9IgogICAgICAgICAgICAgIGNsYXNzPSJmb3JtLWdyb3VwIGhhcy1mZWVkYmFjayI+PHN0cm9uZyBuZy1pZj0iaS5raW5kPT0nb2JqZWN0JyIKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3R5bGU9Im1hcmdpbjogNnB4IDEycHg7ZGlzcGxheTogaW5saW5lLWJsb2NrOyIKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3M9InRleHQtaW5mbyI+e308L3N0cm9uZz48c3Ryb25nCiAgICAgICAgICAgIG5nLWlmPSJpLmtpbmQ9PSdhcnJheShvYmplY3QpJyIgc3R5bGU9Im1hcmdpbjogNnB4IDEycHg7ZGlzcGxheTogaW5saW5lLWJsb2NrOyIKICAgICAgICAgICAgY2xhc3M9InRleHQtaW5mbyI+W3t9XTwvc3Ryb25nPgogICAgICAgICAgICA8aW5wdXQgbmctbW9kZWw9ImkucnVsZSIgZHktbmFtZT0iaS5ydWxlVmVyaWZ5IiBwbGFjZWhvbGRlcj0ie3snUkVRVUlSRUQnfHRyYW5zbGF0ZX19IiBuZy1yZXF1aXJlZD0idHJ1ZSIKICAgICAgICAgICAgICAgICAgIG5nLWlmPSJpLmtpbmQhPSdvYmplY3QnJmFtcDsmYW1wOyBpLmtpbmQhPSdhcnJheShvYmplY3QpJyIgY2xhc3M9ImZvcm0tY29udHJvbCIvPgogICAgICAgICAgICAgICAgPHNwYW4gbmctaWY9ImFkZEZvcm1baS5ydWxlVmVyaWZ5XS4kZGlydHkgJmFtcDsmYW1wOyBhZGRGb3JtW2kucnVsZVZlcmlmeV0uJGludmFsaWQiIHRvb2x0aXA9Int7J1JFUVVJUkVEJ3x0cmFuc2xhdGV9fSIKICAgICAgICAgICAgICAgICAgICAgIGNsYXNzPSJnbHlwaGljb24gZ2x5cGhpY29uLWV4Y2xhbWF0aW9uLXNpZ24gZm9ybS1jb250cm9sLWZlZWRiYWNrIj48L3NwYW4+CiAgICAgICAgICA8L3RkPgogICAgICAgICAgPHRkIGFsaWduPSJjZW50ZXIiPjxzcGFuIG5nLWJpbmQ9Imkua2luZCIgc3R5bGU9ImRpc3BsYXk6bm9uZTttYXJnaW4tdG9wOjZweDsiCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3M9ImRpc2FibGVkLXNlbGVjdCI+PC9zcGFuPgogICAgICAgICAgICA8c2VsZWN0IG5nLW1vZGVsPSJpLmtpbmQiIHN0eWxlPSJtYXJnaW4tdG9wOiA4cHg7Ij4KICAgICAgICAgICAgICA8b3B0aW9uPnN0cmluZzwvb3B0aW9uPgogICAgICAgICAgICAgIDxvcHRpb24+bW9jazwvb3B0aW9uPgogICAgICAgICAgICAgIDxvcHRpb24+b2JqZWN0PC9vcHRpb24+CiAgICAgICAgICAgICAgPG9wdGlvbj5hcnJheShvYmplY3QpPC9vcHRpb24+CiAgICAgICAgICAgIDwvc2VsZWN0PgogICAgICAgICAgPC90ZD4KICAgICAgICAgIDx0ZD4KICAgICAgICAgICAgPGlucHV0IHN5bWJvbC1maWx0ZXIgbmctbW9kZWw9ImkucmVtYXJrIiAgY2xhc3M9ImZvcm0tY29udHJvbCIvPgogICAgICAgICAgPC90ZD4KICAgICAgICAgIDx0ZCBhbGlnbj0iY2VudGVyIj4KICAgICAgICAgICAgPGEgbmctY2xpY2s9ImFkZFJlc3BvbnNlUGFyYW1ldGVycyhpLmlkKSIgbmctaWY9Imkua2luZD09J29iamVjdCd8fGkua2luZD09J2FycmF5KG9iamVjdCknIiB0b29sdGlwPSJ7eydBREQnfHRyYW5zbGF0ZX19IiBzdHlsZT0ibWFyZ2luLXRvcDogM3B4O3BhZGRpbmc6IDEwcHggMHB4OyIgIGNsYXNzPSJidG4gYnRuLXNtIGdseXBoaWNvbiBnbHlwaGljb24tcGx1cyB0ZXh0LXN1Y2Nlc3MiPjwvYT4KICAgICAgICAgICAgPGEgbmctY2xpY2s9InJlbW92ZVJlc3BvbnNlUGFyYW1ldGVycygkaW5kZXgpIiB0b29sdGlwPSJ7eydERUxFVEUnfHRyYW5zbGF0ZX19IiBzdHlsZT0ibWFyZ2luLXRvcDogM3B4O3BhZGRpbmc6IDEwcHggMHB4OyIgY2xhc3M9ImJ0biBidG4tc20gZ2x5cGhpY29uIGdseXBoaWNvbi1taW51cyB0ZXh0LWRhbmdlciI+PC9hPgogICAgICAgICAgPC90ZD4KICAgICAgICA8L3RyPgogICAgICAgIDwvdGJvZHk+CiAgICAgIDwvdGFibGU+CgoKICAgIDwvdGFiPgogICAgPHRhYiBoZWFkaW5nPSJ7eydERVRBSUwtUkVUVVJOLVNUQVRJQy1JTlRFUkZBQ0UnfHRyYW5zbGF0ZX19IiBzZWxlY3Q9ImRhdGEucmVzcG9uc2VQYXJhbWV0ZXJzVHlwZT10cnVlIiBhY3RpdmU9ImRhdGEucmVzcG9uc2VQYXJhbWV0ZXJzVHlwZSI+CiAgICAgIDxkaXYgc3R5bGU9ImJvcmRlci1yaWdodDogMXB4IHNvbGlkICNlM2UzZTM7Ym9yZGVyLWxlZnQ6IDFweCBzb2xpZCAjZTNlM2UzO2JvcmRlci1ib3R0b206IDFweCBzb2xpZCAjZTNlM2UzOyI+CiAgICAgICAgPHRleHRhcmVhIHBsYWNlaG9sZGVyPSJ7eydERVRBSUwtRklMTC1PVVQnfHRyYW5zbGF0ZX19IiBpcy1qc29uIG5nLW1vZGVsPSJkYXRhLnJlc3BvbnNlSnNvbiIKICAgICAgICAgICAgICAgICAgc3R5bGU9InBhZGRpbmc6IDEwcHg7cmVzaXplOiB2ZXJ0aWNhbDttaW4taGVpZ2h0OjMwMHB4O2JvcmRlci1jb2xvcjogI2ZmZmZmZjt3aWR0aDogMTAwJTsiPjwvdGV4dGFyZWE+CiAgICAgIDwvZGl2PgogICAgPC90YWI+CiAgPC90YWJzZXQ+CgoKPC9kaXY+CjxkaXYgY2xhc3M9ImNvbC1tZC01IHdlbGwgd2VsbC1zbSI+CiAgPGRpdiBjbGFzcz0icGFuZWwtYm9keSI+CiAgICA8YSBocmVmPSJodHRwOi8vbW9ja2pzLmNvbS9kZW1vL21vY2suaHRtbCIgdGFyZ2V0PSJfYmxhbmsiPnt7J0RFVEFJTC1NT0NLSlMtREVNTyd8dHJhbnNsYXRlfX0mZ3Q7Jmd0OzwvYT4KCiAgICA8aDY+e3snREVUQUlMLVVSTCd8dHJhbnNsYXRlfX08L2g2PgoKICAgIDxwIG5nLWJpbmQ9ImRhdGEuaW50ZXJmYWNlVXJsIiBuZy1pZj0iZGF0YS5pbnRlcmZhY2VVcmwubGVuZ3RoIiBjbGFzcz0idGV4dC1tdXRlZCI+PC9wPgogICAgPHAgbmctaWY9IiFkYXRhLmludGVyZmFjZVVybC5sZW5ndGgiIGNsYXNzPSJ0ZXh0LW11dGVkIj4tLTwvcD4KCiAgICA8aDY+e3snREVUQUlMLVRZUEUnfHRyYW5zbGF0ZX19PC9oNj4KICAgIDxwIG5nLWJpbmQ9ImRhdGEuaW50ZXJmYWNlVHlwZSIgY2xhc3M9InRleHQtbXV0ZWQiPjwvcD4KCiAgICA8aDY+e3snREVUQUlMLVJFTUFSSyd8dHJhbnNsYXRlfX08L2g2PgoKICAgIDxwIG5nLWJpbmQ9ImRhdGEuaW50ZXJmYWNlTmFtZSIgbmctaWY9ImRhdGEuaW50ZXJmYWNlTmFtZS5sZW5ndGgiIGNsYXNzPSJ0ZXh0LW11dGVkIj48L3A+CiAgICA8cCBuZy1pZj0iIWRhdGEuaW50ZXJmYWNlTmFtZS5sZW5ndGgiIGNsYXNzPSJ0ZXh0LW11dGVkIj4tLTwvcD4KCiAgICA8aDY+e3snREVUQUlMLVJFUVVFU1QtUEFSQU1FVEVSUyd8dHJhbnNsYXRlfX08L2g2PgogICAgPHVsPgogICAgICA8bGkgbmctcmVwZWF0PSJpIGluIGRhdGEucmVxdWlyZWRQYXJhbWV0ZXJzIj4KICAgICAgICA8c3Ryb25nIG5nLWlmPSJpLm5hbWUubGVuZ3RoIiBuZy1jbGFzcz0ieyd0ZXh0LW11dGVkJzohaS5yZXF1aXJlZH0iPnt7aS5uYW1lfX08L3N0cm9uZz4KICAgICAgICA8c3BhbiBuZy1pZj0iIWkubmFtZS5sZW5ndGgiPi0tPC9zcGFuPgogICAgICAgIDxzYXBuPiZuYnNwOzwvc2Fwbj4KICAgICAgICA8c3BhbiBuZy1pZj0iaS5yZW1hcmsubGVuZ3RoIiBzdHlsZT0iY29sb3I6ICM5OTkzMzM7Ij4mbmJzcDsvLyZuYnNwO3t7aS5yZW1hcmt9fTwvc3Bhbj4KICAgICAgPC9saT4KICAgIDwvdWw+CiAgICA8aDY+CiAgICAgIHt7J0RFVEFJTC1SRVRVUk4tSU5URVJGQUNFJ3x0cmFuc2xhdGV9fQogICAgPC9oNj4KCiAgICA8ZGl2IGNsYXNzPSJwYW5lbCBwYW5lbC1kZWZhdWx0Ij4KICAgICAgPGRpdiBuZy1pZj0iIWRhdGEucmVzcG9uc2VQYXJhbWV0ZXJzVHlwZSIganNvbjJodG1sPSJkYXRhLnJlc3BvbnNlUGFyYW1ldGVycyIgc3R5bGU9Im92ZXJmbG93LXk6IGF1dG87IgogICAgICAgICAgIGNsYXNzPSJwYW5lbC1ib2R5IGpzb24tcGFuZWwiPjwvZGl2PgogICAgICA8ZGl2IG5nLWlmPSJkYXRhLnJlc3BvbnNlUGFyYW1ldGVyc1R5cGUiIGpzb24tZm9ybWF0PSJkYXRhLnJlc3BvbnNlSnNvbiIgc3R5bGU9Im92ZXJmbG93LXk6IGF1dG87IgogICAgICAgICAgIGNsYXNzPSJwYW5lbC1ib2R5IGpzb24tcGFuZWwiPjwvZGl2PgogICAgPC9kaXY+CiAgPC9kaXY+Cgo8L2Rpdj4KPC9kaXY+Cgo8ZGl2IGNsYXNzPSJyb3cgd2VsbCB3ZWxsLXNtIgogICAgIHN0eWxlPSIgcG9zaXRpb246IGZpeGVkOyBib3R0b206IDA7IGxlZnQ6IDA7IHJpZ2h0OiAwOyB6LWluZGV4OiA5OTk7dGV4dC1hbGlnbjogY2VudGVyO21hcmdpbi1ib3R0b206MDsiPgogIDxhIG5nLWRpc2FibGVkPSJhZGRGb3JtLiRpbnZhbGlkIiBuZy1jbGljaz0ic3VibWl0KCkiIGNsYXNzPSJidG4gYnRuLXN1Y2Nlc3MiPnt7J1NVQk1JVCd8dHJhbnNsYXRlfX08L2E+CiAgPGEgdWktc3JlZj0ibGlzdCIgc3R5bGU9Im1hcmdpbi1sZWZ0OiAxMHB4OyIgY2xhc3M9ImJ0biBidG4tZGVmYXVsdCI+e3snQ0FOQ0VMJ3x0cmFuc2xhdGV9fTwvYT4KPC9kaXY+Cgo8L2Zvcm0+Cg==","base64"),
+      template: Buffer("PGZvcm0gbmFtZT0iYWRkRm9ybSIgcm9sZT0iZm9ybSIgbm92YWxpZGF0ZT0ibm92YWxpZGF0ZSIgY2xhc3M9ImZvcm0taG9yaXpvbnRhbCI+Cgo8ZGl2IGNsYXNzPSJyb3ciIHN0eWxlPSJwYWRkaW5nLWJvdHRvbTogNTRweDsiPgo8ZGl2IGNsYXNzPSJjb2wtbWQtNyI+CiAgPGRpdiBjbGFzcz0icGFuZWwgcGFuZWwtaW5mbyBjbGVhcmZpeCI+CiAgICA8ZGl2IGNsYXNzPSJwYW5lbC1oZWFkaW5nIj4KICAgICAgPGg2IGNsYXNzPSJwYW5lbC10aXRsZSI+e3snREVUQUlMLVRJVExFJ3x0cmFuc2xhdGV9fTwvaDY+CiAgICA8L2Rpdj4KICAgIDxkaXYgY2xhc3M9InBhbmVsLWJvZHkiPgoKICAgICAgPGRpdiBuZy1jbGFzcz0ieydoYXMtZXJyb3InOmFkZEZvcm0uaW50ZXJmYWNlVXJsLiRkaXJ0eSAmYW1wOyZhbXA7IGFkZEZvcm0uaW50ZXJmYWNlVXJsLiRpbnZhbGlkfSIKICAgICAgICAgICBjbGFzcz0iZm9ybS1ncm91cCBoYXMtZmVlZGJhY2siPgogICAgICAgIDxsYWJlbCBjbGFzcz0iY29sLXNtLTMgY29udHJvbC1sYWJlbCI+e3snREVUQUlMLVVSTCd8dHJhbnNsYXRlfX3vvJo8L2xhYmVsPgoKICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tOSBmb3JtLWNvbnRyb2wtc3RhdGljIj4KICAgICAgICAgIDxzcGFuIGNsYXNzPSIgdGV4dC1pbmZvIiBuZy1iaW5kPSJkYXRhLmludGVyZmFjZVVybCI+IDwvc3Bhbj4KICAgICAgICA8L2Rpdj4KICAgICAgPC9kaXY+CgoKICAgICAgPGRpdiBjbGFzcz0iZm9ybS1ncm91cCBoYXMtZmVlZGJhY2siPgogICAgICAgIDxsYWJlbCBjbGFzcz0iY29sLXNtLTMgY29udHJvbC1sYWJlbCI+e3snREVUQUlMLUxBWlktTE9BRCd8dHJhbnNsYXRlfX3vvJo8L2xhYmVsPgoKICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tOSI+CiAgICAgICAgICA8bGFiZWwgY2xhc3M9InJhZGlvLWlubGluZSI+CiAgICAgICAgICAgIDxpbnB1dCBuZy1tb2RlbD0iZGF0YS5sYXp5TG9hZCIgdHlwZT0icmFkaW8iIHZhbHVlPSJubyIvPjxzcGFuPk5PPC9zcGFuPgogICAgICAgICAgPC9sYWJlbD4KICAgICAgICAgIDxsYWJlbCBjbGFzcz0icmFkaW8taW5saW5lIj4KICAgICAgICAgICAgPGlucHV0IG5nLW1vZGVsPSJkYXRhLmxhenlMb2FkIiB0eXBlPSJyYWRpbyIgdmFsdWU9InllcyIvPjxzcGFuPllFUzwvc3Bhbj4KICAgICAgICAgIDwvbGFiZWw+CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgoKICAgICAgPGRpdiBjbGFzcz0iZm9ybS1ncm91cCI+CiAgICAgICAgPGxhYmVsIGNsYXNzPSJjb2wtc20tMyBjb250cm9sLWxhYmVsIj57eydERVRBSUwtVFlQRSd8dHJhbnNsYXRlfX3vvJo8L2xhYmVsPgoKICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tOSI+CiAgICAgICAgICA8bGFiZWwgY2xhc3M9InJhZGlvLWlubGluZSI+CiAgICAgICAgICAgIDxpbnB1dCBuZy1tb2RlbD0iZGF0YS5pbnRlcmZhY2VUeXBlIiB0eXBlPSJyYWRpbyIgbmFtZT0iaW50ZXJmYWNlVHlwZSIgdmFsdWU9IkdFVCIvPjxzcGFuPkdFVDwvc3Bhbj4KICAgICAgICAgIDwvbGFiZWw+CiAgICAgICAgICA8bGFiZWwgY2xhc3M9InJhZGlvLWlubGluZSI+CiAgICAgICAgICAgIDxpbnB1dCBuZy1tb2RlbD0iZGF0YS5pbnRlcmZhY2VUeXBlIiB0eXBlPSJyYWRpbyIgbmFtZT0iaW50ZXJmYWNlVHlwZSIgdmFsdWU9IlBPU1QiLz48c3Bhbj5QT1NUPC9zcGFuPgogICAgICAgICAgPC9sYWJlbD4KICAgICAgICA8L2Rpdj4KICAgICAgPC9kaXY+CgogICAgICA8ZGl2IGNsYXNzPSJmb3JtLWdyb3VwIj4KICAgICAgICA8bGFiZWwgY2xhc3M9ImNvbC1zbS0zIGNvbnRyb2wtbGFiZWwiPmpzb25w77yaPC9sYWJlbD4KCiAgICAgICAgPGRpdiBjbGFzcz0iY29sLXNtLTMiPgogICAgICAgICAgPGxhYmVsIGNsYXNzPSJjaGVja2JveC1pbmxpbmUiPgogICAgICAgICAgICA8aW5wdXQgbmctbW9kZWw9ImRhdGEuaXNKc29ucCIgdHlwZT0iY2hlY2tib3giIG5hbWU9ImlzSnNvbnAiLz48c3Bhbj57eydERVRBSUwtSlNPTlAnfHRyYW5zbGF0ZX19PC9zcGFuPgogICAgICAgICAgPC9sYWJlbD4KICAgICAgICA8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tNiI+CiAgICAgICAgICA8aW5wdXQgY2xhc3M9ImZvcm0tY29udHJvbCIgbmctbW9kZWw9ImRhdGEuanNvbnBDYWxsYmFjayIgbmctcmVxdWlyZWQ9InRydWUiIG5nLWlmPSJkYXRhLmlzSnNvbnAiIHBsYWNlaG9sZGVyPSJqc29ucENhbGxiYWNrIi8+CiAgICAgICAgPC9kaXY+CiAgICAgIDwvZGl2PgoKCiAgICAgIDxkaXYgbmctY2xhc3M9InsnaGFzLWVycm9yJzphZGRGb3JtLmludGVyZmFjZU5hbWUuJGRpcnR5ICZhbXA7JmFtcDsgYWRkRm9ybS5pbnRlcmZhY2VOYW1lLiRpbnZhbGlkfSIKICAgICAgICAgICBjbGFzcz0iZm9ybS1ncm91cCBoYXMtZmVlZGJhY2siPgogICAgICAgIDxsYWJlbCBjbGFzcz0iY29sLXNtLTMgY29udHJvbC1sYWJlbCI+e3snREVUQUlMLVJFTUFSSyd8dHJhbnNsYXRlfX3vvJo8L2xhYmVsPgoKICAgICAgICA8ZGl2IGNsYXNzPSJjb2wtc20tOSI+CiAgICAgICAgICA8aW5wdXQgbmctbW9kZWw9ImRhdGEuaW50ZXJmYWNlTmFtZSIgbmFtZT0iaW50ZXJmYWNlTmFtZSIgcGxhY2Vob2xkZXI9Int7J1JFUVVJUkVEJ3x0cmFuc2xhdGV9fSIgbmctcmVxdWlyZWQ9InRydWUiCiAgICAgICAgICAgICAgICAgY2xhc3M9ImZvcm0tY29udHJvbCIvPjxzcGFuCiAgICAgICAgICBuZy1pZj0iYWRkRm9ybS5pbnRlcmZhY2VOYW1lLiRkaXJ0eSAmYW1wOyZhbXA7IGFkZEZvcm0uaW50ZXJmYWNlTmFtZS4kaW52YWxpZCIgdG9vbHRpcD0ie3snUkVRVUlSRUQnfHRyYW5zbGF0ZX19IgogICAgICAgICAgY2xhc3M9ImdseXBoaWNvbiBnbHlwaGljb24tZXhjbGFtYXRpb24tc2lnbiBmb3JtLWNvbnRyb2wtZmVlZGJhY2siPjwvc3Bhbj4KICAgICAgICA8L2Rpdj4KICAgICAgPC9kaXY+CgogICAgPC9kaXY+CiAgPC9kaXY+CiAgPGRpdiBjbGFzcz0icGFuZWwgcGFuZWwtaW5mbyI+CiAgICA8ZGl2IGNsYXNzPSJwYW5lbC1oZWFkaW5nIGNsZWFyZml4Ij4KICAgICAgPGg2IGNsYXNzPSJwYW5lbC10aXRsZSBwdWxsLWxlZnQiPnt7J0RFVEFJTC1SRVFVRVNULVBBUkFNRVRFUlMnfHRyYW5zbGF0ZX19PC9oNj4KICAgICAgPGEgbmctY2xpY2s9ImFkZFJlcXVpcmVkUGFyYW1ldGVycygpIiB0b29sdGlwPSJ7eydBREQnfHRyYW5zbGF0ZX19IiBjbGFzcz0iYnRuIGJ0bi1kZWZhdWx0IGJ0bi1zbSBidG4teHMgcHVsbC1yaWdodCI+CiAgICAgICAgPHNwYW4gY2xhc3M9ImdseXBoaWNvbiBnbHlwaGljb24tcGx1cyI+PC9zcGFuPgogICAgICA8L2E+CiAgICA8L2Rpdj4KICAgIDx0YWJsZSBjbGFzcz0idGFibGUgdGFibGUtYm9yZGVyZWQgdGFibGVMaXN0Ij4KICAgICAgPHRoZWFkPgogICAgICA8dHI+CiAgICAgICAgPHRoIHN0eWxlPSJ3aWR0aDogNDRweDsiPnt7J1JFUVVJUkVEJ3x0cmFuc2xhdGV9fTwvdGg+CiAgICAgICAgPHRoPnt7J0RFVEFJTC1QQVJBTUVURVJTLU5BTUUnfHRyYW5zbGF0ZX19PC90aD4KICAgICAgICA8dGg+e3snREVUQUlMLVJFTUFSSyd8dHJhbnNsYXRlfX08L3RoPgogICAgICAgIDx0aCB3aWR0aD0iNDUiPnt7J09QRVJBVElORyd8dHJhbnNsYXRlfX08L3RoPgogICAgICA8L3RyPgogICAgICA8L3RoZWFkPgogICAgICA8dGJvZHk+CiAgICAgIDx0ciBuZy1yZXBlYXQ9ImkgaW4gZGF0YS5yZXF1aXJlZFBhcmFtZXRlcnMiPgogICAgICAgIDx0ZCBzdHlsZT0iIHRleHQtYWxpZ246IGNlbnRlcjsgdmVydGljYWwtYWxpZ246IG1pZGRsZTsgIj4KICAgICAgICAgIDxpbnB1dCAgc3R5bGU9ImhlaWdodDogYXV0bzt3aWR0aDogYXV0bztmbG9hdDogbm9uZTsiIHR5cGU9ImNoZWNrYm94IiBuZy1tb2RlbD0iaS5yZXF1aXJlZCI+CiAgICAgICAgPC90ZD4KICAgICAgICA8dGQgbmctY2xhc3M9InsnaGFzLWVycm9yJzphZGRGb3JtW2kubmFtZVZlcmlmeV0uJGRpcnR5ICZhbXA7JmFtcDsgYWRkRm9ybVtpLm5hbWVWZXJpZnldLiRpbnZhbGlkfSIKICAgICAgICAgICAgY2xhc3M9ImZvcm0tZ3JvdXAgaGFzLWZlZWRiYWNrIj4KICAgICAgICAgIDxpbnB1dCBuZy1tb2RlbD0iaS5uYW1lIiBkeS1uYW1lPSJpLm5hbWVWZXJpZnkiIHBsYWNlaG9sZGVyPSJ7eydSRVFVSVJFRCd8dHJhbnNsYXRlfX0iIG5nLXJlcXVpcmVkPSJ0cnVlIgogICAgICAgICAgICAgICAgIGNsYXNzPSJmb3JtLWNvbnRyb2wiLz4KICAgICAgICAgICAgICA8c3BhbiBuZy1pZj0iYWRkRm9ybVtpLm5hbWVWZXJpZnldLiRkaXJ0eSAmYW1wOyZhbXA7IGFkZEZvcm1baS5uYW1lVmVyaWZ5XS4kaW52YWxpZCIgdG9vbHRpcD0ie3snUkVRVUlSRUQnfHRyYW5zbGF0ZX19IgogICAgICAgICAgICAgICAgICAgIGNsYXNzPSJnbHlwaGljb24gZ2x5cGhpY29uLWV4Y2xhbWF0aW9uLXNpZ24gZm9ybS1jb250cm9sLWZlZWRiYWNrIj48L3NwYW4+CiAgICAgICAgPC90ZD4KICAgICAgICA8dGQ+CiAgICAgICAgICA8aW5wdXQgc3ltYm9sLWZpbHRlciBuZy1tb2RlbD0iaS5yZW1hcmsiIGNsYXNzPSJmb3JtLWNvbnRyb2wiLz4KICAgICAgICA8L3RkPgogICAgICAgIDx0ZCBhbGlnbj0iY2VudGVyIj4KICAgICAgICAgIDxhIG5nLWNsaWNrPSJyZW1vdmVSZXF1aXJlZFBhcmFtZXRlcnMoJGluZGV4KSIgdG9vbHRpcD0ie3snREVMRVRFJ3x0cmFuc2xhdGV9fSIgc3R5bGU9Im1hcmdpbi10b3A6IDNweDsiIGNsYXNzPSJidG4gYnRuLXNtIGdseXBoaWNvbiBnbHlwaGljb24tbWludXMgdGV4dC1kYW5nZXIiPjwvYT4KICAgICAgICA8L3RkPgogICAgICA8L3RyPgogICAgICA8L3Rib2R5PgogICAgPC90YWJsZT4KICA8L2Rpdj4KICA8dGFic2V0IGp1c3RpZmllZD0idHJ1ZSI+CiAgICA8dGFiIGhlYWRpbmc9Int7J0RFVEFJTC1SRVRVUk4tRFlOQU1JQy1JTlRFUkZBQ0UnfHRyYW5zbGF0ZX19IiBzZWxlY3Q9ImRhdGEucmVzcG9uc2VQYXJhbWV0ZXJzVHlwZT1mYWxzZSI+CgogICAgICA8ZGl2IGNsYXNzPSJjbGVhcmZpeCIgc3R5bGU9ImJvcmRlci1yaWdodDogMXB4IHNvbGlkICNlM2UzZTM7cGFkZGluZzogMTBweDtib3JkZXItbGVmdDogMXB4IHNvbGlkICNlM2UzZTM7Ij4KICAgICAgICA8YSBuZy1jbGljaz0iYWRkUmVzcG9uc2VQYXJhbWV0ZXJzKCcnKSIgdG9vbHRpcD0ie3snQUREJ3x0cmFuc2xhdGV9fSIgY2xhc3M9ImJ0biBidG4tZGVmYXVsdCBidG4tc20gYnRuLXhzIHB1bGwtcmlnaHQiPgogICAgICAgICAgPHNwYW4gY2xhc3M9ImdseXBoaWNvbiBnbHlwaGljb24tcGx1cyI+PC9zcGFuPgogICAgICAgIDwvYT4KICAgICAgICA8YSBuZy1jbGljaz0ib3BlbldpbigpIiB0b29sdGlwPSJ7eydJTVBPUlQnfHRyYW5zbGF0ZX19IiBzdHlsZT0ibWFyZ2luLXJpZ2h0OjEwcHg7IgogICAgICAgICAgIGNsYXNzPSJidG4gYnRuLWRlZmF1bHQgYnRuLXNtIGJ0bi14cyBwdWxsLXJpZ2h0Ij4KICAgICAgICAgIDxzcGFuIGNsYXNzPSJnbHlwaGljb24gZ2x5cGhpY29uLWltcG9ydCI+PC9zcGFuPgogICAgICAgIDwvYT4KICAgICAgPC9kaXY+CiAgICAgIDx0YWJsZSBjbGFzcz0idGFibGUgdGFibGUtYm9yZGVyZWQgdGFibGVMaXN0Ij4KICAgICAgICA8dGhlYWQ+CiAgICAgICAgPHRyPgogICAgICAgICAgPHRoPnt7J0RFVEFJTC1QQVJBTUVURVJTLU5BTUUnfHRyYW5zbGF0ZX19PC90aD4KICAgICAgICAgIDx0aD57eydWQVJJQVRJT04tTEFXJ3x0cmFuc2xhdGV9fTwvdGg+CiAgICAgICAgICA8dGggd2lkdGg9IjEyMCI+e3snVFlQRSd8dHJhbnNsYXRlfX08L3RoPgogICAgICAgICAgPHRoPnt7J0RFVEFJTC1SRU1BUksnfHRyYW5zbGF0ZX19PC90aD4KICAgICAgICAgIDx0aCB3aWR0aD0iNDUiPnt7J09QRVJBVElORyd8dHJhbnNsYXRlfX08L3RoPgogICAgICAgIDwvdHI+CiAgICAgICAgPC90aGVhZD4KICAgICAgICA8dGJvZHkgdmFsaWduPSJiYXNlbGluZSI+CiAgICAgICAgPHRyIG5nLXJlcGVhdD0iaSBpbiBkYXRhLnJlc3BvbnNlUGFyYW1ldGVycyB8IG9yZGVyQnkgOiAnaWQnICIgY2FuLXJlbW92ZT0iZGF0YS5yZXNwb25zZVBhcmFtZXRlcnMiCiAgICAgICAgICAgIGxpc3QtaWQ9Int7aS5pZH19Ij4KICAgICAgICAgIDx0ZCBuZy1jbGFzcz0ieydoYXMtZXJyb3InOmFkZEZvcm1baS5uYW1lVmVyaWZ5XS4kZGlydHkgJmFtcDsmYW1wOyBhZGRGb3JtW2kubmFtZVZlcmlmeV0uJGludmFsaWR9IgogICAgICAgICAgICAgIGNsYXNzPSJmb3JtLWdyb3VwIGhhcy1mZWVkYmFjayIgc3R5bGU9InBvc2l0aW9uOiByZWxhdGl2ZTsiPgoKICAgICAgICAgICAgPHNwYW4gbmctaWY9ImkuaWQubGVuZ3RoIT0yIiBjbGFzcz0idGV4dC1kYW5nZXIiIHN0eWxlPSJ0b3A6IDlweDtsZWZ0OiB7eyhpLmlkLmxlbmd0aC8yIC0gMSkqNn19JTtwb3NpdGlvbjogYWJzb2x1dGU7Ij4mbm90Ozwvc3Bhbj4KICAgICAgICAgICAgPGlucHV0IG5nLW1vZGVsPSJpLm5hbWUiIGR5LW5hbWU9ImkubmFtZVZlcmlmeSIgcGxhY2Vob2xkZXI9Int7J1JFUVVJUkVEJ3x0cmFuc2xhdGV9fSIgbmctcmVxdWlyZWQ9InRydWUiCiAgICAgICAgICAgICAgICAgICBjbGFzcz0iZm9ybS1jb250cm9sIiAgc3R5bGU9IndpZHRoOnt7MTAwLShpLmlkLmxlbmd0aC8yIC0gMSkqNn19JSIgLz48c3BhbgogICAgICAgICAgICBuZy1pZj0iYWRkRm9ybVtpLm5hbWVWZXJpZnldLiRkaXJ0eSAmYW1wOyZhbXA7IGFkZEZvcm1baS5uYW1lVmVyaWZ5XS4kaW52YWxpZCIgdG9vbHRpcD0ie3snUkVRVUlSRUQnfHRyYW5zbGF0ZX19IgogICAgICAgICAgICBjbGFzcz0iZ2x5cGhpY29uIGdseXBoaWNvbi1leGNsYW1hdGlvbi1zaWduIGZvcm0tY29udHJvbC1mZWVkYmFjayI+PC9zcGFuPgogICAgICAgICAgPC90ZD4KICAgICAgICAgIDx0ZCBuZy1jbGFzcz0ieydoYXMtZXJyb3InOmFkZEZvcm1baS5ydWxlVmVyaWZ5XS4kZGlydHkgJmFtcDsmYW1wOyBhZGRGb3JtW2kucnVsZVZlcmlmeV0uJGludmFsaWR9IgogICAgICAgICAgICAgIGNsYXNzPSJmb3JtLWdyb3VwIGhhcy1mZWVkYmFjayI+PHN0cm9uZyBuZy1pZj0iaS5raW5kPT0nb2JqZWN0JyIKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3R5bGU9Im1hcmdpbjogNnB4IDEycHg7ZGlzcGxheTogaW5saW5lLWJsb2NrOyIKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY2xhc3M9InRleHQtaW5mbyI+e308L3N0cm9uZz48c3Ryb25nCiAgICAgICAgICAgIG5nLWlmPSJpLmtpbmQ9PSdhcnJheShvYmplY3QpJyIgc3R5bGU9Im1hcmdpbjogNnB4IDEycHg7ZGlzcGxheTogaW5saW5lLWJsb2NrOyIKICAgICAgICAgICAgY2xhc3M9InRleHQtaW5mbyI+W3t9XTwvc3Ryb25nPgogICAgICAgICAgICA8aW5wdXQgbmctbW9kZWw9ImkucnVsZSIgYXJyYXkyc3RyIGR5LW5hbWU9ImkucnVsZVZlcmlmeSIgcGxhY2Vob2xkZXI9Int7J1JFUVVJUkVEJ3x0cmFuc2xhdGV9fSIgbmctcmVxdWlyZWQ9InRydWUiCiAgICAgICAgICAgICAgICAgICBuZy1pZj0iaS5raW5kIT0nb2JqZWN0JyZhbXA7JmFtcDsgaS5raW5kIT0nYXJyYXkob2JqZWN0KSciIGNsYXNzPSJmb3JtLWNvbnRyb2wiLz4KICAgICAgICAgICAgICAgIDxzcGFuIG5nLWlmPSJhZGRGb3JtW2kucnVsZVZlcmlmeV0uJGRpcnR5ICZhbXA7JmFtcDsgYWRkRm9ybVtpLnJ1bGVWZXJpZnldLiRpbnZhbGlkIiB0b29sdGlwPSJ7eydSRVFVSVJFRCd8dHJhbnNsYXRlfX0iCiAgICAgICAgICAgICAgICAgICAgICBjbGFzcz0iZ2x5cGhpY29uIGdseXBoaWNvbi1leGNsYW1hdGlvbi1zaWduIGZvcm0tY29udHJvbC1mZWVkYmFjayI+PC9zcGFuPgogICAgICAgICAgPC90ZD4KICAgICAgICAgIDx0ZCBhbGlnbj0iY2VudGVyIj48c3BhbiBuZy1iaW5kPSJpLmtpbmQiIHN0eWxlPSJkaXNwbGF5Om5vbmU7bWFyZ2luLXRvcDo2cHg7IgogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGNsYXNzPSJkaXNhYmxlZC1zZWxlY3QiPjwvc3Bhbj4KICAgICAgICAgICAgPHNlbGVjdCBuZy1tb2RlbD0iaS5raW5kIiBzdHlsZT0ibWFyZ2luLXRvcDogOHB4OyI+CiAgICAgICAgICAgICAgPG9wdGlvbj5zdHJpbmc8L29wdGlvbj4KICAgICAgICAgICAgICA8b3B0aW9uPm1vY2s8L29wdGlvbj4KICAgICAgICAgICAgICA8b3B0aW9uPm9iamVjdDwvb3B0aW9uPgogICAgICAgICAgICAgIDxvcHRpb24+YXJyYXkob2JqZWN0KTwvb3B0aW9uPgogICAgICAgICAgICA8L3NlbGVjdD4KICAgICAgICAgIDwvdGQ+CiAgICAgICAgICA8dGQ+CiAgICAgICAgICAgIDxpbnB1dCBzeW1ib2wtZmlsdGVyIG5nLW1vZGVsPSJpLnJlbWFyayIgIGNsYXNzPSJmb3JtLWNvbnRyb2wiLz4KICAgICAgICAgIDwvdGQ+CiAgICAgICAgICA8dGQgYWxpZ249ImNlbnRlciI+CiAgICAgICAgICAgIDxhIG5nLWNsaWNrPSJhZGRSZXNwb25zZVBhcmFtZXRlcnMoaS5pZCkiIG5nLWlmPSJpLmtpbmQ9PSdvYmplY3QnfHxpLmtpbmQ9PSdhcnJheShvYmplY3QpJyIgdG9vbHRpcD0ie3snQUREJ3x0cmFuc2xhdGV9fSIgc3R5bGU9Im1hcmdpbi10b3A6IDNweDtwYWRkaW5nOiAxMHB4IDBweDsiICBjbGFzcz0iYnRuIGJ0bi1zbSBnbHlwaGljb24gZ2x5cGhpY29uLXBsdXMgdGV4dC1zdWNjZXNzIj48L2E+CiAgICAgICAgICAgIDxhIG5nLWNsaWNrPSJyZW1vdmVSZXNwb25zZVBhcmFtZXRlcnMoJGluZGV4KSIgdG9vbHRpcD0ie3snREVMRVRFJ3x0cmFuc2xhdGV9fSIgc3R5bGU9Im1hcmdpbi10b3A6IDNweDtwYWRkaW5nOiAxMHB4IDBweDsiIGNsYXNzPSJidG4gYnRuLXNtIGdseXBoaWNvbiBnbHlwaGljb24tbWludXMgdGV4dC1kYW5nZXIiPjwvYT4KICAgICAgICAgIDwvdGQ+CiAgICAgICAgPC90cj4KICAgICAgICA8L3Rib2R5PgogICAgICA8L3RhYmxlPgoKCiAgICA8L3RhYj4KICAgIDx0YWIgaGVhZGluZz0ie3snREVUQUlMLVJFVFVSTi1TVEFUSUMtSU5URVJGQUNFJ3x0cmFuc2xhdGV9fSIgc2VsZWN0PSJkYXRhLnJlc3BvbnNlUGFyYW1ldGVyc1R5cGU9dHJ1ZSIgYWN0aXZlPSJkYXRhLnJlc3BvbnNlUGFyYW1ldGVyc1R5cGUiPgogICAgICA8ZGl2IHN0eWxlPSJib3JkZXItcmlnaHQ6IDFweCBzb2xpZCAjZTNlM2UzO2JvcmRlci1sZWZ0OiAxcHggc29saWQgI2UzZTNlMztib3JkZXItYm90dG9tOiAxcHggc29saWQgI2UzZTNlMzsiPgogICAgICAgIDx0ZXh0YXJlYSBwbGFjZWhvbGRlcj0ie3snREVUQUlMLUZJTEwtT1VUJ3x0cmFuc2xhdGV9fSIgaXMtanNvbiBuZy1tb2RlbD0iZGF0YS5yZXNwb25zZUpzb24iCiAgICAgICAgICAgICAgICAgIHN0eWxlPSJwYWRkaW5nOiAxMHB4O3Jlc2l6ZTogdmVydGljYWw7bWluLWhlaWdodDozMDBweDtib3JkZXItY29sb3I6ICNmZmZmZmY7d2lkdGg6IDEwMCU7Ij48L3RleHRhcmVhPgogICAgICA8L2Rpdj4KICAgIDwvdGFiPgogIDwvdGFic2V0PgoKCjwvZGl2Pgo8ZGl2IGNsYXNzPSJjb2wtbWQtNSB3ZWxsIHdlbGwtc20iPgogIDxkaXYgY2xhc3M9InBhbmVsLWJvZHkiPgogICAgPGEgaHJlZj0iaHR0cDovL21vY2tqcy5jb20vZGVtby9tb2NrLmh0bWwiIHRhcmdldD0iX2JsYW5rIj57eydERVRBSUwtTU9DS0pTLURFTU8nfHRyYW5zbGF0ZX19Jmd0OyZndDs8L2E+CgogICAgPGg2Pnt7J0RFVEFJTC1VUkwnfHRyYW5zbGF0ZX19PC9oNj4KCiAgICA8cCBuZy1iaW5kPSJkYXRhLmludGVyZmFjZVVybCIgbmctaWY9ImRhdGEuaW50ZXJmYWNlVXJsLmxlbmd0aCIgY2xhc3M9InRleHQtbXV0ZWQiPjwvcD4KICAgIDxwIG5nLWlmPSIhZGF0YS5pbnRlcmZhY2VVcmwubGVuZ3RoIiBjbGFzcz0idGV4dC1tdXRlZCI+LS08L3A+CgogICAgPGg2Pnt7J0RFVEFJTC1UWVBFJ3x0cmFuc2xhdGV9fTwvaDY+CiAgICA8cCBuZy1iaW5kPSJkYXRhLmludGVyZmFjZVR5cGUiIGNsYXNzPSJ0ZXh0LW11dGVkIj48L3A+CgogICAgPGg2Pnt7J0RFVEFJTC1SRU1BUksnfHRyYW5zbGF0ZX19PC9oNj4KCiAgICA8cCBuZy1iaW5kPSJkYXRhLmludGVyZmFjZU5hbWUiIG5nLWlmPSJkYXRhLmludGVyZmFjZU5hbWUubGVuZ3RoIiBjbGFzcz0idGV4dC1tdXRlZCI+PC9wPgogICAgPHAgbmctaWY9IiFkYXRhLmludGVyZmFjZU5hbWUubGVuZ3RoIiBjbGFzcz0idGV4dC1tdXRlZCI+LS08L3A+CgogICAgPGg2Pnt7J0RFVEFJTC1SRVFVRVNULVBBUkFNRVRFUlMnfHRyYW5zbGF0ZX19PC9oNj4KICAgIDx1bD4KICAgICAgPGxpIG5nLXJlcGVhdD0iaSBpbiBkYXRhLnJlcXVpcmVkUGFyYW1ldGVycyI+CiAgICAgICAgPHN0cm9uZyBuZy1pZj0iaS5uYW1lLmxlbmd0aCIgbmctY2xhc3M9InsndGV4dC1tdXRlZCc6IWkucmVxdWlyZWR9Ij57e2kubmFtZX19PC9zdHJvbmc+CiAgICAgICAgPHNwYW4gbmctaWY9IiFpLm5hbWUubGVuZ3RoIj4tLTwvc3Bhbj4KICAgICAgICA8c2Fwbj4mbmJzcDs8L3NhcG4+CiAgICAgICAgPHNwYW4gbmctaWY9ImkucmVtYXJrLmxlbmd0aCIgc3R5bGU9ImNvbG9yOiAjOTk5MzMzOyI+Jm5ic3A7Ly8mbmJzcDt7e2kucmVtYXJrfX08L3NwYW4+CiAgICAgIDwvbGk+CiAgICA8L3VsPgogICAgPGg2PgogICAgICB7eydERVRBSUwtUkVUVVJOLUlOVEVSRkFDRSd8dHJhbnNsYXRlfX0KICAgIDwvaDY+CgogICAgPGRpdiBjbGFzcz0icGFuZWwgcGFuZWwtZGVmYXVsdCI+CiAgICAgIDxkaXYgbmctaWY9IiFkYXRhLnJlc3BvbnNlUGFyYW1ldGVyc1R5cGUiIGpzb24yaHRtbD0iZGF0YS5yZXNwb25zZVBhcmFtZXRlcnMiIHN0eWxlPSJvdmVyZmxvdy15OiBhdXRvOyIKICAgICAgICAgICBjbGFzcz0icGFuZWwtYm9keSBqc29uLXBhbmVsIj48L2Rpdj4KICAgICAgPGRpdiBuZy1pZj0iZGF0YS5yZXNwb25zZVBhcmFtZXRlcnNUeXBlIiBqc29uLWZvcm1hdD0iZGF0YS5yZXNwb25zZUpzb24iIHN0eWxlPSJvdmVyZmxvdy15OiBhdXRvOyIKICAgICAgICAgICBjbGFzcz0icGFuZWwtYm9keSBqc29uLXBhbmVsIj48L2Rpdj4KICAgIDwvZGl2PgogIDwvZGl2PgoKPC9kaXY+CjwvZGl2PgoKPGRpdiBjbGFzcz0icm93IHdlbGwgd2VsbC1zbSIKICAgICBzdHlsZT0iIHBvc2l0aW9uOiBmaXhlZDsgYm90dG9tOiAwOyBsZWZ0OiAwOyByaWdodDogMDsgei1pbmRleDogOTk5O3RleHQtYWxpZ246IGNlbnRlcjttYXJnaW4tYm90dG9tOjA7Ij4KICA8YSBuZy1kaXNhYmxlZD0iYWRkRm9ybS4kaW52YWxpZCIgbmctY2xpY2s9InN1Ym1pdCgpIiBjbGFzcz0iYnRuIGJ0bi1zdWNjZXNzIj57eydTVUJNSVQnfHRyYW5zbGF0ZX19PC9hPgogIDxhIHVpLXNyZWY9Imxpc3QiIHN0eWxlPSJtYXJnaW4tbGVmdDogMTBweDsiIGNsYXNzPSJidG4gYnRuLWRlZmF1bHQiPnt7J0NBTkNFTCd8dHJhbnNsYXRlfX08L2E+CjwvZGl2PgoKPC9mb3JtPgo=","base64"),
       controller: require('./controller/detail.js')
     });
 
@@ -10009,115 +10038,126 @@ module.exports = ['$stateProvider', '$urlRouterProvider', '$provide', function (
 }];
 
 }).call(this,require("buffer").Buffer)
-},{"./controller/detail.js":3,"./controller/main.js":4,"buffer":27}],19:[function(require,module,exports){
+},{"./controller/detail.js":3,"./controller/main.js":4,"buffer":28}],20:[function(require,module,exports){
 /**
-*
-* @param json 需要处理的对象
-* @param id  父节点的ID
-* @param array 他的父级 如果为数组的话 将id传出数组
-* @returns {data|*}
-*/
+ *
+ * @param json 需要处理的对象
+ * @param id  父节点的ID
+ * @param array 他的父级 如果为数组的话 将id传出数组
+ * @returns {data|*}
+ */
 
 var json2Data = function(key,value,id,array,reData){
-  if(typeof(value)==='string'){
-    reData.push({
-      id: (''+id).length%2!=0 ? '0' + id : id,
-      kind: typeof(value),
-      name: key,
-      rule: value,
-      array: array,
-      nameVerify:'name_'+Date.parse(new Date()),
-      ruleVerify:'rule_'+Date.parse(new Date())
-    });
-  }else if(typeof(value)==='boolean' || typeof(value)==='number'){
-    reData.push({
-      id: (''+id).length%2!=0 ? '0' + id : id,
-      kind: 'mock',
-      name: key,
-      rule: value,
-      array: array,
-      nameVerify:'name_'+Date.parse(new Date()),
-      ruleVerify:'rule_'+Date.parse(new Date())
-    });
-  }else if(angular.isArray(value)){ //如果是一个数组
-    id = (''+id).length%2!=0 ? '0' + id : id;
-    if(value.length){
-      if(typeof(value[0]) === 'object'){ //如果这是一个数组对象的话
+    if(typeof(value)==='string'){
         reData.push({
-          id: id,
-          kind: 'array(object)',
-          name: key,
-          rule: '',
-          array: array,
-          nameVerify:'name_'+Date.parse(new Date()),
-          ruleVerify:'rule_'+Date.parse(new Date())
+            id: (''+id).length%2!=0 ? '0' + id : id,
+            kind: typeof(value),
+            name: key,
+            rule: value,
+            array: array,
+            nameVerify:'name_'+Date.parse(new Date()),
+            ruleVerify:'rule_'+Date.parse(new Date())
+        });
+    }else if(typeof(value)==='boolean' || typeof(value)==='number'){
+        reData.push({
+            id: (''+id).length%2!=0 ? '0' + id : id,
+            kind: 'mock',
+            name: key,
+            rule: value,
+            array: array,
+            nameVerify:'name_'+Date.parse(new Date()),
+            ruleVerify:'rule_'+Date.parse(new Date())
+        });
+    }else if(angular.isArray(value)){ //如果是一个数组
+        id = (''+id).length%2!=0 ? '0' + id : id;
+        if(value.length){
+            if(angular.isArray(value[0])){ //如果是二维数组
+                reData.push({
+                    id: id,
+                    kind: 'mock',
+                    name: key,
+                    rule: value,
+                    array: array,
+                    nameVerify:'name_'+Date.parse(new Date()),
+                    ruleVerify:'rule_'+Date.parse(new Date())
+                });
+            }
+            else if(angular.isObject(value[0])){ //如果这是一个数组对象的话
+                reData.push({
+                    id: id,
+                    kind: 'array(object)',
+                    name: key,
+                    rule: '',
+                    array: array,
+                    nameVerify:'name_'+Date.parse(new Date()),
+                    ruleVerify:'rule_'+Date.parse(new Date())
+                });
+                var _id = 0;
+                array.push(id);
+                angular.forEach(value[0],function(o,i){
+                    _id = parseInt(_id);
+                    _id = 1 + _id;
+                    _id = (''+ _id ).length%2!=0 ? '0'+_id:_id;
+                    json2Data(i,o,id+_id,array,reData);
+                });
+            }else{ //如果这是一个简单的数组的话
+                var _rule = '[';
+                angular.forEach(value,function(o,i){
+                    if(typeof(o) === 'string'){
+                        _rule += '"'+ o + '"';
+                    }else{
+                        _rule +=  o ;
+                    }
+                    if(i !== value.length-1){
+                        _rule += ',';
+                    }
+                });
+                _rule +=']';
+                reData.push({
+                    id: id,
+                    kind: 'mock',
+                    name: key,
+                    rule: _rule,
+                    array: array,
+                    nameVerify:'name_'+Date.parse(new Date()),
+                    ruleVerify:'rule_'+Date.parse(new Date())
+                });
+            }
+        }else{ //如果是一个空数组
+            reData.push({
+                id: id,
+                kind: 'mock',
+                name: key,
+                rule: "[]",
+                array: array,
+                nameVerify:'name_'+Date.parse(new Date()),
+                ruleVerify:'rule_'+Date.parse(new Date())
+            });
+        }
+    }else if(angular.isObject(value)){ //这不是一个空对象
+        id = (''+id).length%2!=0 ? '0'+ id : id ;
+        reData.push({
+            id: id,
+            kind: 'object',
+            name: key,
+            rule: "",
+            array: array,
+            nameVerify:'name_'+Date.parse(new Date()),
+            ruleVerify:'rule_'+Date.parse(new Date())
         });
         var _id = 0;
-        array.push(id);
-        angular.forEach(value[0],function(o,i){
-          _id = parseInt(_id);
-          _id = 1 + _id;
-          _id = (''+ _id ).length%2!=0 ? '0'+_id:_id;
-          json2Data(i,o,id+_id,array,reData);
-        });
-      }else{ //如果这是一个简单的数组的话
-        var _rule = '[';
         angular.forEach(value,function(o,i){
-          if(typeof(o) === 'string'){
-            _rule += '"'+ o + '"';
-          }else{
-            _rule +=  o ;
-          }
-          if(i !== value.length-1){
-            _rule += ',';
-          }
+            _id = parseInt(_id);
+            _id = 1 + _id;
+            _id = (''+ _id ).length%2!=0 ? '0'+_id:_id;
+            json2Data(i,o,id+_id,array,reData);
         });
-        _rule +=']';
-        reData.push({
-          id: id,
-          kind: 'mock',
-          name: key,
-          rule: _rule,
-          array: array,
-          nameVerify:'name_'+Date.parse(new Date()),
-          ruleVerify:'rule_'+Date.parse(new Date())
-        });
-      }
-    }else{ //如果是一个空数组
-      reData.push({
-        id: id,
-        kind: 'mock',
-        name: key,
-        rule: "[]",
-        array: array,
-        nameVerify:'name_'+Date.parse(new Date()),
-        ruleVerify:'rule_'+Date.parse(new Date())
-      });
     }
-  }else if(angular.isObject(value)){ //这不是一个空对象
-    id = (''+id).length%2!=0 ? '0'+ id : id ;
-    reData.push({
-      id: id,
-      kind: 'object',
-      name: key,
-      rule: "",
-      array: array,
-      nameVerify:'name_'+Date.parse(new Date()),
-      ruleVerify:'rule_'+Date.parse(new Date())
-    });
-    var _id = 0;
-    angular.forEach(value,function(o,i){
-      _id = parseInt(_id);
-      _id = 1 + _id;
-      _id = (''+ _id ).length%2!=0 ? '0'+_id:_id;
-      json2Data(i,o,id+_id,array,reData);
-    });
-  }
 };
 
 module.exports = json2Data;
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * Created by lihui on 15-1-22.
  */
@@ -10127,7 +10167,7 @@ module.exports = angular.module('service', [])
   .factory('json2Data', function () {
     return  require('./json2Data')
   });
-},{"./json2Data":19}],21:[function(require,module,exports){
+},{"./json2Data":20}],22:[function(require,module,exports){
 /*!
  * angular-translate - v2.6.0 - 2015-02-08
  * http://github.com/angular-translate/angular-translate
@@ -12483,7 +12523,7 @@ angular.module('pascalprecht.translate')
   return translateFilter;
 }]);
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /**
  * State-based routing for AngularJS
  * @version v0.2.10
@@ -15707,7 +15747,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
         .provider('$route', $RouteProvider)
         .directive('ngView', $ViewDirective);
 })(window, window.angular);
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /**
  * @license AngularJS v1.2.19
  * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -37486,7 +37526,7 @@ var styleDirective = valueFn({
 })(window, document);
 
 !window.angular.$$csp() && window.angular.element(document).find('head').prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style>');
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /*
     json2.js
     2012-10-08
@@ -37974,7 +38014,7 @@ if (typeof JSON !== 'object') {
     }
 }());
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /*! mockjs 23-06-2014 15:57:37 */
 /*! src/mock-prefix.js */
 /*!
@@ -39594,7 +39634,7 @@ if (typeof JSON !== 'object') {
         };
     }).call(window);
 }).call(window);
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -43712,7 +43752,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "</ul>");
 }]);
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -43722,14 +43762,17 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
 
 var base64 = require('base64-js')
 var ieee754 = require('ieee754')
+var isArray = require('is-array')
 
 exports.Buffer = Buffer
-exports.SlowBuffer = Buffer
+exports.SlowBuffer = SlowBuffer
 exports.INSPECT_MAX_BYTES = 50
-Buffer.poolSize = 8192
+Buffer.poolSize = 8192 // not used by this implementation
+
+var rootParent = {}
 
 /**
- * If `TYPED_ARRAY_SUPPORT`:
+ * If `Buffer.TYPED_ARRAY_SUPPORT`:
  *   === true    Use Uint8Array implementation (fastest)
  *   === false   Use Object implementation (most compatible, even IE6)
  *
@@ -43747,21 +43790,30 @@ Buffer.poolSize = 8192
  *  - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
  *    incorrect length in some situations.
  *
- * We detect these buggy browsers and set `TYPED_ARRAY_SUPPORT` to `false` so they will
+ * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they will
  * get the Object implementation, which is slower but will work correctly.
  */
-var TYPED_ARRAY_SUPPORT = (function () {
+Buffer.TYPED_ARRAY_SUPPORT = (function () {
+  function Foo () {}
   try {
     var buf = new ArrayBuffer(0)
     var arr = new Uint8Array(buf)
     arr.foo = function () { return 42 }
-    return 42 === arr.foo() && // typed array instances can be augmented
+    arr.constructor = Foo
+    return arr.foo() === 42 && // typed array instances can be augmented
+        arr.constructor === Foo && // constructor can be set
         typeof arr.subarray === 'function' && // chrome 9-10 lack `subarray`
         new Uint8Array(1).subarray(1, 1).byteLength === 0 // ie10 has broken `subarray`
   } catch (e) {
     return false
   }
 })()
+
+function kMaxLength () {
+  return Buffer.TYPED_ARRAY_SUPPORT
+    ? 0x7fffffff
+    : 0x3fffffff
+}
 
 /**
  * Class: Buffer
@@ -43775,66 +43827,192 @@ var TYPED_ARRAY_SUPPORT = (function () {
  * By augmenting the instances, we can avoid modifying the `Uint8Array`
  * prototype.
  */
-function Buffer (subject, encoding, noZero) {
-  if (!(this instanceof Buffer))
-    return new Buffer(subject, encoding, noZero)
+function Buffer (arg) {
+  if (!(this instanceof Buffer)) {
+    // Avoid going through an ArgumentsAdaptorTrampoline in the common case.
+    if (arguments.length > 1) return new Buffer(arg, arguments[1])
+    return new Buffer(arg)
+  }
 
-  var type = typeof subject
+  this.length = 0
+  this.parent = undefined
 
-  // Find the length
-  var length
-  if (type === 'number')
-    length = subject > 0 ? subject >>> 0 : 0
-  else if (type === 'string') {
-    if (encoding === 'base64')
-      subject = base64clean(subject)
-    length = Buffer.byteLength(subject, encoding)
-  } else if (type === 'object' && subject !== null) { // assume object is array-like
-    if (subject.type === 'Buffer' && isArray(subject.data))
-      subject = subject.data
-    length = +subject.length > 0 ? Math.floor(+subject.length) : 0
-  } else
-    throw new Error('First argument needs to be a number, array or string.')
+  // Common case.
+  if (typeof arg === 'number') {
+    return fromNumber(this, arg)
+  }
 
-  var buf
-  if (TYPED_ARRAY_SUPPORT) {
-    // Preferred: Return an augmented `Uint8Array` instance for best performance
-    buf = Buffer._augment(new Uint8Array(length))
+  // Slightly less common case.
+  if (typeof arg === 'string') {
+    return fromString(this, arg, arguments.length > 1 ? arguments[1] : 'utf8')
+  }
+
+  // Unusual.
+  return fromObject(this, arg)
+}
+
+function fromNumber (that, length) {
+  that = allocate(that, length < 0 ? 0 : checked(length) | 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < length; i++) {
+      that[i] = 0
+    }
+  }
+  return that
+}
+
+function fromString (that, string, encoding) {
+  if (typeof encoding !== 'string' || encoding === '') encoding = 'utf8'
+
+  // Assumption: byteLength() return value is always < kMaxLength.
+  var length = byteLength(string, encoding) | 0
+  that = allocate(that, length)
+
+  that.write(string, encoding)
+  return that
+}
+
+function fromObject (that, object) {
+  if (Buffer.isBuffer(object)) return fromBuffer(that, object)
+
+  if (isArray(object)) return fromArray(that, object)
+
+  if (object == null) {
+    throw new TypeError('must start with number, buffer, array or string')
+  }
+
+  if (typeof ArrayBuffer !== 'undefined' && object.buffer instanceof ArrayBuffer) {
+    return fromTypedArray(that, object)
+  }
+
+  if (object.length) return fromArrayLike(that, object)
+
+  return fromJsonObject(that, object)
+}
+
+function fromBuffer (that, buffer) {
+  var length = checked(buffer.length) | 0
+  that = allocate(that, length)
+  buffer.copy(that, 0, 0, length)
+  return that
+}
+
+function fromArray (that, array) {
+  var length = checked(array.length) | 0
+  that = allocate(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+// Duplicate of fromArray() to keep fromArray() monomorphic.
+function fromTypedArray (that, array) {
+  var length = checked(array.length) | 0
+  that = allocate(that, length)
+  // Truncating the elements is probably not what people expect from typed
+  // arrays with BYTES_PER_ELEMENT > 1 but it's compatible with the behavior
+  // of the old Buffer constructor.
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function fromArrayLike (that, array) {
+  var length = checked(array.length) | 0
+  that = allocate(that, length)
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+// Deserialize { type: 'Buffer', data: [1,2,3,...] } into a Buffer object.
+// Returns a zero-length buffer for inputs that don't conform to the spec.
+function fromJsonObject (that, object) {
+  var array
+  var length = 0
+
+  if (object.type === 'Buffer' && isArray(object.data)) {
+    array = object.data
+    length = checked(array.length) | 0
+  }
+  that = allocate(that, length)
+
+  for (var i = 0; i < length; i += 1) {
+    that[i] = array[i] & 255
+  }
+  return that
+}
+
+function allocate (that, length) {
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    // Return an augmented `Uint8Array` instance, for best performance
+    that = Buffer._augment(new Uint8Array(length))
   } else {
-    // Fallback: Return THIS instance of Buffer (created by `new`)
-    buf = this
-    buf.length = length
-    buf._isBuffer = true
+    // Fallback: Return an object instance of the Buffer class
+    that.length = length
+    that._isBuffer = true
   }
 
-  var i
-  if (TYPED_ARRAY_SUPPORT && typeof subject.byteLength === 'number') {
-    // Speed optimization -- use set if we're copying from a typed array
-    buf._set(subject)
-  } else if (isArrayish(subject)) {
-    // Treat array-ish objects as a byte array
-    if (Buffer.isBuffer(subject)) {
-      for (i = 0; i < length; i++)
-        buf[i] = subject.readUInt8(i)
-    } else {
-      for (i = 0; i < length; i++)
-        buf[i] = ((subject[i] % 256) + 256) % 256
-    }
-  } else if (type === 'string') {
-    buf.write(subject, 0, encoding)
-  } else if (type === 'number' && !TYPED_ARRAY_SUPPORT && !noZero) {
-    for (i = 0; i < length; i++) {
-      buf[i] = 0
-    }
-  }
+  var fromPool = length !== 0 && length <= Buffer.poolSize >>> 1
+  if (fromPool) that.parent = rootParent
 
+  return that
+}
+
+function checked (length) {
+  // Note: cannot use `length < kMaxLength` here because that fails when
+  // length is NaN (which is otherwise coerced to zero.)
+  if (length >= kMaxLength()) {
+    throw new RangeError('Attempt to allocate Buffer larger than maximum ' +
+                         'size: 0x' + kMaxLength().toString(16) + ' bytes')
+  }
+  return length | 0
+}
+
+function SlowBuffer (subject, encoding) {
+  if (!(this instanceof SlowBuffer)) return new SlowBuffer(subject, encoding)
+
+  var buf = new Buffer(subject, encoding)
+  delete buf.parent
   return buf
 }
 
-// STATIC METHODS
-// ==============
+Buffer.isBuffer = function isBuffer (b) {
+  return !!(b != null && b._isBuffer)
+}
 
-Buffer.isEncoding = function (encoding) {
+Buffer.compare = function compare (a, b) {
+  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
+    throw new TypeError('Arguments must be Buffers')
+  }
+
+  if (a === b) return 0
+
+  var x = a.length
+  var y = b.length
+
+  var i = 0
+  var len = Math.min(x, y)
+  while (i < len) {
+    if (a[i] !== b[i]) break
+
+    ++i
+  }
+
+  if (i !== len) {
+    x = a[i]
+    y = b[i]
+  }
+
+  if (x < y) return -1
+  if (y < x) return 1
+  return 0
+}
+
+Buffer.isEncoding = function isEncoding (encoding) {
   switch (String(encoding).toLowerCase()) {
     case 'hex':
     case 'utf8':
@@ -43853,43 +44031,8 @@ Buffer.isEncoding = function (encoding) {
   }
 }
 
-Buffer.isBuffer = function (b) {
-  return !!(b != null && b._isBuffer)
-}
-
-Buffer.byteLength = function (str, encoding) {
-  var ret
-  str = str.toString()
-  switch (encoding || 'utf8') {
-    case 'hex':
-      ret = str.length / 2
-      break
-    case 'utf8':
-    case 'utf-8':
-      ret = utf8ToBytes(str).length
-      break
-    case 'ascii':
-    case 'binary':
-    case 'raw':
-      ret = str.length
-      break
-    case 'base64':
-      ret = base64ToBytes(str).length
-      break
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      ret = str.length * 2
-      break
-    default:
-      throw new Error('Unknown encoding')
-  }
-  return ret
-}
-
-Buffer.concat = function (list, totalLength) {
-  assert(isArray(list), 'Usage: Buffer.concat(list[, length])')
+Buffer.concat = function concat (list, length) {
+  if (!isArray(list)) throw new TypeError('list argument must be an Array of Buffers.')
 
   if (list.length === 0) {
     return new Buffer(0)
@@ -43898,14 +44041,14 @@ Buffer.concat = function (list, totalLength) {
   }
 
   var i
-  if (totalLength === undefined) {
-    totalLength = 0
+  if (length === undefined) {
+    length = 0
     for (i = 0; i < list.length; i++) {
-      totalLength += list[i].length
+      length += list[i].length
     }
   }
 
-  var buf = new Buffer(totalLength)
+  var buf = new Buffer(length)
   var pos = 0
   for (i = 0; i < list.length; i++) {
     var item = list[i]
@@ -43915,26 +44058,171 @@ Buffer.concat = function (list, totalLength) {
   return buf
 }
 
-Buffer.compare = function (a, b) {
-  assert(Buffer.isBuffer(a) && Buffer.isBuffer(b), 'Arguments must be Buffers')
-  var x = a.length
-  var y = b.length
-  for (var i = 0, len = Math.min(x, y); i < len && a[i] === b[i]; i++) {}
-  if (i !== len) {
-    x = a[i]
-    y = b[i]
+function byteLength (string, encoding) {
+  if (typeof string !== 'string') string = '' + string
+
+  var len = string.length
+  if (len === 0) return 0
+
+  // Use a for loop to avoid recursion
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'ascii':
+      case 'binary':
+      // Deprecated
+      case 'raw':
+      case 'raws':
+        return len
+      case 'utf8':
+      case 'utf-8':
+        return utf8ToBytes(string).length
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return len * 2
+      case 'hex':
+        return len >>> 1
+      case 'base64':
+        return base64ToBytes(string).length
+      default:
+        if (loweredCase) return utf8ToBytes(string).length // assume utf8
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
+    }
   }
-  if (x < y) {
-    return -1
+}
+Buffer.byteLength = byteLength
+
+// pre-set for values that may exist in the future
+Buffer.prototype.length = undefined
+Buffer.prototype.parent = undefined
+
+function slowToString (encoding, start, end) {
+  var loweredCase = false
+
+  start = start | 0
+  end = end === undefined || end === Infinity ? this.length : end | 0
+
+  if (!encoding) encoding = 'utf8'
+  if (start < 0) start = 0
+  if (end > this.length) end = this.length
+  if (end <= start) return ''
+
+  while (true) {
+    switch (encoding) {
+      case 'hex':
+        return hexSlice(this, start, end)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Slice(this, start, end)
+
+      case 'ascii':
+        return asciiSlice(this, start, end)
+
+      case 'binary':
+        return binarySlice(this, start, end)
+
+      case 'base64':
+        return base64Slice(this, start, end)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return utf16leSlice(this, start, end)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = (encoding + '').toLowerCase()
+        loweredCase = true
+    }
   }
-  if (y < x) {
-    return 1
-  }
-  return 0
 }
 
-// BUFFER INSTANCE METHODS
-// =======================
+Buffer.prototype.toString = function toString () {
+  var length = this.length | 0
+  if (length === 0) return ''
+  if (arguments.length === 0) return utf8Slice(this, 0, length)
+  return slowToString.apply(this, arguments)
+}
+
+Buffer.prototype.equals = function equals (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return true
+  return Buffer.compare(this, b) === 0
+}
+
+Buffer.prototype.inspect = function inspect () {
+  var str = ''
+  var max = exports.INSPECT_MAX_BYTES
+  if (this.length > 0) {
+    str = this.toString('hex', 0, max).match(/.{2}/g).join(' ')
+    if (this.length > max) str += ' ... '
+  }
+  return '<Buffer ' + str + '>'
+}
+
+Buffer.prototype.compare = function compare (b) {
+  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
+  if (this === b) return 0
+  return Buffer.compare(this, b)
+}
+
+Buffer.prototype.indexOf = function indexOf (val, byteOffset) {
+  if (byteOffset > 0x7fffffff) byteOffset = 0x7fffffff
+  else if (byteOffset < -0x80000000) byteOffset = -0x80000000
+  byteOffset >>= 0
+
+  if (this.length === 0) return -1
+  if (byteOffset >= this.length) return -1
+
+  // Negative offsets start from the end of the buffer
+  if (byteOffset < 0) byteOffset = Math.max(this.length + byteOffset, 0)
+
+  if (typeof val === 'string') {
+    if (val.length === 0) return -1 // special case: looking for empty string always fails
+    return String.prototype.indexOf.call(this, val, byteOffset)
+  }
+  if (Buffer.isBuffer(val)) {
+    return arrayIndexOf(this, val, byteOffset)
+  }
+  if (typeof val === 'number') {
+    if (Buffer.TYPED_ARRAY_SUPPORT && Uint8Array.prototype.indexOf === 'function') {
+      return Uint8Array.prototype.indexOf.call(this, val, byteOffset)
+    }
+    return arrayIndexOf(this, [ val ], byteOffset)
+  }
+
+  function arrayIndexOf (arr, val, byteOffset) {
+    var foundIndex = -1
+    for (var i = 0; byteOffset + i < arr.length; i++) {
+      if (arr[byteOffset + i] === val[foundIndex === -1 ? 0 : i - foundIndex]) {
+        if (foundIndex === -1) foundIndex = i
+        if (i - foundIndex + 1 === val.length) return byteOffset + foundIndex
+      } else {
+        foundIndex = -1
+      }
+    }
+    return -1
+  }
+
+  throw new TypeError('val must be string, number or Buffer')
+}
+
+// `get` will be removed in Node 0.13+
+Buffer.prototype.get = function get (offset) {
+  console.log('.get() is deprecated. Access using array indexes instead.')
+  return this.readUInt8(offset)
+}
+
+// `set` will be removed in Node 0.13+
+Buffer.prototype.set = function set (v, offset) {
+  console.log('.set() is deprecated. Access using array indexes instead.')
+  return this.writeUInt8(v, offset)
+}
 
 function hexWrite (buf, string, offset, length) {
   offset = Number(offset) || 0
@@ -43950,27 +44238,25 @@ function hexWrite (buf, string, offset, length) {
 
   // must be an even number of digits
   var strLen = string.length
-  assert(strLen % 2 === 0, 'Invalid hex string')
+  if (strLen % 2 !== 0) throw new Error('Invalid hex string')
 
   if (length > strLen / 2) {
     length = strLen / 2
   }
   for (var i = 0; i < length; i++) {
-    var byte = parseInt(string.substr(i * 2, 2), 16)
-    assert(!isNaN(byte), 'Invalid hex string')
-    buf[offset + i] = byte
+    var parsed = parseInt(string.substr(i * 2, 2), 16)
+    if (isNaN(parsed)) throw new Error('Invalid hex string')
+    buf[offset + i] = parsed
   }
   return i
 }
 
 function utf8Write (buf, string, offset, length) {
-  var charsWritten = blitBuffer(utf8ToBytes(string), buf, offset, length)
-  return charsWritten
+  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
 }
 
 function asciiWrite (buf, string, offset, length) {
-  var charsWritten = blitBuffer(asciiToBytes(string), buf, offset, length)
-  return charsWritten
+  return blitBuffer(asciiToBytes(string), buf, offset, length)
 }
 
 function binaryWrite (buf, string, offset, length) {
@@ -43978,163 +44264,89 @@ function binaryWrite (buf, string, offset, length) {
 }
 
 function base64Write (buf, string, offset, length) {
-  var charsWritten = blitBuffer(base64ToBytes(string), buf, offset, length)
-  return charsWritten
+  return blitBuffer(base64ToBytes(string), buf, offset, length)
 }
 
-function utf16leWrite (buf, string, offset, length) {
-  var charsWritten = blitBuffer(utf16leToBytes(string), buf, offset, length)
-  return charsWritten
+function ucs2Write (buf, string, offset, length) {
+  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
 }
 
-Buffer.prototype.write = function (string, offset, length, encoding) {
-  // Support both (string, offset, length, encoding)
-  // and the legacy (string, encoding, offset, length)
-  if (isFinite(offset)) {
-    if (!isFinite(length)) {
+Buffer.prototype.write = function write (string, offset, length, encoding) {
+  // Buffer#write(string)
+  if (offset === undefined) {
+    encoding = 'utf8'
+    length = this.length
+    offset = 0
+  // Buffer#write(string, encoding)
+  } else if (length === undefined && typeof offset === 'string') {
+    encoding = offset
+    length = this.length
+    offset = 0
+  // Buffer#write(string, offset[, length][, encoding])
+  } else if (isFinite(offset)) {
+    offset = offset | 0
+    if (isFinite(length)) {
+      length = length | 0
+      if (encoding === undefined) encoding = 'utf8'
+    } else {
       encoding = length
       length = undefined
     }
-  } else {  // legacy
+  // legacy write(string, encoding, offset, length) - remove in v0.13
+  } else {
     var swap = encoding
     encoding = offset
-    offset = length
+    offset = length | 0
     length = swap
   }
 
-  offset = Number(offset) || 0
   var remaining = this.length - offset
-  if (!length) {
-    length = remaining
-  } else {
-    length = Number(length)
-    if (length > remaining) {
-      length = remaining
+  if (length === undefined || length > remaining) length = remaining
+
+  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
+    throw new RangeError('attempt to write outside buffer bounds')
+  }
+
+  if (!encoding) encoding = 'utf8'
+
+  var loweredCase = false
+  for (;;) {
+    switch (encoding) {
+      case 'hex':
+        return hexWrite(this, string, offset, length)
+
+      case 'utf8':
+      case 'utf-8':
+        return utf8Write(this, string, offset, length)
+
+      case 'ascii':
+        return asciiWrite(this, string, offset, length)
+
+      case 'binary':
+        return binaryWrite(this, string, offset, length)
+
+      case 'base64':
+        // Warning: maxLength not taken into account in base64Write
+        return base64Write(this, string, offset, length)
+
+      case 'ucs2':
+      case 'ucs-2':
+      case 'utf16le':
+      case 'utf-16le':
+        return ucs2Write(this, string, offset, length)
+
+      default:
+        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
+        encoding = ('' + encoding).toLowerCase()
+        loweredCase = true
     }
   }
-  encoding = String(encoding || 'utf8').toLowerCase()
-
-  var ret
-  switch (encoding) {
-    case 'hex':
-      ret = hexWrite(this, string, offset, length)
-      break
-    case 'utf8':
-    case 'utf-8':
-      ret = utf8Write(this, string, offset, length)
-      break
-    case 'ascii':
-      ret = asciiWrite(this, string, offset, length)
-      break
-    case 'binary':
-      ret = binaryWrite(this, string, offset, length)
-      break
-    case 'base64':
-      ret = base64Write(this, string, offset, length)
-      break
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      ret = utf16leWrite(this, string, offset, length)
-      break
-    default:
-      throw new Error('Unknown encoding')
-  }
-  return ret
 }
 
-Buffer.prototype.toString = function (encoding, start, end) {
-  var self = this
-
-  encoding = String(encoding || 'utf8').toLowerCase()
-  start = Number(start) || 0
-  end = (end === undefined) ? self.length : Number(end)
-
-  // Fastpath empty strings
-  if (end === start)
-    return ''
-
-  var ret
-  switch (encoding) {
-    case 'hex':
-      ret = hexSlice(self, start, end)
-      break
-    case 'utf8':
-    case 'utf-8':
-      ret = utf8Slice(self, start, end)
-      break
-    case 'ascii':
-      ret = asciiSlice(self, start, end)
-      break
-    case 'binary':
-      ret = binarySlice(self, start, end)
-      break
-    case 'base64':
-      ret = base64Slice(self, start, end)
-      break
-    case 'ucs2':
-    case 'ucs-2':
-    case 'utf16le':
-    case 'utf-16le':
-      ret = utf16leSlice(self, start, end)
-      break
-    default:
-      throw new Error('Unknown encoding')
-  }
-  return ret
-}
-
-Buffer.prototype.toJSON = function () {
+Buffer.prototype.toJSON = function toJSON () {
   return {
     type: 'Buffer',
     data: Array.prototype.slice.call(this._arr || this, 0)
-  }
-}
-
-Buffer.prototype.equals = function (b) {
-  assert(Buffer.isBuffer(b), 'Argument must be a Buffer')
-  return Buffer.compare(this, b) === 0
-}
-
-Buffer.prototype.compare = function (b) {
-  assert(Buffer.isBuffer(b), 'Argument must be a Buffer')
-  return Buffer.compare(this, b)
-}
-
-// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
-Buffer.prototype.copy = function (target, target_start, start, end) {
-  var source = this
-
-  if (!start) start = 0
-  if (!end && end !== 0) end = this.length
-  if (!target_start) target_start = 0
-
-  // Copy 0 bytes; we're done
-  if (end === start) return
-  if (target.length === 0 || source.length === 0) return
-
-  // Fatal error conditions
-  assert(end >= start, 'sourceEnd < sourceStart')
-  assert(target_start >= 0 && target_start < target.length,
-      'targetStart out of bounds')
-  assert(start >= 0 && start < source.length, 'sourceStart out of bounds')
-  assert(end >= 0 && end <= source.length, 'sourceEnd out of bounds')
-
-  // Are we oob?
-  if (end > this.length)
-    end = this.length
-  if (target.length - target_start < end - start)
-    end = target.length - target_start + start
-
-  var len = end - start
-
-  if (len < 100 || !TYPED_ARRAY_SUPPORT) {
-    for (var i = 0; i < len; i++) {
-      target[i + target_start] = this[i + start]
-    }
-  } else {
-    target._set(this.subarray(start, start + len), target_start)
   }
 }
 
@@ -44168,13 +44380,19 @@ function asciiSlice (buf, start, end) {
   end = Math.min(buf.length, end)
 
   for (var i = start; i < end; i++) {
-    ret += String.fromCharCode(buf[i])
+    ret += String.fromCharCode(buf[i] & 0x7F)
   }
   return ret
 }
 
 function binarySlice (buf, start, end) {
-  return asciiSlice(buf, start, end)
+  var ret = ''
+  end = Math.min(buf.length, end)
+
+  for (var i = start; i < end; i++) {
+    ret += String.fromCharCode(buf[i])
+  }
+  return ret
 }
 
 function hexSlice (buf, start, end) {
@@ -44199,453 +44417,522 @@ function utf16leSlice (buf, start, end) {
   return res
 }
 
-Buffer.prototype.slice = function (start, end) {
+Buffer.prototype.slice = function slice (start, end) {
   var len = this.length
   start = ~~start
   end = end === undefined ? len : ~~end
 
   if (start < 0) {
-    start += len;
-    if (start < 0)
-      start = 0
+    start += len
+    if (start < 0) start = 0
   } else if (start > len) {
     start = len
   }
 
   if (end < 0) {
     end += len
-    if (end < 0)
-      end = 0
+    if (end < 0) end = 0
   } else if (end > len) {
     end = len
   }
 
-  if (end < start)
-    end = start
+  if (end < start) end = start
 
-  if (TYPED_ARRAY_SUPPORT) {
-    return Buffer._augment(this.subarray(start, end))
+  var newBuf
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    newBuf = Buffer._augment(this.subarray(start, end))
   } else {
     var sliceLen = end - start
-    var newBuf = new Buffer(sliceLen, undefined, true)
+    newBuf = new Buffer(sliceLen, undefined)
     for (var i = 0; i < sliceLen; i++) {
       newBuf[i] = this[i + start]
     }
-    return newBuf
   }
+
+  if (newBuf.length) newBuf.parent = this.parent || this
+
+  return newBuf
 }
 
-// `get` will be removed in Node 0.13+
-Buffer.prototype.get = function (offset) {
-  console.log('.get() is deprecated. Access using array indexes instead.')
-  return this.readUInt8(offset)
+/*
+ * Need to make sure that buffer isn't trying to write out of bounds.
+ */
+function checkOffset (offset, ext, length) {
+  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
+  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
 }
 
-// `set` will be removed in Node 0.13+
-Buffer.prototype.set = function (v, offset) {
-  console.log('.set() is deprecated. Access using array indexes instead.')
-  return this.writeUInt8(v, offset)
+Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
+  }
+
+  return val
 }
 
-Buffer.prototype.readUInt8 = function (offset, noAssert) {
+Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
   if (!noAssert) {
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset < this.length, 'Trying to read beyond buffer length')
+    checkOffset(offset, byteLength, this.length)
   }
 
-  if (offset >= this.length)
-    return
+  var val = this[offset + --byteLength]
+  var mul = 1
+  while (byteLength > 0 && (mul *= 0x100)) {
+    val += this[offset + --byteLength] * mul
+  }
 
+  return val
+}
+
+Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
   return this[offset]
 }
 
-function readUInt16 (buf, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 1 < buf.length, 'Trying to read beyond buffer length')
-  }
+Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return this[offset] | (this[offset + 1] << 8)
+}
 
-  var len = buf.length
-  if (offset >= len)
-    return
+Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  return (this[offset] << 8) | this[offset + 1]
+}
 
-  var val
-  if (littleEndian) {
-    val = buf[offset]
-    if (offset + 1 < len)
-      val |= buf[offset + 1] << 8
-  } else {
-    val = buf[offset] << 8
-    if (offset + 1 < len)
-      val |= buf[offset + 1]
+Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return ((this[offset]) |
+      (this[offset + 1] << 8) |
+      (this[offset + 2] << 16)) +
+      (this[offset + 3] * 0x1000000)
+}
+
+Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] * 0x1000000) +
+    ((this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    this[offset + 3])
+}
+
+Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
+
+  var val = this[offset]
+  var mul = 1
+  var i = 0
+  while (++i < byteLength && (mul *= 0x100)) {
+    val += this[offset + i] * mul
   }
+  mul *= 0x80
+
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
+
   return val
 }
 
-Buffer.prototype.readUInt16LE = function (offset, noAssert) {
-  return readUInt16(this, offset, true, noAssert)
-}
+Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkOffset(offset, byteLength, this.length)
 
-Buffer.prototype.readUInt16BE = function (offset, noAssert) {
-  return readUInt16(this, offset, false, noAssert)
-}
-
-function readUInt32 (buf, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 3 < buf.length, 'Trying to read beyond buffer length')
+  var i = byteLength
+  var mul = 1
+  var val = this[offset + --i]
+  while (i > 0 && (mul *= 0x100)) {
+    val += this[offset + --i] * mul
   }
+  mul *= 0x80
 
-  var len = buf.length
-  if (offset >= len)
-    return
+  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
 
-  var val
-  if (littleEndian) {
-    if (offset + 2 < len)
-      val = buf[offset + 2] << 16
-    if (offset + 1 < len)
-      val |= buf[offset + 1] << 8
-    val |= buf[offset]
-    if (offset + 3 < len)
-      val = val + (buf[offset + 3] << 24 >>> 0)
-  } else {
-    if (offset + 1 < len)
-      val = buf[offset + 1] << 16
-    if (offset + 2 < len)
-      val |= buf[offset + 2] << 8
-    if (offset + 3 < len)
-      val |= buf[offset + 3]
-    val = val + (buf[offset] << 24 >>> 0)
-  }
   return val
 }
 
-Buffer.prototype.readUInt32LE = function (offset, noAssert) {
-  return readUInt32(this, offset, true, noAssert)
+Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 1, this.length)
+  if (!(this[offset] & 0x80)) return (this[offset])
+  return ((0xff - this[offset] + 1) * -1)
 }
 
-Buffer.prototype.readUInt32BE = function (offset, noAssert) {
-  return readUInt32(this, offset, false, noAssert)
+Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset] | (this[offset + 1] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
 }
 
-Buffer.prototype.readInt8 = function (offset, noAssert) {
-  if (!noAssert) {
-    assert(offset !== undefined && offset !== null,
-        'missing offset')
-    assert(offset < this.length, 'Trying to read beyond buffer length')
+Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 2, this.length)
+  var val = this[offset + 1] | (this[offset] << 8)
+  return (val & 0x8000) ? val | 0xFFFF0000 : val
+}
+
+Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset]) |
+    (this[offset + 1] << 8) |
+    (this[offset + 2] << 16) |
+    (this[offset + 3] << 24)
+}
+
+Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+
+  return (this[offset] << 24) |
+    (this[offset + 1] << 16) |
+    (this[offset + 2] << 8) |
+    (this[offset + 3])
+}
+
+Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, true, 23, 4)
+}
+
+Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 4, this.length)
+  return ieee754.read(this, offset, false, 23, 4)
+}
+
+Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, true, 52, 8)
+}
+
+Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
+  if (!noAssert) checkOffset(offset, 8, this.length)
+  return ieee754.read(this, offset, false, 52, 8)
+}
+
+function checkInt (buf, value, offset, ext, max, min) {
+  if (!Buffer.isBuffer(buf)) throw new TypeError('buffer must be a Buffer instance')
+  if (value > max || value < min) throw new RangeError('value is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('index out of range')
+}
+
+Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+
+  var mul = 1
+  var i = 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
   }
 
-  if (offset >= this.length)
-    return
-
-  var neg = this[offset] & 0x80
-  if (neg)
-    return (0xff - this[offset] + 1) * -1
-  else
-    return this[offset]
+  return offset + byteLength
 }
 
-function readInt16 (buf, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 1 < buf.length, 'Trying to read beyond buffer length')
+Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  byteLength = byteLength | 0
+  if (!noAssert) checkInt(this, value, offset, byteLength, Math.pow(2, 8 * byteLength), 0)
+
+  var i = byteLength - 1
+  var mul = 1
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = (value / mul) & 0xFF
   }
 
-  var len = buf.length
-  if (offset >= len)
-    return
-
-  var val = readUInt16(buf, offset, littleEndian, true)
-  var neg = val & 0x8000
-  if (neg)
-    return (0xffff - val + 1) * -1
-  else
-    return val
+  return offset + byteLength
 }
 
-Buffer.prototype.readInt16LE = function (offset, noAssert) {
-  return readInt16(this, offset, true, noAssert)
-}
-
-Buffer.prototype.readInt16BE = function (offset, noAssert) {
-  return readInt16(this, offset, false, noAssert)
-}
-
-function readInt32 (buf, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 3 < buf.length, 'Trying to read beyond buffer length')
-  }
-
-  var len = buf.length
-  if (offset >= len)
-    return
-
-  var val = readUInt32(buf, offset, littleEndian, true)
-  var neg = val & 0x80000000
-  if (neg)
-    return (0xffffffff - val + 1) * -1
-  else
-    return val
-}
-
-Buffer.prototype.readInt32LE = function (offset, noAssert) {
-  return readInt32(this, offset, true, noAssert)
-}
-
-Buffer.prototype.readInt32BE = function (offset, noAssert) {
-  return readInt32(this, offset, false, noAssert)
-}
-
-function readFloat (buf, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset + 3 < buf.length, 'Trying to read beyond buffer length')
-  }
-
-  return ieee754.read(buf, offset, littleEndian, 23, 4)
-}
-
-Buffer.prototype.readFloatLE = function (offset, noAssert) {
-  return readFloat(this, offset, true, noAssert)
-}
-
-Buffer.prototype.readFloatBE = function (offset, noAssert) {
-  return readFloat(this, offset, false, noAssert)
-}
-
-function readDouble (buf, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset + 7 < buf.length, 'Trying to read beyond buffer length')
-  }
-
-  return ieee754.read(buf, offset, littleEndian, 52, 8)
-}
-
-Buffer.prototype.readDoubleLE = function (offset, noAssert) {
-  return readDouble(this, offset, true, noAssert)
-}
-
-Buffer.prototype.readDoubleBE = function (offset, noAssert) {
-  return readDouble(this, offset, false, noAssert)
-}
-
-Buffer.prototype.writeUInt8 = function (value, offset, noAssert) {
-  if (!noAssert) {
-    assert(value !== undefined && value !== null, 'missing value')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset < this.length, 'trying to write beyond buffer length')
-    verifuint(value, 0xff)
-  }
-
-  if (offset >= this.length) return
-
+Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0xff, 0)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
   this[offset] = value
   return offset + 1
 }
 
-function writeUInt16 (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(value !== undefined && value !== null, 'missing value')
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 1 < buf.length, 'trying to write beyond buffer length')
-    verifuint(value, 0xffff)
+function objectWriteUInt16 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; i++) {
+    buf[offset + i] = (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
+      (littleEndian ? i : 1 - i) * 8
   }
+}
 
-  var len = buf.length
-  if (offset >= len)
-    return
-
-  for (var i = 0, j = Math.min(len - offset, 2); i < j; i++) {
-    buf[offset + i] =
-        (value & (0xff << (8 * (littleEndian ? i : 1 - i)))) >>>
-            (littleEndian ? i : 1 - i) * 8
+Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
   }
   return offset + 2
 }
 
-Buffer.prototype.writeUInt16LE = function (value, offset, noAssert) {
-  return writeUInt16(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeUInt16BE = function (value, offset, noAssert) {
-  return writeUInt16(this, value, offset, false, noAssert)
-}
-
-function writeUInt32 (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(value !== undefined && value !== null, 'missing value')
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 3 < buf.length, 'trying to write beyond buffer length')
-    verifuint(value, 0xffffffff)
+Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0xffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = value
+  } else {
+    objectWriteUInt16(this, value, offset, false)
   }
+  return offset + 2
+}
 
-  var len = buf.length
-  if (offset >= len)
-    return
+function objectWriteUInt32 (buf, value, offset, littleEndian) {
+  if (value < 0) value = 0xffffffff + value + 1
+  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; i++) {
+    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+  }
+}
 
-  for (var i = 0, j = Math.min(len - offset, 4); i < j; i++) {
-    buf[offset + i] =
-        (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
+Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset + 3] = (value >>> 24)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 1] = (value >>> 8)
+    this[offset] = value
+  } else {
+    objectWriteUInt32(this, value, offset, true)
   }
   return offset + 4
 }
 
-Buffer.prototype.writeUInt32LE = function (value, offset, noAssert) {
-  return writeUInt32(this, value, offset, true, noAssert)
+Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0xffffffff, 0)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = value
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
 }
 
-Buffer.prototype.writeUInt32BE = function (value, offset, noAssert) {
-  return writeUInt32(this, value, offset, false, noAssert)
-}
-
-Buffer.prototype.writeInt8 = function (value, offset, noAssert) {
+Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
   if (!noAssert) {
-    assert(value !== undefined && value !== null, 'missing value')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset < this.length, 'Trying to write beyond buffer length')
-    verifsint(value, 0x7f, -0x80)
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
   }
 
-  if (offset >= this.length)
-    return
+  var i = 0
+  var mul = 1
+  var sub = value < 0 ? 1 : 0
+  this[offset] = value & 0xFF
+  while (++i < byteLength && (mul *= 0x100)) {
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
 
-  if (value >= 0)
-    this.writeUInt8(value, offset, noAssert)
-  else
-    this.writeUInt8(0xff + value + 1, offset, noAssert)
+  return offset + byteLength
+}
+
+Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) {
+    var limit = Math.pow(2, 8 * byteLength - 1)
+
+    checkInt(this, value, offset, byteLength, limit - 1, -limit)
+  }
+
+  var i = byteLength - 1
+  var mul = 1
+  var sub = value < 0 ? 1 : 0
+  this[offset + i] = value & 0xFF
+  while (--i >= 0 && (mul *= 0x100)) {
+    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
+  }
+
+  return offset + byteLength
+}
+
+Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 1, 0x7f, -0x80)
+  if (!Buffer.TYPED_ARRAY_SUPPORT) value = Math.floor(value)
+  if (value < 0) value = 0xff + value + 1
+  this[offset] = value
   return offset + 1
 }
 
-function writeInt16 (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(value !== undefined && value !== null, 'missing value')
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 1 < buf.length, 'Trying to write beyond buffer length')
-    verifsint(value, 0x7fff, -0x8000)
+Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value
+    this[offset + 1] = (value >>> 8)
+  } else {
+    objectWriteUInt16(this, value, offset, true)
   }
-
-  var len = buf.length
-  if (offset >= len)
-    return
-
-  if (value >= 0)
-    writeUInt16(buf, value, offset, littleEndian, noAssert)
-  else
-    writeUInt16(buf, 0xffff + value + 1, offset, littleEndian, noAssert)
   return offset + 2
 }
 
-Buffer.prototype.writeInt16LE = function (value, offset, noAssert) {
-  return writeInt16(this, value, offset, true, noAssert)
-}
-
-Buffer.prototype.writeInt16BE = function (value, offset, noAssert) {
-  return writeInt16(this, value, offset, false, noAssert)
-}
-
-function writeInt32 (buf, value, offset, littleEndian, noAssert) {
-  if (!noAssert) {
-    assert(value !== undefined && value !== null, 'missing value')
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 3 < buf.length, 'Trying to write beyond buffer length')
-    verifsint(value, 0x7fffffff, -0x80000000)
+Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 2, 0x7fff, -0x8000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 8)
+    this[offset + 1] = value
+  } else {
+    objectWriteUInt16(this, value, offset, false)
   }
+  return offset + 2
+}
 
-  var len = buf.length
-  if (offset >= len)
-    return
-
-  if (value >= 0)
-    writeUInt32(buf, value, offset, littleEndian, noAssert)
-  else
-    writeUInt32(buf, 0xffffffff + value + 1, offset, littleEndian, noAssert)
+Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = value
+    this[offset + 1] = (value >>> 8)
+    this[offset + 2] = (value >>> 16)
+    this[offset + 3] = (value >>> 24)
+  } else {
+    objectWriteUInt32(this, value, offset, true)
+  }
   return offset + 4
 }
 
-Buffer.prototype.writeInt32LE = function (value, offset, noAssert) {
-  return writeInt32(this, value, offset, true, noAssert)
+Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
+  value = +value
+  offset = offset | 0
+  if (!noAssert) checkInt(this, value, offset, 4, 0x7fffffff, -0x80000000)
+  if (value < 0) value = 0xffffffff + value + 1
+  if (Buffer.TYPED_ARRAY_SUPPORT) {
+    this[offset] = (value >>> 24)
+    this[offset + 1] = (value >>> 16)
+    this[offset + 2] = (value >>> 8)
+    this[offset + 3] = value
+  } else {
+    objectWriteUInt32(this, value, offset, false)
+  }
+  return offset + 4
 }
 
-Buffer.prototype.writeInt32BE = function (value, offset, noAssert) {
-  return writeInt32(this, value, offset, false, noAssert)
+function checkIEEE754 (buf, value, offset, ext, max, min) {
+  if (value > max || value < min) throw new RangeError('value is out of bounds')
+  if (offset + ext > buf.length) throw new RangeError('index out of range')
+  if (offset < 0) throw new RangeError('index out of range')
 }
 
 function writeFloat (buf, value, offset, littleEndian, noAssert) {
   if (!noAssert) {
-    assert(value !== undefined && value !== null, 'missing value')
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 3 < buf.length, 'Trying to write beyond buffer length')
-    verifIEEE754(value, 3.4028234663852886e+38, -3.4028234663852886e+38)
+    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
   }
-
-  var len = buf.length
-  if (offset >= len)
-    return
-
   ieee754.write(buf, value, offset, littleEndian, 23, 4)
   return offset + 4
 }
 
-Buffer.prototype.writeFloatLE = function (value, offset, noAssert) {
+Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
   return writeFloat(this, value, offset, true, noAssert)
 }
 
-Buffer.prototype.writeFloatBE = function (value, offset, noAssert) {
+Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
   return writeFloat(this, value, offset, false, noAssert)
 }
 
 function writeDouble (buf, value, offset, littleEndian, noAssert) {
   if (!noAssert) {
-    assert(value !== undefined && value !== null, 'missing value')
-    assert(typeof littleEndian === 'boolean', 'missing or invalid endian')
-    assert(offset !== undefined && offset !== null, 'missing offset')
-    assert(offset + 7 < buf.length,
-        'Trying to write beyond buffer length')
-    verifIEEE754(value, 1.7976931348623157E+308, -1.7976931348623157E+308)
+    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
   }
-
-  var len = buf.length
-  if (offset >= len)
-    return
-
   ieee754.write(buf, value, offset, littleEndian, 52, 8)
   return offset + 8
 }
 
-Buffer.prototype.writeDoubleLE = function (value, offset, noAssert) {
+Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
   return writeDouble(this, value, offset, true, noAssert)
 }
 
-Buffer.prototype.writeDoubleBE = function (value, offset, noAssert) {
+Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
   return writeDouble(this, value, offset, false, noAssert)
 }
 
+// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
+Buffer.prototype.copy = function copy (target, targetStart, start, end) {
+  if (!start) start = 0
+  if (!end && end !== 0) end = this.length
+  if (targetStart >= target.length) targetStart = target.length
+  if (!targetStart) targetStart = 0
+  if (end > 0 && end < start) end = start
+
+  // Copy 0 bytes; we're done
+  if (end === start) return 0
+  if (target.length === 0 || this.length === 0) return 0
+
+  // Fatal error conditions
+  if (targetStart < 0) {
+    throw new RangeError('targetStart out of bounds')
+  }
+  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
+  if (end < 0) throw new RangeError('sourceEnd out of bounds')
+
+  // Are we oob?
+  if (end > this.length) end = this.length
+  if (target.length - targetStart < end - start) {
+    end = target.length - targetStart + start
+  }
+
+  var len = end - start
+
+  if (len < 1000 || !Buffer.TYPED_ARRAY_SUPPORT) {
+    for (var i = 0; i < len; i++) {
+      target[i + targetStart] = this[i + start]
+    }
+  } else {
+    target._set(this.subarray(start, start + len), targetStart)
+  }
+
+  return len
+}
+
 // fill(value, start=0, end=buffer.length)
-Buffer.prototype.fill = function (value, start, end) {
+Buffer.prototype.fill = function fill (value, start, end) {
   if (!value) value = 0
   if (!start) start = 0
   if (!end) end = this.length
 
-  assert(end >= start, 'end < start')
+  if (end < start) throw new RangeError('end < start')
 
   // Fill 0 bytes; we're done
   if (end === start) return
   if (this.length === 0) return
 
-  assert(start >= 0 && start < this.length, 'start out of bounds')
-  assert(end >= 0 && end <= this.length, 'end out of bounds')
+  if (start < 0 || start >= this.length) throw new RangeError('start out of bounds')
+  if (end < 0 || end > this.length) throw new RangeError('end out of bounds')
 
   var i
   if (typeof value === 'number') {
@@ -44663,26 +44950,13 @@ Buffer.prototype.fill = function (value, start, end) {
   return this
 }
 
-Buffer.prototype.inspect = function () {
-  var out = []
-  var len = this.length
-  for (var i = 0; i < len; i++) {
-    out[i] = toHex(this[i])
-    if (i === exports.INSPECT_MAX_BYTES) {
-      out[i + 1] = '...'
-      break
-    }
-  }
-  return '<Buffer ' + out.join(' ') + '>'
-}
-
 /**
  * Creates a new `ArrayBuffer` with the *copied* memory of the buffer instance.
  * Added in Node 0.12. Only available in browsers that support ArrayBuffer.
  */
-Buffer.prototype.toArrayBuffer = function () {
+Buffer.prototype.toArrayBuffer = function toArrayBuffer () {
   if (typeof Uint8Array !== 'undefined') {
-    if (TYPED_ARRAY_SUPPORT) {
+    if (Buffer.TYPED_ARRAY_SUPPORT) {
       return (new Buffer(this)).buffer
     } else {
       var buf = new Uint8Array(this.length)
@@ -44692,7 +44966,7 @@ Buffer.prototype.toArrayBuffer = function () {
       return buf.buffer
     }
   } else {
-    throw new Error('Buffer.toArrayBuffer not supported in this browser')
+    throw new TypeError('Buffer.toArrayBuffer not supported in this browser')
   }
 }
 
@@ -44704,11 +44978,11 @@ var BP = Buffer.prototype
 /**
  * Augment a Uint8Array *instance* (not the Uint8Array class!) with Buffer methods
  */
-Buffer._augment = function (arr) {
+Buffer._augment = function _augment (arr) {
+  arr.constructor = Buffer
   arr._isBuffer = true
 
-  // save reference to original Uint8Array get/set methods before overwriting
-  arr._get = arr.get
+  // save reference to original Uint8Array set method before overwriting
   arr._set = arr.set
 
   // deprecated, will be removed in node 0.13+
@@ -44721,13 +44995,18 @@ Buffer._augment = function (arr) {
   arr.toJSON = BP.toJSON
   arr.equals = BP.equals
   arr.compare = BP.compare
+  arr.indexOf = BP.indexOf
   arr.copy = BP.copy
   arr.slice = BP.slice
+  arr.readUIntLE = BP.readUIntLE
+  arr.readUIntBE = BP.readUIntBE
   arr.readUInt8 = BP.readUInt8
   arr.readUInt16LE = BP.readUInt16LE
   arr.readUInt16BE = BP.readUInt16BE
   arr.readUInt32LE = BP.readUInt32LE
   arr.readUInt32BE = BP.readUInt32BE
+  arr.readIntLE = BP.readIntLE
+  arr.readIntBE = BP.readIntBE
   arr.readInt8 = BP.readInt8
   arr.readInt16LE = BP.readInt16LE
   arr.readInt16BE = BP.readInt16BE
@@ -44738,10 +45017,14 @@ Buffer._augment = function (arr) {
   arr.readDoubleLE = BP.readDoubleLE
   arr.readDoubleBE = BP.readDoubleBE
   arr.writeUInt8 = BP.writeUInt8
+  arr.writeUIntLE = BP.writeUIntLE
+  arr.writeUIntBE = BP.writeUIntBE
   arr.writeUInt16LE = BP.writeUInt16LE
   arr.writeUInt16BE = BP.writeUInt16BE
   arr.writeUInt32LE = BP.writeUInt32LE
   arr.writeUInt32BE = BP.writeUInt32BE
+  arr.writeIntLE = BP.writeIntLE
+  arr.writeIntBE = BP.writeIntBE
   arr.writeInt8 = BP.writeInt8
   arr.writeInt16LE = BP.writeInt16LE
   arr.writeInt16BE = BP.writeInt16BE
@@ -44758,11 +45041,13 @@ Buffer._augment = function (arr) {
   return arr
 }
 
-var INVALID_BASE64_RE = /[^+\/0-9A-z]/g
+var INVALID_BASE64_RE = /[^+\/0-9A-z\-]/g
 
 function base64clean (str) {
   // Node strips out invalid characters like \n and \t from the string, base64-js does not
   str = stringtrim(str).replace(INVALID_BASE64_RE, '')
+  // Node converts strings with length < 2 to ''
+  if (str.length < 2) return ''
   // Node allows for non-padded base64 strings (missing trailing ===), base64-js does not
   while (str.length % 4 !== 0) {
     str = str + '='
@@ -44775,39 +45060,90 @@ function stringtrim (str) {
   return str.replace(/^\s+|\s+$/g, '')
 }
 
-function isArray (subject) {
-  return (Array.isArray || function (subject) {
-    return Object.prototype.toString.call(subject) === '[object Array]'
-  })(subject)
-}
-
-function isArrayish (subject) {
-  return isArray(subject) || Buffer.isBuffer(subject) ||
-      subject && typeof subject === 'object' &&
-      typeof subject.length === 'number'
-}
-
 function toHex (n) {
   if (n < 16) return '0' + n.toString(16)
   return n.toString(16)
 }
 
-function utf8ToBytes (str) {
-  var byteArray = []
-  for (var i = 0; i < str.length; i++) {
-    var b = str.charCodeAt(i)
-    if (b <= 0x7F) {
-      byteArray.push(b)
-    } else {
-      var start = i
-      if (b >= 0xD800 && b <= 0xDFFF) i++
-      var h = encodeURIComponent(str.slice(start, i+1)).substr(1).split('%')
-      for (var j = 0; j < h.length; j++) {
-        byteArray.push(parseInt(h[j], 16))
+function utf8ToBytes (string, units) {
+  units = units || Infinity
+  var codePoint
+  var length = string.length
+  var leadSurrogate = null
+  var bytes = []
+  var i = 0
+
+  for (; i < length; i++) {
+    codePoint = string.charCodeAt(i)
+
+    // is surrogate component
+    if (codePoint > 0xD7FF && codePoint < 0xE000) {
+      // last char was a lead
+      if (leadSurrogate) {
+        // 2 leads in a row
+        if (codePoint < 0xDC00) {
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          leadSurrogate = codePoint
+          continue
+        } else {
+          // valid surrogate pair
+          codePoint = leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00 | 0x10000
+          leadSurrogate = null
+        }
+      } else {
+        // no lead yet
+
+        if (codePoint > 0xDBFF) {
+          // unexpected trail
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else if (i + 1 === length) {
+          // unpaired lead
+          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+          continue
+        } else {
+          // valid lead
+          leadSurrogate = codePoint
+          continue
+        }
       }
+    } else if (leadSurrogate) {
+      // valid bmp char, but last char was a lead
+      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+      leadSurrogate = null
+    }
+
+    // encode utf8
+    if (codePoint < 0x80) {
+      if ((units -= 1) < 0) break
+      bytes.push(codePoint)
+    } else if (codePoint < 0x800) {
+      if ((units -= 2) < 0) break
+      bytes.push(
+        codePoint >> 0x6 | 0xC0,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x10000) {
+      if ((units -= 3) < 0) break
+      bytes.push(
+        codePoint >> 0xC | 0xE0,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else if (codePoint < 0x200000) {
+      if ((units -= 4) < 0) break
+      bytes.push(
+        codePoint >> 0x12 | 0xF0,
+        codePoint >> 0xC & 0x3F | 0x80,
+        codePoint >> 0x6 & 0x3F | 0x80,
+        codePoint & 0x3F | 0x80
+      )
+    } else {
+      throw new Error('Invalid code point')
     }
   }
-  return byteArray
+
+  return bytes
 }
 
 function asciiToBytes (str) {
@@ -44819,10 +45155,12 @@ function asciiToBytes (str) {
   return byteArray
 }
 
-function utf16leToBytes (str) {
+function utf16leToBytes (str, units) {
   var c, hi, lo
   var byteArray = []
   for (var i = 0; i < str.length; i++) {
+    if ((units -= 2) < 0) break
+
     c = str.charCodeAt(i)
     hi = c >> 8
     lo = c % 256
@@ -44834,13 +45172,12 @@ function utf16leToBytes (str) {
 }
 
 function base64ToBytes (str) {
-  return base64.toByteArray(str)
+  return base64.toByteArray(base64clean(str))
 }
 
 function blitBuffer (src, dst, offset, length) {
   for (var i = 0; i < length; i++) {
-    if ((i + offset >= dst.length) || (i >= src.length))
-      break
+    if ((i + offset >= dst.length) || (i >= src.length)) break
     dst[i + offset] = src[i]
   }
   return i
@@ -44854,36 +45191,7 @@ function decodeUtf8Char (str) {
   }
 }
 
-/*
- * We have to make sure that the value is a valid integer. This means that it
- * is non-negative. It has no fractional component and that it does not
- * exceed the maximum allowed value.
- */
-function verifuint (value, max) {
-  assert(typeof value === 'number', 'cannot write a non-number as a number')
-  assert(value >= 0, 'specified a negative value for writing an unsigned value')
-  assert(value <= max, 'value is larger than maximum value for type')
-  assert(Math.floor(value) === value, 'value has a fractional component')
-}
-
-function verifsint (value, max, min) {
-  assert(typeof value === 'number', 'cannot write a non-number as a number')
-  assert(value <= max, 'value larger than maximum allowed value')
-  assert(value >= min, 'value smaller than minimum allowed value')
-  assert(Math.floor(value) === value, 'value has a fractional component')
-}
-
-function verifIEEE754 (value, max, min) {
-  assert(typeof value === 'number', 'cannot write a non-number as a number')
-  assert(value <= max, 'value larger than maximum allowed value')
-  assert(value >= min, 'value smaller than minimum allowed value')
-}
-
-function assert (test, message) {
-  if (!test) throw new Error(message || 'Failed assertion')
-}
-
-},{"base64-js":28,"ieee754":29}],28:[function(require,module,exports){
+},{"base64-js":29,"ieee754":30,"is-array":31}],29:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -44898,12 +45206,16 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	var NUMBER = '0'.charCodeAt(0)
 	var LOWER  = 'a'.charCodeAt(0)
 	var UPPER  = 'A'.charCodeAt(0)
+	var PLUS_URL_SAFE = '-'.charCodeAt(0)
+	var SLASH_URL_SAFE = '_'.charCodeAt(0)
 
 	function decode (elt) {
 		var code = elt.charCodeAt(0)
-		if (code === PLUS)
+		if (code === PLUS ||
+		    code === PLUS_URL_SAFE)
 			return 62 // '+'
-		if (code === SLASH)
+		if (code === SLASH ||
+		    code === SLASH_URL_SAFE)
 			return 63 // '/'
 		if (code < NUMBER)
 			return -1 //no match
@@ -45005,90 +45317,125 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],29:[function(require,module,exports){
-exports.read = function(buffer, offset, isLE, mLen, nBytes) {
-  var e, m,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      nBits = -7,
-      i = isLE ? (nBytes - 1) : 0,
-      d = isLE ? -1 : 1,
-      s = buffer[offset + i];
+},{}],30:[function(require,module,exports){
+exports.read = function (buffer, offset, isLE, mLen, nBytes) {
+  var e, m
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var nBits = -7
+  var i = isLE ? (nBytes - 1) : 0
+  var d = isLE ? -1 : 1
+  var s = buffer[offset + i]
 
-  i += d;
+  i += d
 
-  e = s & ((1 << (-nBits)) - 1);
-  s >>= (-nBits);
-  nBits += eLen;
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8);
+  e = s & ((1 << (-nBits)) - 1)
+  s >>= (-nBits)
+  nBits += eLen
+  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
-  m = e & ((1 << (-nBits)) - 1);
-  e >>= (-nBits);
-  nBits += mLen;
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8);
+  m = e & ((1 << (-nBits)) - 1)
+  e >>= (-nBits)
+  nBits += mLen
+  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
-    e = 1 - eBias;
+    e = 1 - eBias
   } else if (e === eMax) {
-    return m ? NaN : ((s ? -1 : 1) * Infinity);
+    return m ? NaN : ((s ? -1 : 1) * Infinity)
   } else {
-    m = m + Math.pow(2, mLen);
-    e = e - eBias;
+    m = m + Math.pow(2, mLen)
+    e = e - eBias
   }
-  return (s ? -1 : 1) * m * Math.pow(2, e - mLen);
-};
+  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
+}
 
-exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
-  var e, m, c,
-      eLen = nBytes * 8 - mLen - 1,
-      eMax = (1 << eLen) - 1,
-      eBias = eMax >> 1,
-      rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0),
-      i = isLE ? 0 : (nBytes - 1),
-      d = isLE ? 1 : -1,
-      s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0;
+exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
+  var e, m, c
+  var eLen = nBytes * 8 - mLen - 1
+  var eMax = (1 << eLen) - 1
+  var eBias = eMax >> 1
+  var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
+  var i = isLE ? 0 : (nBytes - 1)
+  var d = isLE ? 1 : -1
+  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
 
-  value = Math.abs(value);
+  value = Math.abs(value)
 
   if (isNaN(value) || value === Infinity) {
-    m = isNaN(value) ? 1 : 0;
-    e = eMax;
+    m = isNaN(value) ? 1 : 0
+    e = eMax
   } else {
-    e = Math.floor(Math.log(value) / Math.LN2);
+    e = Math.floor(Math.log(value) / Math.LN2)
     if (value * (c = Math.pow(2, -e)) < 1) {
-      e--;
-      c *= 2;
+      e--
+      c *= 2
     }
     if (e + eBias >= 1) {
-      value += rt / c;
+      value += rt / c
     } else {
-      value += rt * Math.pow(2, 1 - eBias);
+      value += rt * Math.pow(2, 1 - eBias)
     }
     if (value * c >= 2) {
-      e++;
-      c /= 2;
+      e++
+      c /= 2
     }
 
     if (e + eBias >= eMax) {
-      m = 0;
-      e = eMax;
+      m = 0
+      e = eMax
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen);
-      e = e + eBias;
+      m = (value * c - 1) * Math.pow(2, mLen)
+      e = e + eBias
     } else {
-      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen);
-      e = 0;
+      m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
+      e = 0
     }
   }
 
-  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8);
+  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
 
-  e = (e << mLen) | m;
-  eLen += mLen;
-  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8);
+  e = (e << mLen) | m
+  eLen += mLen
+  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
 
-  buffer[offset + i - d] |= s * 128;
+  buffer[offset + i - d] |= s * 128
+}
+
+},{}],31:[function(require,module,exports){
+
+/**
+ * isArray
+ */
+
+var isArray = Array.isArray;
+
+/**
+ * toString
+ */
+
+var str = Object.prototype.toString;
+
+/**
+ * Whether or not the given `val`
+ * is an array.
+ *
+ * example:
+ *
+ *        isArray([]);
+ *        // > true
+ *        isArray(arguments);
+ *        // > false
+ *        isArray('');
+ *        // > false
+ *
+ * @param {mixed} val
+ * @return {bool}
+ */
+
+module.exports = isArray || function (val) {
+  return !! val && '[object Array]' == str.call(val);
 };
 
 },{}]},{},[2]);
