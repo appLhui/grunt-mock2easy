@@ -26,7 +26,8 @@ function getBody(request, response, callback) {
 }
 
 
-module.exports = function (req, res) {
+module.exports = function (req, res, next) {
+  if( req.url.indexOf("{{interfaceSuffix}}") == -1) return next();
 
   getBody(req, res, function (err, body) {
     if (err) {

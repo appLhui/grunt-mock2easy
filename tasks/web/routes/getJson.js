@@ -44,8 +44,9 @@ module.exports = function (grunt, ignoreField) {
               var _reData;
               if (_data.responseParametersType) {
                 _reData = _data.responseJson;
+              }else{
+                _reData = JSON.stringify(Mock.mock(require('../util/response2json')(hashObj, grunt, true)));
               }
-              _reData = JSON.stringify(Mock.mock(require('../util/response2json')(hashObj, grunt, true)));
               if (_data.isJsonp) {
                 _reData = _data.jsonpCallback + '(' + _reData + ')';
               }

@@ -40,7 +40,8 @@ module.exports = function(grunt, target,async) {
               grunt.log.error(err);
             } else {
               require('./util/writeFile')(path.resolve(options.database) + '/do.js', _.template(data)({
-                port: options.port
+                port: options.port,
+                interfaceSuffix:options.interfaceSuffix
               }), grunt).then(function () {
                 callback();
               });

@@ -35,6 +35,7 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data'
     },
     addResponseParameters:function(id){
       var _id = id+'00';
+      var _length = _id.length;
       if($scope.data && $scope.data.responseParameters){
         angular.forEach($scope.data.responseParameters,function(o,i){
           if(o.id.length === _id.length && id == o.id.substr(0, o.id.length-2)){
@@ -43,6 +44,8 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data'
             }
           }
         });
+
+
         _id = parseInt(_id)+1;
         _id = (''+_id).length%2==0?''+_id:'0'+_id;
 
@@ -60,8 +63,15 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data'
         $scope.data.responseParameters = [];
       }
 
+
+      id =  id == '00'?'00'+_id:_id;
+
+      while(id.length < _length){
+        id = '0'+ id;
+      }
+
       $scope.data.responseParameters.push({
-        id:id=='00'?'00'+_id:_id,
+        id: id,
         kind:'string',
         name:'--',
         rule:'--',
