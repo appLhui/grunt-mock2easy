@@ -15,10 +15,6 @@ var clone = function (obj) {
 
 var json2Data = function (key, value, id, array, reData) {
 
-  console.log(value, JSON.stringify(reData));
-  console.log('=======================================');
-
-
   var _array = clone(array);
   if (typeof(value) === 'string') {
     reData.push({
