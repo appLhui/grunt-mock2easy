@@ -36,7 +36,7 @@ module.exports = function(grunt) {
       isSpider:false,
       ignoreField:[],
       interfaceSuffix:'.json',
-      preferredLanguage:'cn'
+      preferredLanguage:'en'
     });
     try{
       server[action](options);
