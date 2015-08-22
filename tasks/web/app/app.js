@@ -3,7 +3,6 @@ require('./util/angular-ui-router');
 require('./util/angular-translate');
 require('./util/json2');
 require('./util/ui-bootstrap-tpls');
-require('./directive/angluar-growl');
 require('angular-sanitize');
 
 require('./filter/filter');
@@ -12,7 +11,7 @@ require('./service/service');
 
 
 
-var app = angular.module('app', ['ui.bootstrap', 'ngSanitize','ui.router', 'filter', 'directive', 'service', 'pascalprecht.translate','angular-growl']);
+var app = angular.module('app', ['ui.bootstrap', 'ngSanitize','ui.router', 'filter', 'directive', 'service', 'pascalprecht.translate']);
 
 app.config(require('./routes'));
 

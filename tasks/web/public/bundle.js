@@ -9905,7 +9905,6 @@ require('./util/angular-ui-router');
 require('./util/angular-translate');
 require('./util/json2');
 require('./util/ui-bootstrap-tpls');
-require('./directive/angluar-growl');
 require('angular-sanitize');
 
 require('./filter/filter');
@@ -9914,7 +9913,7 @@ require('./service/service');
 
 
 
-var app = angular.module('app', ['ui.bootstrap', 'ngSanitize','ui.router', 'filter', 'directive', 'service', 'pascalprecht.translate','angular-growl']);
+var app = angular.module('app', ['ui.bootstrap', 'ngSanitize','ui.router', 'filter', 'directive', 'service', 'pascalprecht.translate']);
 
 app.config(require('./routes'));
 
@@ -9928,7 +9927,7 @@ app.config(['$translateProvider','growlProvider', function ($translateProvider,g
 }]);
 
 angular.bootstrap(document, ['app']);
-},{"./directive/angluar-growl":7,"./directive/directive":11,"./filter/filter":20,"./routes":22,"./service/service":24,"./util/angular":27,"./util/angular-translate":25,"./util/angular-ui-router":26,"./util/json2":28,"./util/ui-bootstrap-tpls":30,"angular-sanitize":2}],5:[function(require,module,exports){
+},{"./directive/directive":12,"./filter/filter":21,"./routes":23,"./service/service":25,"./util/angular":28,"./util/angular-translate":26,"./util/angular-ui-router":27,"./util/json2":29,"./util/ui-bootstrap-tpls":31,"angular-sanitize":2}],5:[function(require,module,exports){
 (function (Buffer){
 /**
  * Created by lihui on 14-7-31.
@@ -10059,14 +10058,14 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data'
 
 }];
 }).call(this,require("buffer").Buffer)
-},{"buffer":31,"jquery":3}],6:[function(require,module,exports){
+},{"buffer":32,"jquery":3}],6:[function(require,module,exports){
 (function (Buffer){
 /**
  * Created by lihui on 14-7-30.
  */
 
 
-module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 'json2Data', 'config','growl', function ($scope, $state, $http, $modal, $filter, $timeout, json2Data, config,growl) {
+module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 'json2Data', 'config','growl', '$confirm',function ($scope, $state, $http, $modal, $filter, $timeout, json2Data, config,growl,$confirm) {
 
   angular.extend($scope, {
     interfaceSuffix: config.interfaceSuffix,
@@ -10103,12 +10102,20 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 
       });
     },
     del: function (url) {
-      $http.post('/del', {
-        interfaceUrl: url
-      }).then(function (data) {
-        $scope.render();
-        growl.addSuccessMessage(window.language.SUCCESS);
-      });
+
+      $confirm({
+        text: window.language['MAIN-DELETE-CONTENT'],
+        title:window.language.DELETE,
+        ok:window.language.SUBMIT,
+        cancel:window.language.CANCEL
+      }).then(function() {
+          $http.post('/del', {
+            interfaceUrl: url
+          }).then(function (data) {
+            $scope.render();
+            growl.addSuccessMessage(window.language.SUCCESS);
+          });
+        });
     },
     changeLazy: function (url) {
 
@@ -10229,7 +10236,7 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 
 
 }];
 }).call(this,require("buffer").Buffer)
-},{"buffer":31}],7:[function(require,module,exports){
+},{"buffer":32}],7:[function(require,module,exports){
 /**
  * angular-growl - v0.4.0 - 2013-11-19
  * https://github.com/marcorinck/angular-growl
@@ -10414,6 +10421,102 @@ angular.module('angular-growl').provider('growl', function () {
   ];
 });
 },{}],8:[function(require,module,exports){
+/*
+ * angular-confirm
+ * http://schlogen.github.io/angular-confirm/
+ * Version: 1.1.0 - 2015-14-07
+ * License: Apache
+ */
+angular.module('angular-confirm', ['ui.bootstrap'])
+  .controller('ConfirmModalController', ['$scope', '$modalInstance', 'data', function ($scope, $modalInstance, data) {
+    $scope.data = angular.copy(data);
+
+    $scope.ok = function () {
+      $modalInstance.close();
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+
+  }])
+  .value('$confirmModalDefaults', {
+    template: '<div class="modal-header"><h3 class="modal-title">{{data.title}}</h3></div>' +
+      '<div class="modal-body">{{data.text}}</div>' +
+      '<div class="modal-footer">' +
+      '<button class="btn btn-primary" ng-click="ok()">{{data.ok}}</button>' +
+      '<button class="btn btn-default" ng-click="cancel()">{{data.cancel}}</button>' +
+      '</div>',
+    controller: 'ConfirmModalController',
+    defaultLabels: {
+      title: 'Confirm',
+      ok: 'OK',
+      cancel: 'Cancel'
+    }
+  })
+  .factory('$confirm', ['$modal', '$confirmModalDefaults', function ($modal, $confirmModalDefaults) {
+    return function (data, settings) {
+      settings = angular.extend($confirmModalDefaults, (settings || {}));
+
+      data = angular.extend({}, settings.defaultLabels, data || {});
+
+      if ('templateUrl' in settings && 'template' in settings) {
+        delete settings.template;
+      }
+
+      settings.resolve = {
+        data: function () {
+          return data;
+        }
+      };
+
+      return $modal.open(settings).result;
+    };
+  }])
+  .directive('confirm', ['$confirm', function ($confirm) {
+    return {
+      priority: 1,
+      restrict: 'A',
+      scope: {
+        confirmIf: "=",
+        ngClick: '&',
+        confirm: '@',
+        confirmSettings: "=",
+        confirmTitle: '@',
+        confirmOk: '@',
+        confirmCancel: '@'
+      },
+      link: function (scope, element, attrs) {
+
+
+        element.unbind("click").bind("click", function ($event) {
+
+          $event.preventDefault();
+
+          if (angular.isUndefined(scope.confirmIf) || scope.confirmIf) {
+
+            var data = {text: scope.confirm};
+            if (scope.confirmTitle) {
+              data.title = scope.confirmTitle;
+            }
+            if (scope.confirmOk) {
+              data.ok = scope.confirmOk;
+            }
+            if (scope.confirmCancel) {
+              data.cancel = scope.confirmCancel;
+            }
+            $confirm(data, scope.confirmSettings || {}).then(scope.ngClick);
+          } else {
+
+            scope.$apply(scope.ngClick);
+          }
+        });
+
+      }
+    }
+  }]);
+
+},{}],9:[function(require,module,exports){
 
 module.exports = function() {
     return {
@@ -10432,7 +10535,7 @@ module.exports = function() {
     }
 }
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  * Created by lihui on 14-9-10.
  * 验证新接口是否验证通过
@@ -10471,7 +10574,7 @@ module.exports = function() {
     }
   }
 }
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -10499,11 +10602,15 @@ module.exports = function() {
         }
     }
 }
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
-module.exports = angular.module('directive', [])
+
+require('./angluar-growl');
+require('./angular-confirm');
+
+module.exports = angular.module('directive', ['angular-growl','angular-confirm'])
     .directive('dyName', require('./dyName'))
     .directive('canRemove', require('./canRemove'))
     .directive('json2html', require('./json2html'))
@@ -10515,7 +10622,7 @@ module.exports = angular.module('directive', [])
     .directive('jsonFormat', require('./jsonFormat'))
     .directive('array2str', require('./array2str'));
 
-},{"./array2str":8,"./canAdd":9,"./canRemove":10,"./dyName":12,"./isJson":13,"./json2html":14,"./jsonFormat":15,"./jsonVerify":16,"./mockjs":17,"./symbolFilter":18}],12:[function(require,module,exports){
+},{"./angluar-growl":7,"./angular-confirm":8,"./array2str":9,"./canAdd":10,"./canRemove":11,"./dyName":13,"./isJson":14,"./json2html":15,"./jsonFormat":16,"./jsonVerify":17,"./mockjs":18,"./symbolFilter":19}],13:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -10537,7 +10644,7 @@ module.exports = function() {
     };
 }
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Created by lihui on 15-1-26.
  */
@@ -10561,7 +10668,7 @@ module.exports = function () {
   }
 }
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -10735,7 +10842,7 @@ module.exports = function() {
         }
     };
 }
-},{"../util/mock":29,"jquery":3}],15:[function(require,module,exports){
+},{"../util/mock":30,"jquery":3}],16:[function(require,module,exports){
 /**
  * Created by lihui on 15-1-22.
  *
@@ -10806,7 +10913,7 @@ module.exports = function () {
     }
   };
 }
-},{"../util/mock":29,"jquery":3}],16:[function(require,module,exports){
+},{"../util/mock":30,"jquery":3}],17:[function(require,module,exports){
 /**
  * Created by lihui on 14-9-11.
  */
@@ -10830,7 +10937,7 @@ module.exports = function() {
     }
   }
 }
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-31.
  */
@@ -10847,7 +10954,7 @@ module.exports = function() {
         }
     };
 }
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * Created by lihui on 14-9-16.
  */
@@ -10871,7 +10978,7 @@ module.exports = function() {
     }
   }
 }
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-30.
  */
@@ -10881,7 +10988,7 @@ module.exports = function(){
         return val.replace(/database/g,'');
     }
 }
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-30.
  */
@@ -10890,7 +10997,7 @@ module.exports = angular.module('filter', [])
     .filter('url', require('./url'))
     .filter('database',require('./database'))
 
-},{"./database":19,"./url":21}],21:[function(require,module,exports){
+},{"./database":20,"./url":22}],22:[function(require,module,exports){
 /**
  * Created by lihui on 14-7-30.
  */
@@ -10901,7 +11008,7 @@ module.exports = function(){
     }
 }
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (Buffer){
 /**
  * Created by lihui on 14-7-30.
@@ -10930,7 +11037,7 @@ module.exports = ['$stateProvider', '$urlRouterProvider', '$provide', function (
 }];
 
 }).call(this,require("buffer").Buffer)
-},{"./controller/detail.js":5,"./controller/main.js":6,"buffer":31}],23:[function(require,module,exports){
+},{"./controller/detail.js":5,"./controller/main.js":6,"buffer":32}],24:[function(require,module,exports){
 /**
  *
  * @param json 需要处理的对象
@@ -11059,7 +11166,7 @@ var json2Data = function (key, value, id, array, reData) {
 
 module.exports = json2Data;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 /**
  * Created by lihui on 15-1-22.
  */
@@ -11069,7 +11176,7 @@ module.exports = angular.module('service', [])
   .factory('json2Data', function () {
     return  require('./json2Data')
   });
-},{"./json2Data":23}],25:[function(require,module,exports){
+},{"./json2Data":24}],26:[function(require,module,exports){
 /*!
  * angular-translate - v2.6.0 - 2015-02-08
  * http://github.com/angular-translate/angular-translate
@@ -13425,7 +13532,7 @@ angular.module('pascalprecht.translate')
   return translateFilter;
 }]);
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /**
  * State-based routing for AngularJS
  * @version v0.2.10
@@ -16649,7 +16756,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined" && module.ex
         .provider('$route', $RouteProvider)
         .directive('ngView', $ViewDirective);
 })(window, window.angular);
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /**
  * @license AngularJS v1.2.19
  * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -38428,7 +38535,7 @@ var styleDirective = valueFn({
 })(window, document);
 
 !window.angular.$$csp() && window.angular.element(document).find('head').prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}.ng-hide-add-active,.ng-hide-remove{display:block!important;}</style>');
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /*
     json2.js
     2012-10-08
@@ -38916,7 +39023,7 @@ if (typeof JSON !== 'object') {
     }
 }());
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /*! mockjs 23-06-2014 15:57:37 */
 /*! src/mock-prefix.js */
 /*!
@@ -40536,7 +40643,7 @@ if (typeof JSON !== 'object') {
         };
     }).call(window);
 }).call(window);
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 /*
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
@@ -44654,7 +44761,7 @@ angular.module("template/typeahead/typeahead-popup.html", []).run(["$templateCac
     "</ul>");
 }]);
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -45825,7 +45932,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":32,"ieee754":33}],32:[function(require,module,exports){
+},{"base64-js":33,"ieee754":34}],33:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -45947,7 +46054,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,

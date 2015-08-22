@@ -3,7 +3,7 @@
  */
 var fs = require('fs');
 
-module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 'json2Data', 'config','growl', function ($scope, $state, $http, $modal, $filter, $timeout, json2Data, config,growl) {
+module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 'json2Data', 'config','growl', '$confirm',function ($scope, $state, $http, $modal, $filter, $timeout, json2Data, config,growl,$confirm) {
 
   angular.extend($scope, {
     interfaceSuffix: config.interfaceSuffix,
@@ -40,12 +40,20 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 
       });
     },
     del: function (url) {
-      $http.post('/del', {
-        interfaceUrl: url
-      }).then(function (data) {
-        $scope.render();
-        growl.addSuccessMessage(window.language.SUCCESS);
-      });
+
+      $confirm({
+        text: window.language['MAIN-DELETE-CONTENT'],
+        title:window.language.DELETE,
+        ok:window.language.SUBMIT,
+        cancel:window.language.CANCEL
+      }).then(function() {
+          $http.post('/del', {
+            interfaceUrl: url
+          }).then(function (data) {
+            $scope.render();
+            growl.addSuccessMessage(window.language.SUCCESS);
+          });
+        });
     },
     changeLazy: function (url) {
 
