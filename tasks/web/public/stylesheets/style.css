@@ -39,3 +39,7 @@ textarea {
 .remove-hide .disabled-select {
   display: block !important;
 }
+
+
+
+.growl{position:fixed;top:10px;right:10px;float:right;width:250px}.growl-item.ng-enter,.growl-item.ng-leave{-webkit-transition:.5s linear all;-moz-transition:.5s linear all;-o-transition:.5s linear all;transition:.5s linear all}.growl-item.ng-enter,.growl-item.ng-leave.ng-leave-active{opacity:0}.growl-item.ng-leave,.growl-item.ng-enter.ng-enter-active{opacity:1}

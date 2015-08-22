@@ -230,8 +230,11 @@
 
 <div class="row well well-sm"
      style=" position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;text-align: center;margin-bottom:0;">
-  <a ng-disabled="addForm.$invalid" ng-click="submit()" class="btn btn-success">{{'SUBMIT'|translate}}</a>
+  <a ng-disabled="addForm.$invalid" ng-click="used()" class="btn btn-primary">{{'APPLY'|translate}}</a>
+  <a style="margin-left: 10px;" ng-disabled="addForm.$invalid" ng-click="submit()" class="btn btn-success">{{'SUBMIT'|translate}}</a>
   <a ui-sref="list" style="margin-left: 10px;" class="btn btn-default">{{'CANCEL'|translate}}</a>
 </div>
 
 </form>
+<div growl></div>
+

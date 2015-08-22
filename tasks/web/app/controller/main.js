@@ -3,7 +3,7 @@
  */
 var fs = require('fs');
 
-module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 'json2Data', 'config', function ($scope, $state, $http, $modal, $filter, $timeout, json2Data, config) {
+module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 'json2Data', 'config','growl', function ($scope, $state, $http, $modal, $filter, $timeout, json2Data, config,growl) {
 
   angular.extend($scope, {
     interfaceSuffix: config.interfaceSuffix,
@@ -44,10 +44,7 @@ module.exports = ['$scope', '$state', '$http', '$modal', '$filter', '$timeout', 
         interfaceUrl: url
       }).then(function (data) {
         $scope.render();
-        $scope.suc = true;
-        $timeout(function () {
-          $scope.suc = false;
-        }, 1000);
+        growl.addSuccessMessage(window.language.SUCCESS);
       });
     },
     changeLazy: function (url) {

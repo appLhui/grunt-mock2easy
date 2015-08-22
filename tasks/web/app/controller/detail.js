@@ -4,7 +4,8 @@
 var fs = require('fs');
 var $ = require('jquery');
 
-module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data',function($scope,$stateParams,$http,$filter,$modal,json2Data) {
+
+module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data','growl',function($scope,$stateParams,$http,$filter,$modal,json2Data,growl) {
 
   angular.extend($scope,{
     data:{
@@ -88,6 +89,12 @@ module.exports = ['$scope','$stateParams','$http','$filter','$modal','json2Data'
       $('[json2html]').html();
       $http.post('/modify',angular.fromJson($scope.data)).then(function(){
         window.location.href = '/';
+      });
+    },
+    used:function(){
+      $('[json2html]').html();
+      $http.post('/modify',angular.fromJson($scope.data)).then(function(){
+        growl.addSuccessMessage(window.language.SUCCESS);
       });
     },
     //打开窗口

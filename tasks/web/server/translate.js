@@ -8,6 +8,7 @@ module.exports = function (grunt, preferredLanguage) {
     'en': {
       'DELETE': 'Delete',
       'ADD': 'Add',
+      'APPLY':'Apply',
       'OPTIONAL': 'Optional',
       'REQUIRED': 'Required',
       'RECORD': 'Record',
@@ -64,6 +65,7 @@ module.exports = function (grunt, preferredLanguage) {
     'cn': {
       'DELETE': '删除',
       'ADD': '添加',
+      'APPLY':'应用',
       'OPTIONAL': '选填',
       'REQUIRED': '必填',
       'RECORD': '录制',
