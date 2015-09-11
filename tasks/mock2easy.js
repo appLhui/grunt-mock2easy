@@ -27,17 +27,7 @@ module.exports = function(grunt) {
 
     var server  = servers[this.target];
     var action  = this.args.shift() || 'start';
-    var options = this.options({
-      port:3000,
-      lazyLoadTime:3000,
-      database:'mock2easy',
-      doc:'doc',
-      keepAlive:true,
-      isSpider:false,
-      ignoreField:[],
-      interfaceSuffix:'.json',
-      preferredLanguage:'en'
-    });
+    var options = this.options({});
     try{
       server[action](options);
     } catch (e){

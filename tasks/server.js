@@ -66,7 +66,7 @@ module.exports = function (grunt, target, async) {
 
       server = process._servers[target] = require('mock2easy')(mock2easy, options,function(app){
         try{
-          app(mock2easy,options).listen(options.port, function () {
+          app.listen(options.port, function () {
             grunt.log.write(('mock2easy is starting , please visit : http://localhost:' + options.port).bold.cyan);
             if (!options.keepAlive) {
               async();
