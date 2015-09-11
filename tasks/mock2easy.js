@@ -22,7 +22,7 @@ module.exports = function(grunt) {
 
 
     if (!servers[this.target]) {
-      servers[this.target] = require('./web/server')(grunt, this.target,this.async());
+      servers[this.target] = require('./server')(grunt, this.target,this.async());
     }
 
     var server  = servers[this.target];
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
     try{
       server[action](options);
     } catch (e){
-      grunt.log.writeln(e.red);
+      grunt.log.writeln('grunt-mock2easy启动失败，请联系：lhui3it@gmail.com'.red);
     }
   });
 };
